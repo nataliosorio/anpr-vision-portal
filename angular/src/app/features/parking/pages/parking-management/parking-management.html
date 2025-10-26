@@ -1,0 +1,127 @@
+<div class="parking-system">
+  <!-- Header -->
+  <div class="header">
+    <h1>Zonas y Sectores</h1>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar sector..." class="search-input" />
+    </div>
+
+    <!-- Zone Tabs -->
+    <div class="zone-tabs">
+      <button *ngFor="let zone of zones" [class.active]="selectedZone?.id === zone.id" (click)="selectZone(zone)" class="zone-tab">
+        {{ zone.name }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" *ngIf="selectedZone">
+
+
+    <!-- Zone Title -->
+    <div class="zone-title">
+      <h2>{{ selectedZone.name }}</h2>
+      <p>Selecciona un sector para ver los espacios disponibles</p>
+    </div>
+
+    <!-- Sectors Grid -->
+    <div class="sectors-grid">
+      <div *ngFor="let sector of filteredSectors" class="sector-card" (click)="openSectorModal(sector)">
+
+        <div class="sector-header">
+          <div>
+            <h3>{{ sector.name }}</h3>
+            <p>Capacidad: {{ sector.capacity }}</p>
+            <p>Tipo Vehículo: {{ sector.typeVehicle }}</p>
+          </div>
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+
+        <div class="sector-stats">
+          <div class="stat-item">
+            <span class="stat-value">{{ getTotalSectorSlots(sector) }}</span>
+            <span class="stat-text">Espacios Totales</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value green">{{ getAvailableSlots(sector) }}</span>
+            <span class="stat-text">Libres</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value red">{{ getSectorStatusCount('ocupado', sector) }}</span>
+            <span class="stat-text">Ocupados</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Sector Modal -->
+  <div class="modal-overlay" *ngIf="showSectorModal" (click)="closeSectorModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header" *ngIf="selectedSector">
+        <h2>{{ selectedSector.name }}</h2>
+        <button class="close-btn" (click)="closeSectorModal()">×</button>
+      </div>
+
+      <div class="modal-content" *ngIf="selectedSector">
+
+
+
+        <p class="modal-subtitle">Haz clic en cualquier espacio para ver detalles</p>
+
+        <div class="slots-container">
+          <button
+            *ngFor="let slot of filteredSlots"
+            class="slot-btn"
+            [style.background-color]="getStatusColor(slot.isAvailable ? 'libre' : 'ocupado')"
+            [class.selected]="selectedSlot?.id === slot.id"
+            (click)="selectSlot(slot)"
+          >
+            {{ slot.name }}
+          </button>
+        </div>
+
+        <!-- Slot Details -->
+        <div class="slot-details" *ngIf="selectedSlot">
+          <div class="slot-header">
+            <h3>Espacio {{ selectedSlot.name }}</h3>
+          </div>
+
+
+          <div class="detail-row">
+            <span class="detail-label">Estado:</span>
+            <span class="status-badge" [style.background-color]="getStatusColor(selectedSlot.isAvailable ? 'libre' : 'ocupado')">
+              {{ selectedSlot.isAvailable ? 'Disponible' : 'Ocupado' }}
+            </span>
+          </div>
+
+          <div *ngIf="selectedSlot.isAvailable" class="empty-slot-info">
+            <p class="empty-message">Este espacio está disponible</p>
+          </div>
+
+          <div *ngIf="!selectedSlot.isAvailable && vehicleData?.vehicle" class="vehicle-info">
+            <div class="detail-row">
+              <span class="detail-label">Placa:</span>
+              <span class="vehicle-plate">{{ vehicleData.vehicle.plate }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Propietario:</span>
+               <span>{{ vehicleData.vehicle.client.name }}</span>
+
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Hora de entrada:</span>
+              <span>{{ vehicleData.entryDate | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

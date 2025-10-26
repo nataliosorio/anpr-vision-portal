@@ -1,0 +1,154 @@
+<div class="parking-container">
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="controls-row">
+          <!-- Botón lado izquierdo -->
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Agregar nuevo tipo de tarifa">
+              <mat-icon class="title-icon">attach_money</mat-icon>
+              Agregar Tipo de Tarifa
+            </button>
+          </div>
+
+          <!-- Search lado derecho -->
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o descripción..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Rate Types List -->
+  <div class="tariff-list" *ngIf="(dataSource?.data?.length || 0) > 0">
+    <div
+      class="tariff-card-horizontal"
+      *ngFor="let rateType of (dataSource?.data || [])"
+      [class.deleted-card]="rateType.isDeleted">
+
+      <!-- Left Section: Nombre + Estado -->
+      <div class="card-left">
+        <div class="plate-section">
+          <h2 class="plate-title">{{ rateType.name }}</h2>
+          <div
+            class="status-badge"
+            [class.active]="rateType.asset && !rateType.isDeleted"
+            [class.inactive]="!rateType.asset && !rateType.isDeleted"
+            [class.deleted]="rateType.isDeleted">
+            <mat-icon>
+              {{ rateType.isDeleted ? 'block' : (rateType.asset ? 'check_circle' : 'cancel') }}
+            </mat-icon>
+            <span>{{ rateType.isDeleted ? 'Eliminado' : (rateType.asset ? 'Activo' : 'Inactivo') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Section: Info -->
+      <div class="card-center">
+        <div class="info-row">
+          <div class="info-item" *ngIf="rateType.description">
+            <mat-icon>description</mat-icon>
+            <span class="info-text">{{ rateType.description }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Acciones -->
+      <div class="card-right">
+        <ng-container *ngIf="!rateType.isDeleted">
+          <button
+            mat-raised-button
+            color="primary"
+            class="action-btn-horizontal edit-btn"
+            (click)="goToEdit(rateType)"
+            matTooltip="Editar tipo de tarifa">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            color="warn"
+            class="action-btn-horizontal delete-btn"
+            (click)="deleteRateType(rateType.id!)"
+            matTooltip="Eliminar tipo de tarifa">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="rateType.isDeleted">
+          <button
+            mat-raised-button
+            class="action-btn-horizontal disabled-btn"
+            disabled>
+            <mat-icon>edit_off</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            class="action-btn-horizontal permanent-delete-btn"
+            (click)="deletePermanentRateType(rateType.id!)">
+            <mat-icon>delete_forever</mat-icon>
+            <span>Eliminar Permanente</span>
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Overlay eliminados -->
+      <div class="deletion-warning-overlay" *ngIf="rateType.isDeleted">
+        <mat-icon>warning_amber</mat-icon>
+        <span>Este tipo de tarifa ha sido eliminado lógicamente del sistema</span>
+      </div>
+    </div>
+  </div>
+
+   <!-- Paginador -->
+  <mat-paginator
+    [length]="dataSource.data.length"
+    [pageSizeOptions]="[5, 10, 20]"
+    [pageSize]="5"
+    showFirstLastButtons
+    (page)="onPageChange($event)">
+  </mat-paginator>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="(dataSource?.data?.length || 0) === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">receipt</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">attach_money</mat-icon>
+          <mat-icon class="car-icon">attach_money</mat-icon>
+          <mat-icon class="car-icon">attach_money</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay tipos de tarifa registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Crear Primer Tipo de Tarifa
+      </button>
+    </div>
+  </div>
+</div>

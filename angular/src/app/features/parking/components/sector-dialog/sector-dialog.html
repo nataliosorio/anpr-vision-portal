@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>{{ sector.nombre }} - {{ sector.descripcion }}</h2>
+<mat-dialog-content>
+
+  <!-- Estadísticas -->
+  <div class="stats">
+    <mat-card class="stat-card libres">{{ sector.libres }} Libres</mat-card>
+    <mat-card class="stat-card ocupados">{{ sector.ocupados }} Ocupados</mat-card>
+    <mat-card class="stat-card reservados">{{ sector.reservados }} Reservados</mat-card>
+    <mat-card class="stat-card mantenimiento">{{ sector.mantenimiento }} Mant.</mat-card>
+  </div>
+
+  <!-- Slots -->
+  <div class="slots">
+    <button mat-raised-button *ngFor="let slot of sector.slots"
+            [color]="slot.estado === 'Libre' ? 'primary' :
+                     slot.estado === 'Ocupado' ? 'warn' :
+                     slot.estado === 'Reservado' ? 'accent' : ''"
+            (click)="selectSlot(slot)">
+      {{ slot.codigo }}
+    </button>
+  </div>
+
+  <!-- Detalle del Slot -->
+  <mat-card *ngIf="selectedSlot" class="slot-detail">
+    <h3>Espacio {{ selectedSlot.codigo }}</h3>
+    <p>Estado: <b>{{ selectedSlot.estado }}</b></p>
+    <p *ngIf="selectedSlot.vehiculo">Vehículo: <b>{{ selectedSlot.vehiculo }}</b></p>
+  </mat-card>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cerrar</button>
+</mat-dialog-actions>

@@ -1,0 +1,352 @@
+/* =========================
+   VARIABLES GLOBALES
+   ========================= */
+:root {
+  /* colores base */
+  --card-bg: #2f3740; /* fondo principal de la card */
+  --card-surface: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  --card-radius: 14px;
+  --card-border: rgba(255,255,255,0.04);
+  --muted: #a2adb5;
+  --muted-2: #7f8b93;
+  --text: #e6f6fb;
+
+  /* acentos (hex + rgba helpers) */
+  --accent-blue: #38b6ff;
+  --accent-green: #2ed8b6;
+  --accent-yellow: #f6b04a;
+  --accent-purple: #7c5cff;
+  --accent-blue-rgba: 56,182,255;
+  --accent-green-rgba: 46,216,182;
+  --accent-yellow-rgba: 246,176,74;
+  --accent-purple-rgba: 124,92,255;
+
+  --danger: #ff6b6b;
+  --glass: rgba(255,255,255,0.02);
+
+  /* Tweak knobs (ajusta aquí la "intensidad" global) */
+  --accent-franja-alpha: 0.30;    /* controla alpha de la franja vertical */
+  --accent-body-alpha: 0.02;      /* controla tint del body por acento */
+  --accent-shadow-alpha: 0.04;    /* controla sombra coloreada (muy sutil) */
+  --franja-width-desktop: 3px;
+  --franja-width-mobile: 3px;
+}
+
+/* =========================
+   BASE CARD
+   ========================= */
+.card {
+  /* base background + subtle top layer to add depth */
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(0,0,0,0.02)), var(--card-bg);
+  border-radius: var(--card-radius);
+  border: 1px solid var(--card-border);
+  box-shadow:
+    0 8px 20px rgba(2,6,23,0.50),
+    inset 0 1px 0 rgba(255,255,255,0.02);
+  overflow: visible; /* allow accent pseudo-element to be visible */
+  position: relative;
+  transition: transform .14s cubic-bezier(.2,.9,.2,1), box-shadow .14s, border-color .12s;
+  will-change: transform;
+  color: var(--text);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  /* sombra menos agresiva al hover */
+  box-shadow: 0 14px 28px rgba(2,6,23,0.62), inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+.card.full-card {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999;
+  border-radius: 0;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background: linear-gradient(180deg, #071018 0%, #071b27 100%);
+}
+
+/* Slight highlight on header for better contrast */
+.card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+}
+
+/* Accent decorative vertical stripe (pseudo element) */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  bottom: 12px;
+  width: var(--franja-width-desktop);
+  border-radius: 6px;
+  background: transparent; /* filled by variant classes */
+  box-shadow: none;
+  opacity: 0.95;
+  pointer-events: none;
+  transition: background .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.card:hover::before { transform: translateX(-1px) scaleY(1.02); }
+
+/* =========================
+   HEADER - LEFT (title/subtitle)
+   ========================= */
+.card-header-left { display: flex; flex-direction: column; gap: 4px; }
+
+.card-title-row { display:flex; align-items:center; gap:10px; }
+
+.card-accent {
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background: var(--accent-blue); /* default accent */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.card.card-accent-green .card-accent { background: var(--accent-green); }
+.card.card-accent-yellow .card-accent { background: var(--accent-yellow); }
+.card.card-accent-purple .card-accent { background: var(--accent-purple); }
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1;
+}
+
+.card-subtitle {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* =========================
+   HEADER ACTIONS
+   ========================= */
+.card-header-right .actions {
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.action-btn {
+  display:inline-grid;
+  place-items:center;
+  width:36px; height:36px;
+  border-radius:10px;
+  border: 1px solid rgba(255,255,255,0.02);
+  background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(255,255,255,0.008));
+  color: var(--text);
+  cursor:pointer;
+  transition: transform .08s ease, background .12s ease;
+  font-size:14px;
+}
+.action-btn i { font-size:16px; }
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.02);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.40);
+}
+.action-btn:focus { outline: none; box-shadow: 0 0 0 3px rgba(56,182,255,0.06); }
+
+.action-btn.danger {
+  color: var(--danger);
+  border-color: rgba(255,107,107,0.10);
+  background: rgba(255,107,107,0.025);
+}
+
+/* =========================
+   BODY & FOOTER
+   ========================= */
+.card-collapse-wrapper { overflow: hidden; }
+
+.card-body {
+  padding: 16px;
+  color: var(--text);
+  min-height: 120px;
+  background: var(--card-surface);
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
+}
+
+/* Sutil separación interior para que no se mezcle el tinte con el borde */
+.card-body > * { position: relative; z-index: 1; }
+
+.card-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.02);
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  background:transparent;
+}
+.card-footer.compact { padding: 8px 12px; }
+
+/* LOADER */
+.card-loader {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(180deg, rgba(2,6,10,0.45), rgba(2,6,10,0.55));
+  z-index: 60;
+  pointer-events: none;
+}
+.loader-wrap { display:flex; gap:8px; align-items:center; color:var(--text); font-weight:600; }
+.pct-loader1 {
+  width:26px; height:26px; border-radius:50%;
+  border:3px solid rgba(255,255,255,0.06);
+  border-top-color:var(--accent-blue);
+}
+
+/* =========================
+   VIBRANT ACCENTS (blue / green / yellow / purple)
+   Apply by adding class to card: e.g. card-accent-blue
+   ========================= */
+
+/* Helper function-like: use low alpha values so sea sutil */
+.card-accent-blue {
+  border-color: rgba(255,255,255,0.02);
+  /* quitar sombra coloreada fuerte: usar base neutra y una muy sutil de color */
+  box-shadow: 0 12px 26px rgba(2,6,23,0.54), 0 6px 18px rgba(0,0,0,0.40);
+}
+.card-accent-blue::before {
+  background: linear-gradient(180deg, rgba(var(--accent-blue-rgba), calc(var(--accent-franja-alpha))), rgba(var(--accent-blue-rgba), calc(var(--accent-franja-alpha) - 0.1)));
+  box-shadow: none;
+}
+.card-accent-blue .card-body {
+  background: linear-gradient(180deg, rgba(var(--accent-blue-rgba), var(--accent-body-alpha)), var(--card-surface));
+}
+.card-accent-blue .stat-icon,
+.card-accent-blue .stat-icon i { color: rgb(var(--accent-blue-rgba)); }
+.card-accent-blue .stat-icon { background: linear-gradient(135deg, rgba(var(--accent-blue-rgba),0.06), rgba(255,255,255,0.01)); }
+
+/* GREEN */
+.card-accent-green {
+  border-color: rgba(255,255,255,0.02);
+  box-shadow: 0 12px 26px rgba(2,6,23,0.54), 0 6px 18px rgba(0,0,0,0.40);
+}
+.card-accent-green::before {
+  background: linear-gradient(180deg, rgba(var(--accent-green-rgba), calc(var(--accent-franja-alpha) - 0.02)), rgba(var(--accent-green-rgba), calc(var(--accent-franja-alpha) - 0.14)));
+  box-shadow: none;
+}
+.card-accent-green .card-body {
+  background: linear-gradient(180deg, rgba(var(--accent-green-rgba), var(--accent-body-alpha)), var(--card-surface));
+}
+.card-accent-green .stat-icon,
+.card-accent-green .stat-icon i { color: rgb(var(--accent-green-rgba)); }
+.card-accent-green .stat-icon { background: linear-gradient(135deg, rgba(var(--accent-green-rgba),0.05), rgba(255,255,255,0.01)); }
+
+/* YELLOW */
+.card-accent-yellow {
+  border-color: rgba(255,255,255,0.02);
+  box-shadow: 0 12px 26px rgba(2,6,23,0.54), 0 6px 18px rgba(0,0,0,0.40);
+}
+.card-accent-yellow::before {
+  background: linear-gradient(180deg, rgba(var(--accent-yellow-rgba), calc(var(--accent-franja-alpha) - 0.04)), rgba(var(--accent-yellow-rgba), calc(var(--accent-franja-alpha) - 0.16)));
+  box-shadow: none;
+}
+.card-accent-yellow .card-body {
+  background: linear-gradient(180deg, rgba(var(--accent-yellow-rgba), var(--accent-body-alpha)), var(--card-surface));
+}
+.card-accent-yellow .stat-icon,
+.card-accent-yellow .stat-icon i { color: rgb(var(--accent-yellow-rgba)); }
+.card-accent-yellow .stat-icon { background: linear-gradient(135deg, rgba(var(--accent-yellow-rgba),0.05), rgba(255,255,255,0.01)); }
+
+/* PURPLE */
+.card-accent-purple {
+  border-color: rgba(255,255,255,0.02);
+  box-shadow: 0 12px 26px rgba(2,6,23,0.54), 0 6px 18px rgba(0,0,0,0.40);
+}
+.card-accent-purple::before {
+  background: linear-gradient(180deg, rgba(var(--accent-purple-rgba), calc(var(--accent-franja-alpha) - 0.06)), rgba(var(--accent-purple-rgba), calc(var(--accent-franja-alpha) - 0.18)));
+  box-shadow: none;
+}
+.card-accent-purple .card-body {
+  background: linear-gradient(180deg, rgba(var(--accent-purple-rgba), var(--accent-body-alpha)), var(--card-surface));
+}
+.card-accent-purple .stat-icon,
+.card-accent-purple .stat-icon i { color: rgb(var(--accent-purple-rgba)); }
+.card-accent-purple .stat-icon { background: linear-gradient(135deg, rgba(var(--accent-purple-rgba),0.04), rgba(255,255,255,0.01)); }
+
+/* =========================
+   STAT CARD & VARIANTS
+   ========================= */
+.stat-card {
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-height:110px;
+  padding: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 12px;
+  /* sombra más suave */
+  box-shadow: 0 8px 18px rgba(2,6,23,0.45);
+}
+
+.stat-card--compact { min-height: 88px; padding: 12px; }
+
+.stat-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+
+.stat-title { color: var(--muted); font-weight:800; font-size:0.92rem; }
+.stat-number { font-weight:900; font-size:1.6rem; color:var(--text); }
+
+.stat-icon {
+  display:grid; place-items:center;
+  width:46px;height:46px;border-radius:10px;
+  background: rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.03);
+  color:var(--accent-blue);
+  font-size:1.25rem;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s;
+}
+
+/* vibrant stat variant (left border menos intenso) */
+.stat-card--vibrant {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+  border-radius: 14px;
+  box-shadow: 0 12px 22px rgba(0,0,0,0.42);
+  transition: transform .12s, box-shadow .12s;
+}
+.stat-card--vibrant.card-accent-blue  { border-left: 4px solid rgba(var(--accent-blue-rgba),0.65);  }
+.stat-card--vibrant.card-accent-green { border-left: 4px solid rgba(var(--accent-green-rgba),0.62); }
+.stat-card--vibrant.card-accent-yellow{ border-left: 4px solid rgba(var(--accent-yellow-rgba),0.60);}
+.stat-card--vibrant.card-accent-purple{ border-left: 4px solid rgba(var(--accent-purple-rgba),0.58);}
+
+/* =========================
+   CHART CARD tweaks
+   ========================= */
+.chart-card {
+  padding: 18px;
+  min-height: 320px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+}
+
+.chart-card .apexcharts-legend-series .apexcharts-marker {
+  stroke-width: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+}
+
+/* =========================
+   MISC / RESPONSIVE
+   ========================= */
+@media (max-width:720px) {
+  .card::before { left:10px; top:10px; bottom:10px; width:var(--franja-width-mobile); }
+  .stat-card--vibrant { padding: 10px; }
+  .card { border-radius: 10px; }
+  .action-btn { width:34px; height:34px; }
+  .card-body { padding:12px; min-height:90px; }
+}

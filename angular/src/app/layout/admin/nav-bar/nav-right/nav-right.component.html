@@ -1,0 +1,225 @@
+<ul class="navbar-nav ms-auto">
+
+  <li>
+    <!-- contenedor con panel + referencia a ngbDropdown -->
+   <div class="notif-dropdown" ngbDropdown #notifDropdown="ngbDropdown" [autoClose]="'outside'" placement="bottom-end">
+  <!-- trigger -->
+  <button class="notif-trigger" ngbDropdownToggle type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="notif-panel-1">
+    <i class="icon feather icon-bell" title="Notificaciones" aria-hidden="true"></i>
+    <span class="notif-badge"><span class="sr-only">Nuevas notificaciones</span></span>
+  </button>
+
+      <!-- panel (menu) -->
+      <div ngbDropdownMenu class="notif-modal" id="notif-panel-1" role="menu" aria-label="Notificaciones recientes">
+        <!-- Header del modal -->
+        <div class="notif-header">
+          <h6 class="notif-title">Notificaciones</h6>
+        </div>
+
+        <!-- Contenido de notificaciones -->
+        <div class="notif-content">
+          <div class="notif-section">
+
+
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-1.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-online"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">John Doe</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    30 min
+                  </span>
+                </div>
+                <p class="notif-message">Nuevo ticket agregado al sistema</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+            <div class="notif-item notif-unread" role="menuitem" tabindex="0">
+              <div class="notif-avatar">
+                <img src="assets/images/user/avatar-4.jpg" alt="Usuario" class="notif-img" />
+                <div class="notif-status notif-away"></div>
+              </div>
+              <div class="notif-details">
+                <div class="notif-user-info">
+                  <span class="notif-username">Maria González</span>
+                  <span class="notif-timestamp">
+                    <i class="icon feather icon-clock"></i>
+                    1 hora
+                  </span>
+                </div>
+                <p class="notif-message">Ha comentado en tu proyecto</p>
+              </div>
+              <div class="notif-indicator" aria-hidden="true"></div>
+            </div>
+          </div>
+
+
+        </div>
+
+
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <div class="dropdown drp-user" ngbDropdown placement="auto">
+      <a href="javascript:" ngbDropdownToggle>
+        <div class="patient-photo">
+          {{ firstLetter }}
+        </div>
+      </a>
+      <div class="dropdown-menu dropdown-menu-end profile-notification" ngbDropdownMenu>
+        <div class="pro-head">
+          <span>{{userName}}</span>
+        </div>
+        <ul class="pro-body">
+          <!-- <li>
+            <button class="dropdown-item" (click)="viewProfile()" >
+              <i class="feather icon-user"></i>
+              Perfil
+            </button>
+          </li> -->
+
+          <li>
+            <button class="dropdown-item" (click)="configuracion()" >
+              <i class="feather icon-settings"></i>
+              Configuración
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" (click)="cerrarSesion()" >
+              <i class="feather icon-lock"></i>
+              Cerrar sesión
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </li>
+</ul>
+
+

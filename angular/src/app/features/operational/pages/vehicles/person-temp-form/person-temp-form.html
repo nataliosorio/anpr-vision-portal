@@ -1,0 +1,56 @@
+<h2 class="modal-title">Nueva Persona</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+  <!-- Nombre -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="firstName" required />
+    <mat-error *ngIf="form.get('firstName')?.hasError('required')">
+      El nombre es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('minlength')">
+      Debe tener al menos 2 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('maxlength')">
+      No puede exceder los 50 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('pattern')">
+      Solo se permiten letras y espacios
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Apellido -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Apellido</mat-label>
+    <input matInput formControlName="lastName" required />
+    <mat-error *ngIf="form.get('lastName')?.hasError('required')">
+      El apellido es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('minlength')">
+      Debe tener al menos 2 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('maxlength')">
+      No puede exceder los 50 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('pattern')">
+      Solo se permiten letras y espacios
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Teléfono -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Teléfono</mat-label>
+    <input matInput formControlName="phoneNumber" />
+    <mat-error *ngIf="form.get('phoneNumber')?.hasError('pattern')">
+      El teléfono debe tener entre 7 y 15 dígitos
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Botones -->
+  <div class="actions">
+    <button mat-stroked-button type="button" (click)="close()">Cancelar</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+      Aceptar
+    </button>
+  </div>
+</form>

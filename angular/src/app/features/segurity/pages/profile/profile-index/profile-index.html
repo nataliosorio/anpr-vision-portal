@@ -1,0 +1,96 @@
+<div class="medical-profile-container">
+  <!-- Header with Action Buttons -->
+  <mat-card class="header-card">
+    <mat-card-content class="header-content">
+      <div class="header-actions d-flex justify-content-center">
+        <h1 class="text-center">Mi Perfil</h1>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="profile-content">
+    <!-- Left Column -->
+    <div class="left-column">
+      <!-- Patient Info Card -->
+      <mat-card class="patient-card">
+        <mat-card-content class="patient-content">
+          <div class="patient-photo">
+              {{ firstLetter }}
+          </div>
+          <h2 class="patient-name">{{ userName }}</h2>
+          <div class="contact-info">
+            <div class="contact-item email">
+              <mat-icon class="contact-icon">email</mat-icon>
+              {{ userData.email }}
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="right-column">
+      <!-- General Information Card -->
+      <mat-card class="info-card">
+        <mat-card-header class="card-header">
+          <mat-card-title>Información de usuario</mat-card-title>
+          <!-- <button mat-icon-button class="edit-button">
+            <mat-icon>edit</mat-icon>
+          </button> -->
+          <button mat-icon-button class="edit-button" (click)="openEditDialog()">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list class="info-list">
+            <mat-list-item class="info-item">
+              <span class="info-label">Nombre de usuario:</span>
+              <span class="info-value">{{ userData.username }}</span>
+            </mat-list-item>
+            <mat-list-item class="info-item">
+              <span class="info-label">correo eléctronico:</span>
+              <span class="info-value">{{ userData.email }}</span>
+            </mat-list-item>
+            <!-- <mat-list-item class="info-item">
+              <span class="info-label">Contraseña:</span>
+              <span class="info-value">{{ userData.password }}</span>
+            </mat-list-item> -->
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Anamnesis Card -->
+      <mat-card class="info-card">
+        <mat-card-header class="card-header">
+          <mat-card-title>Información Personal</mat-card-title>
+           <button mat-icon-button class="edit-button" (click)="openEditPersonDialog()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-list class="info-list">
+            <mat-list-item class="info-item">
+              <span class="info-label">Nombres:</span>
+              <span class="info-value">{{ personData.firstName}}</span>
+            </mat-list-item>
+            <mat-list-item class="info-item">
+              <span class="info-label">Apellidos:</span>
+              <span class="info-value">{{ personData.lastName }}</span>
+            </mat-list-item>
+            <mat-list-item class="info-item">
+              <span class="info-label">Telefono:</span>
+              <span class="info-value">{{ personData.phoneNumber }}</span>
+            </mat-list-item>
+
+
+
+
+          </mat-list>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

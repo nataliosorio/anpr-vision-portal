@@ -1,0 +1,340 @@
+/* Mantén tu patient-photo igual */
+.patient-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin: 0;
+  overflow: hidden;
+  border: 3px solid #e0e0e0;
+  background-color: #27d3c8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 25px;
+  color: #333;
+}
+
+/* Variables limpias y simples */
+:root {
+  --notif-bg: #ffffff;
+  --notif-border: #e2e8f0;
+  --notif-hover: #f8fafc;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --accent-primary: #06b6d4;
+  --accent-secondary: #0891b2;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Trigger simple */
+.notif-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: #06b6d4;
+}
+
+.notif-trigger:hover {
+  background: rgba(6, 182, 212, 0.1);
+}
+
+/* Badge simple */
+.notif-badge {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  transform: translateY(calc(-50% - 15px)); /* sube 8px */
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.06);
+  z-index: 2;
+} 
+
+
+
+
+
+/* Modal limpio */
+.notif-modal {
+  width: 350px;
+  max-height: 600px;
+  background: var(--notif-bg);
+  color: var(--text-primary);
+  border-radius: 12px;
+  border: 1px solid var(--notif-border);
+  box-shadow: var(--shadow);
+  padding: 0;
+  overflow: hidden;
+  right: 0;
+}
+
+.notif-dropdown .notif-modal {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: auto;
+  right: 0;
+  z-index: 1050;
+}
+
+/* Header simple */
+.notif-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--notif-border);
+  background: #fafafa;
+}
+
+.notif-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.notif-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Botones limpios */
+.notif-btn {
+  background: transparent;
+  border: 1px solid var(--notif-border);
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notif-btn:hover {
+  background: var(--notif-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Contenido compacto */
+.notif-content {
+   max-height: 400px;
+  overflow-y: auto;
+  padding: 0;
+  flex: 1;
+
+   /* Firefox */
+  scrollbar-width: thin; /* Tamaño más delgado */
+  scrollbar-color: #404343 #f1f5f9; /* color barra / color fondo */
+}
+
+/* Scrollbar para navegadores basados en Webkit (Chrome, Edge, Safari) */
+.notif-content::-webkit-scrollbar {
+  width: 8px; /* Grosor del scrollbar */
+}
+
+.notif-content::-webkit-scrollbar-track {
+  background: #f1f5f9; /* Color de fondo de la pista */
+  border-radius: 8px;
+}
+
+.notif-content::-webkit-scrollbar-thumb {
+  background-color: #06b6d4; /* Color del scroll */
+  border-radius: 8px; /* Bordes redondeados */
+  border: 2px solid #f1f5f9; /* Espacio alrededor para efecto visual */
+}
+
+.notif-content::-webkit-scrollbar-thumb:hover {
+  background-color: #0891b2; /* Color al pasar el mouse */
+}
+
+/* Secciones compactas */
+.notif-section {
+  margin: 0;
+}
+
+.notif-section + .notif-section {
+  border-top: 1px solid var(--notif-border);
+  margin-top: 0;
+}
+
+.notif-section-title {
+  padding: 12px 20px 8px;
+  margin: 0;
+  background: #f8fafc;
+}
+
+.notif-label-new,
+.notif-label-earlier {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Items limpios */
+.notif-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 20px;
+  transition: background 0.2s ease;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+}
+
+.notif-item:hover {
+  background: var(--notif-hover);
+}
+
+.notif-item.notif-unread {
+  background: rgb(120, 123, 123); // Color de fondo para notificaciones
+  border-left: 3px solid var(--accent-primary);
+  padding-left: 17px;
+}
+
+/* Avatar simple */
+.notif-avatar {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.notif-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--notif-border);
+}
+
+/* Status simples */
+.notif-status {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.notif-online {
+  background: var(--success);
+}
+
+.notif-away {
+  background: var(--warning);
+}
+
+.notif-offline {
+  background: var(--text-muted);
+}
+
+/* Detalles compactos */
+.notif-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.notif-user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.notif-username {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.notif-timestamp {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.notif-message {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+/* Indicador simple */
+.notif-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  flex-shrink: 0;
+  opacity: 0;
+}
+
+.notif-item.notif-unread .notif-indicator {
+  opacity: 1;
+}
+
+/* Footer simple */
+.notif-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--notif-border);
+  background: #fafafa;
+}
+
+.notif-btn-show-all {
+  width: 100%;
+  background: var(--accent-primary);
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.notif-btn-show-all:hover {
+  background: var(--accent-secondary);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .notif-modal {
+    width: 320px;
+  }
+}
+
+/* Focus para accesibilidad */
+.notif-trigger:focus,
+.notif-btn:focus,
+.notif-btn-show-all:focus,
+.notif-item:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}

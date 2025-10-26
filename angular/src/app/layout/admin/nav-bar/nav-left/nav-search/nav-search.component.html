@@ -1,0 +1,59 @@
+<!-- <a href="javascript:" (click)="this.searchOn = true" class="pop-search" title="Search"><i class="feather icon-search"></i></a>
+@if (searchOn) {
+  <div class="search-bar">
+    <input type="text" class="form-control border-0 shadow-none" placeholder="Search here" />
+    <button (click)="this.searchOn = false" type="button" class="btn-close close" aria-label="Close"></button>
+  </div>
+} -->
+<!-- trigger (usa exactamente como tenías) -->
+<a href="javascript:void(0)"
+   (click)="openSearch()"
+   class="pop-search"
+   title="Search"
+   aria-label="Abrir búsqueda">
+  <i class="feather icon-search"></i>
+</a>
+
+<!-- backdrop + search bar -->
+<div *ngIf="searchOn" class="search-bar-backdrop" (click)="closeSearch()">
+  <!-- ahora el contenedor ocupa todo el ancho -->
+  <div class="search-bar" role="dialog" aria-modal="true" aria-label="Barra de búsqueda" (click)="$event.stopPropagation()">
+    <div class="search-left">
+      <i class="feather icon-search" aria-hidden="true"></i>
+    </div>
+
+    <input
+      #searchInput
+      type="text"
+      class="form-control search-input border-0 shadow-none"
+      placeholder="Buscar..."
+      [(ngModel)]="query"
+      (input)="onInput()"
+      (keydown)="onKeydown($event)"
+      aria-label="Buscar"
+      autocomplete="off"
+    />
+    <ul class="suggestions" *ngIf="suggestions.length" role="listbox" aria-label="Sugerencias de búsqueda">
+      <li
+        *ngFor="let s of suggestions; let i = index"
+        class="suggestion-item"
+        role="option"
+        [class.active]="i === suggestionIndex"
+        (click)="selectSuggestion(s)"
+        (mousemove)="suggestionIndex = i"
+        tabindex="0"
+      >
+        <div class="s-title">{{ s.title }}</div>
+        <div class="s-path">{{ s.fullPath }}</div>
+      </li>
+</ul>
+    <!-- botón limpiar (solo aparece si hay texto) -->
+    <button *ngIf="query" class="clear-btn" (click)="clear()" type="button" aria-label="Borrar búsqueda">✕</button>
+
+    <!-- botón cerrar (solo aparece si NO hay texto) -->
+    <button *ngIf="!query" class="close-btn" (click)="closeSearch()" type="button" aria-label="Cerrar búsqueda">
+      <i class="feather icon-x" aria-hidden="true"></i>
+    </button>
+
+  </div>
+</div>

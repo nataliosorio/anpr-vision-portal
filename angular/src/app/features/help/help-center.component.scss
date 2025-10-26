@@ -1,0 +1,195 @@
+/* ===================== Centro de Ayuda — sobrio/pro (CONTENEDOR TRANSPARENTE) ===================== */
+/* Paleta */
+$primary:   #3b82f6;   /* azul */
+$accent:    #22d3ee;   /* cian */
+$success:   #22c55e;   /* menta */
+
+$txt-100:   #ffffff;
+$txt-200:   rgba(255,255,255,.90);
+$txt-300:   rgba(255,255,255,.75);
+
+$border:    rgba(255,255,255,.12);
+$border-2:  rgba(255,255,255,.18);
+
+$radius-lg: 18px;
+$radius-md: 12px;
+$tr:        .25s cubic-bezier(.22,.7,.25,1);
+
+/* ===================== Contenedor (sin fondo, sin borde, sin sombra) ===================== */
+.help-container {
+  max-width: 1100px;
+  margin: 32px auto;
+  padding: 26px;
+  border-radius: $radius-lg;
+  color: $txt-200;
+  background: transparent;    /* ⬅️ sin color de fondo */
+  /* sin border, sin box-shadow */
+  transition: transform $tr;
+  &:hover { transform: translateY(-1px); }
+}
+
+/* ===================== Título ===================== */
+.help-title {
+  margin: 0 0 14px;
+  text-align: center;
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+  font-weight: 800;
+  color: $txt-100;
+  letter-spacing: .2px;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 92px;
+    height: 3px;
+    margin: 12px auto 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, $primary, $accent);
+    box-shadow: 0 0 10px rgba(34,211,238,.35);
+    animation: barGlow 2.8s ease-in-out infinite alternate;
+  }
+}
+
+/* ===================== Tabs (Angular Material MDC) ===================== */
+/* Si este SCSS vive dentro del componente, usamos ::ng-deep para atravesar el encapsulado */
+:host ::ng-deep .custom-tabs {
+  padding: 6px 8px 0;
+
+  /* Ink bar (activo) */
+  .mat-ink-bar {
+    background: linear-gradient(90deg, $primary, $accent) !important;
+    height: 2.5px !important;
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(34,211,238,.35);
+  }
+  .mdc-tab-indicator__content--underline {
+    border-top: 2.5px solid $primary !important;
+    border-radius: 999px;
+    box-shadow: 0 0 8px rgba(34,211,238,.35);
+  }
+
+  /* Carril de labels */
+  .mat-mdc-tab-labels,
+  .mat-tab-labels {
+    justify-content: center;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed $border-2;
+  }
+
+  /* Píldoras */
+  .mat-mdc-tab,
+  .mat-tab-label {
+    border: 1px solid $border;
+    border-radius: 999px !important;
+    padding: 2px 2px;
+    background: rgba(255,255,255,.03);  /* leve, sin sobrecargar fondo global */
+    transition: transform $tr, border-color $tr, background $tr, box-shadow $tr;
+  }
+
+  /* Texto del tab */
+  .mdc-tab__text-label,
+  .mat-tab-label-content {
+    font-size: .98rem;
+    font-weight: 600;
+    color: $txt-300 !important;
+    padding: 8px 14px;
+    display: inline-block;
+  }
+
+  /* Hover/focus */
+  .mat-mdc-tab:hover,
+  .mat-tab-label:hover {
+    transform: translateY(-1px);
+    background: rgba(59,130,246,.08);
+    border-color: rgba(59,130,246,.35);
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  }
+
+  /* Activo */
+  .mat-mdc-tab.mdc-tab--active,
+  .mat-tab-label.mat-tab-label-active {
+    background: rgba(59,130,246,.12);
+    border-color: rgba(59,130,246,.5);
+    box-shadow: 0 8px 22px rgba(0,0,0,.28);
+  }
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label,
+  .mat-tab-label.mat-tab-label-active .mat-tab-label-content {
+    color: $txt-100 !important;
+  }
+
+  /* Quitar ripple pesado (opcional) */
+  .mdc-tab__ripple::before,
+  .mdc-tab__ripple::after { opacity: 0 !important; }
+
+  /* Panel del cuerpo (contenedor interior, no el wrapper externo) */
+  .mat-mdc-tab-body-wrapper,
+  .mat-tab-body-wrapper {
+    padding: 20px;
+    border-radius: $radius-md;
+    border: 1px solid $border;
+    background: rgba(255,255,255,.03);  /* leve panel para legibilidad */
+    color: $txt-200;
+    animation: panelIn .28s both;
+
+    h1, h2, h3, h4, h5, h6 { color: $txt-100 !important; }
+    p, li, span, label, small { color: $txt-300 !important; }
+    a {
+      color: $accent;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color $tr;
+      &:hover { color: $primary; }
+    }
+  }
+
+  /* Expansion panels/listas (si las usas dentro del tab) */
+  .mat-mdc-expansion-panel, .mat-expansion-panel {
+    background: rgba(255,255,255,.03) !important;
+    color: $txt-200 !important;
+    border: 1px solid $border !important;
+    border-radius: $radius-md !important;
+  }
+  .mat-mdc-expansion-panel-header-title,
+  .mat-expansion-panel-header-title {
+    color: $txt-100 !important;
+    font-weight: 600;
+  }
+  .mat-mdc-expansion-panel-content,
+  .mat-expansion-panel-content {
+    color: $txt-300 !important;
+  }
+}
+
+/* ===================== Animaciones ===================== */
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(6px) scale(.99); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);   }
+}
+@keyframes barGlow {
+  from { box-shadow: 0 0 6px rgba(34,211,238,.25); transform: scaleX(1); }
+  to   { box-shadow: 0 0 12px rgba(59,130,246,.45); transform: scaleX(1.04); }
+}
+
+/* ===================== Responsive / accesibilidad ===================== */
+@media (max-width: 768px) {
+  .help-container { padding: 18px; }
+  .help-title { font-size: 1.55rem; }
+  :host ::ng-deep .custom-tabs .mdc-tab__text-label,
+  :host ::ng-deep .custom-tabs .mat-tab-label-content {
+    font-size: .95rem;
+    padding: 7px 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .help-container,
+  :host ::ng-deep .custom-tabs .mat-mdc-tab,
+  :host ::ng-deep .custom-tabs .mat-tab-label {
+    transition: none !important;
+  }
+  .help-title::after,
+  .mat-mdc-tab-body-wrapper,
+  .mat-tab-body-wrapper {
+    animation: none !important;
+  }
+}

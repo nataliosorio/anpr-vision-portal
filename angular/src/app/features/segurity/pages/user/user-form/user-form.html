@@ -1,0 +1,153 @@
+<h2 class="form-title">
+  {{ isEdit ? 'Editar Usuario' : 'Usuarios' }}
+</h2>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <!-- Nombre de Usuario -->
+  <mat-form-field appearance="outline">
+    <mat-label>Nombre de Usuario</mat-label>
+    <input matInput formControlName="userName">
+    <mat-error *ngIf="form.get('userName')?.hasError('required')">
+      El nombre de usuario es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('userName')?.hasError('minlength')">
+      Debe tener al menos 3 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('userName')?.hasError('maxlength')">
+      No puede superar los 30 caracteres
+    </mat-error>
+      <!-- <mat-error *ngIf="form.get('userName')?.hasError('pattern')">
+        El nombre solo puede contener letras y espacios.
+      </mat-error> -->
+    <mat-error *ngIf="form.get('userName')?.hasError('usernameExists')">
+        El nombre de usuario ya se encuentra registrado.
+      </mat-error>
+  </mat-form-field>
+
+  <!-- Email -->
+  <mat-form-field appearance="outline">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email">
+    <mat-error *ngIf="form.get('email')?.hasError('emailExists')">
+      El correo de usuario ya se encuentra registrado.
+    </mat-error>
+
+    <mat-error *ngIf="form.get('email')?.hasError('required')">
+      El correo es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.hasError('email')">
+      Debe ser un correo válido
+    </mat-error>
+
+
+
+  </mat-form-field>
+
+  <!-- Contraseña -->
+  <mat-form-field appearance="outline">
+    <mat-label>Contraseña</mat-label>
+    <input matInput formControlName="password" [type]="form.get('hidePassword')?.value ? 'password' : 'text'">
+    <mat-error *ngIf="form.get('password')?.hasError('required')">
+      La contraseña es obligatoria
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+      Debe tener al menos 8 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('maxlength')">
+      No puede superar los 20 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('pattern')">
+      Debe incluir al menos una mayúscula, un número y un carácter especial
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Persona -->
+  <mat-form-field appearance="outline">
+    <mat-label>Persona</mat-label>
+    <mat-select formControlName="personId">
+      <mat-option *ngFor="let person of persons" [value]="person.id">
+        {{ person.firstName }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('personId')?.hasError('required')">
+      Debe seleccionar una persona
+    </mat-error>
+  </mat-form-field>
+
+
+
+  <!-- <mat-slide-toggle formControlName="asset" color="white">
+  Activo
+  </mat-slide-toggle> -->
+
+  <!-- <mat-slide-toggle formControlName="asset" color="primary" aria-label="Usuario activo">
+  <span style="color: #ffffff;">Activo</span>
+</mat-slide-toggle> -->
+
+
+
+  <button mat-raised-button color="primary" type="submit">
+    {{ isEdit ? 'Actualizar' : 'Crear' }}
+  </button>
+ <button mat-button type="button" (click)="onCancelar()">Cancelar</button>
+</form>
+
+<div *ngIf="isEdit" class="mt-4">
+  <mat-divider></mat-divider>
+  <h4>Asignar Rol</h4>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Seleccionar Rol</mat-label>
+    <mat-select [(ngModel)]="selectedRoleId" (selectionChange)="assignRole()">
+      <mat-option *ngFor="let role of roles" [value]="role.id">
+        {{ role.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-slide-toggle [(ngModel)]="rolUserAsset" color="primary">
+  <span style="color: #ffffff;">Relacion Activa</span>
+  </mat-slide-toggle>
+
+
+</div>
+
+<!-- Tabla de roles del usuario -->
+<div class="mt-4" *ngIf="isEdit">
+  <h5>Roles Asignados</h5>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Rol</th>
+        <th>Asset</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of userRoles; let i = index">
+  <td *ngIf="editIndex !== i">{{ role.roleName }}</td>
+  <td *ngIf="editIndex === i">
+    <input [(ngModel)]="role.roleName" class="form-control" />
+  </td>
+
+  <td *ngIf="editIndex !== i">
+    <mat-icon color="{{ role.asset ? 'primary' : 'warn' }}">
+      {{ role.asset ? 'check_circle' : 'cancel' }}
+    </mat-icon>
+  </td>
+  <td *ngIf="editIndex === i">
+    <mat-slide-toggle [(ngModel)]="role.asset" color="primary">
+      Activo
+    </mat-slide-toggle>
+  </td>
+
+  <td>
+
+    <button class="btn btn-danger btn-sm" (click)="onDeleteRole(role.rolUserId)">
+      <i class="bi bi-trash">Eliminar</i>
+    </button>
+  </td>
+</tr>
+
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,9 @@
+<app-generic-table
+  [columns]="columns"
+  [data]="dataSource.data"
+  [showActions]="true"
+  (create)="goToCreate()"
+  (edit)="goToEdit($event)"
+  (delete)="deleteRole($event)"
+  (deletePermanent)="deletePermanentRole($event)">
+</app-generic-table>

@@ -1,0 +1,369 @@
+/* ======================================================
+   AURORA v4.1 — ZONAS (Dark Neon UI • SOLO ESTILOS)
+   - Avanzado, dinámico, profesional (glass + neon + micro-animaciones)
+   - Drop-in: funciona con TU HTML (Angular + Material) sin tocar la lógica
+   ====================================================== */
+
+/* ---------- Tokens ---------- */
+$bg-0: #0a0e19;
+$bg-1: #0f1528;
+$glass-1: rgba(255,255,255,.08);
+$glass-2: rgba(255,255,255,.05);
+$stroke:  rgba(255,255,255,.16);
+
+$ink-1: #f5f8ff;
+$ink-2: #cbd5ff;
+$muted: #98a6c9;
+
+$pri-1: #35d0ff;   /* cyan */
+$pri-2: #8c5bff;   /* violeta */
+$pri-3: #22ffbb;   /* aqua */
+$ok:    #22c55e;
+$warn:  #f59e0b;
+$err:   #ef4444;
+
+$r-xxl: 28px;
+$r-xl:  22px;
+$r:     16px;
+$r-sm:  12px;
+
+$tr: .28s cubic-bezier(.22,.7,.25,1);
+$trs:.18s cubic-bezier(.22,.7,.25,1);
+$sh-1: 0 24px 68px rgba(0,0,0,.45);
+$sh-2: 0 14px 34px rgba(0,0,0,.32);
+$sh-soft: 0 8px 28px rgba(0,0,0,.28);
+
+/* ---------- Animaciones ---------- */
+@keyframes riseIn   { from{opacity:0; transform: translateY(20px) scale(.985)} to{opacity:1; transform:none} }
+@keyframes fadeUp   { from{opacity:0; transform: translateY(14px)} to{opacity:1; transform:none} }
+@keyframes floaty   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes waveLine { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes glow     { 0%,100%{filter: drop-shadow(0 0 0 rgba($pri-1,.0))} 50%{filter: drop-shadow(0 0 10px rgba($pri-1,.35))} }
+@keyframes sheen    { 0%{transform:translateX(-140%) skewX(-18deg);opacity:0} 40%{opacity:.9} 100%{transform:translateX(160%) skewX(-18deg);opacity:0} }
+
+/* ---------- Mixins ---------- */
+@mixin neon-top($h:4px){
+  content:''; position:absolute; left:0; right:0; top:0; height:$h;
+  background: linear-gradient(90deg, $pri-2, $pri-1, $pri-3, $pri-1, $pri-2);
+  background-size:220% 100%; animation: waveLine 9s ease infinite; opacity:.95;
+}
+@mixin btn-primary{
+  position:relative; overflow:hidden; isolation:isolate;
+  background: linear-gradient(135deg, $pri-2, $pri-1) !important;
+  color:#071018 !important; border-radius:999px !important;
+  padding:16px 26px !important; font-weight:1000 !important; letter-spacing:.02em;
+  box-shadow: 0 12px 36px rgba(53,208,255,.32) !important;
+  transition: transform $tr, box-shadow $tr !important;
+
+  &::before{
+    content:''; position:absolute; inset:-2px; border-radius:inherit; padding:1px;
+    background: linear-gradient(90deg, $pri-2, $pri-1, $pri-3, $pri-1, $pri-2);
+    background-size:200% 100%;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+    animation: sheen 1.6s ease infinite; opacity:.42; pointer-events:none;
+  }
+  &:hover{ transform: translateY(-3px) scale(1.01); box-shadow: 0 18px 46px rgba(53,208,255,.42) !important; }
+  &:focus-visible{ outline:2px solid rgba($pri-1,.6); outline-offset:3px; }
+}
+
+/* ======================================================
+   CONTAINER
+   ====================================================== */
+.parking-container{
+  min-height:100vh; position:relative; padding:22px; color:$ink-1;
+  background:
+    radial-gradient(1100px 440px at 115% -10%, rgba($pri-1,.10), transparent 60%),
+    radial-gradient(960px 400px at -10% 120%, rgba($pri-2,.16), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+  border-radius:$r-xxl; border:1px solid rgba(255,255,255,.10); box-shadow:$sh-1;
+  animation: riseIn .45s ease both; isolation:isolate;
+
+  &::before{
+    content:''; position:absolute; inset:0; border-radius:$r-xxl; pointer-events:none; opacity:.18;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px) 0 0/ 48px 48px,
+      linear-gradient(0deg,  rgba(255,255,255,.05) 1px, transparent 1px) 0 0/ 48px 48px;
+  }
+  &::after{ @include neon-top(3px); border-top-left-radius:$r-xxl; border-top-right-radius:$r-xxl; }
+}
+
+/* ======================================================
+   HERO
+   ====================================================== */
+.hero-section{ position:relative; z-index:1; padding:28px 8px 8px; }
+.hero-content{
+  max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:24px;
+}
+.hero-text{ flex:1; }
+
+.stats-bar{
+  display:flex; gap:24px; flex-wrap:wrap;
+
+  .stat-item{
+    --shine: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.4) 20%, transparent 44%) no-repeat;
+    min-width:110px; padding:14px 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05));
+    border:1px solid rgba(255,255,255,.16); border-radius:$r; backdrop-filter: blur(10px);
+    box-shadow:$sh-soft; text-align:center; transition: transform $tr, box-shadow $tr, border-color $tr, background $tr;
+    animation: fadeUp .45s ease both;
+
+    &:hover{
+      transform: translateY(-3px);
+      box-shadow: 0 16px 34px rgba(0,0,0,.36);
+      border-color: rgba($pri-1,.34);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06)),
+        var(--shine);
+      background-size:auto, 200% 100%; background-position:center, -120% 0;
+      mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+      -webkit-mask-composite: source-in, xor;
+      animation: sheen 1.1s ease both;
+    }
+
+    .stat-number{
+      font-size:28px; font-weight:900; line-height:1;
+      background: linear-gradient(135deg, #fff, $ink-2);
+      -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+      text-shadow: 0 8px 28px rgba(0,0,0,.22);
+    }
+    .stat-label{
+      margin-top:6px; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:$ink-2; font-weight:800;
+    }
+  }
+}
+
+.hero-actions{
+  display:flex; align-items:center; justify-content:flex-end;
+  .create-parking-btn{
+    @include btn-primary;
+    .title-icon{ margin-right:10px; font-size:22px; animation: glow 2.4s ease-in-out infinite; }
+  }
+}
+
+/* ======================================================
+   TOOLBAR
+   ====================================================== */
+.toolbar-section{ padding:0 8px 18px; position:relative; z-index:1; }
+.toolbar-card{
+  max-width:1200px; margin:0 auto; background: linear-gradient(180deg, $glass-1, $glass-2);
+  border:1px solid rgba(255,255,255,.18); border-radius:$r-xl; box-shadow:$sh-soft; backdrop-filter: blur(16px);
+  animation: fadeUp .45s ease both;
+}
+.toolbar-content{ padding:20px; display:flex; flex-direction:column; gap:18px; }
+
+.search-wrapper{
+  display:flex; align-items:center; gap:12px; padding:12px 18px; border-radius:999px;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.16);
+  transition: border-color $tr, box-shadow $tr, background $tr;
+
+  &:focus-within{
+    border-color: rgba($pri-1,.75); box-shadow: 0 0 0 4px rgba($pri-1,.18); background: rgba(255,255,255,.18);
+  }
+  .search-icon{ color:$ink-2; font-size:22px; }
+  .search-input{ flex:1; border:none; outline:none; background:transparent; font-size:15px; color:$ink-1;
+    &::placeholder{ color: rgba($ink-2,.75); }
+  }
+}
+
+.filter-chips{
+  display:flex; gap:12px; flex-wrap:wrap;
+
+  .filter-chip{
+    border-radius:999px; padding:8px 18px; font-weight:800; letter-spacing:.02em;
+    border:1px solid rgba(255,255,255,.22); color:$ink-2; background: rgba(255,255,255,.08);
+    transition: transform $tr, box-shadow $tr, color $tr, border-color $tr, background $tr;
+
+    &:hover{
+      transform: translateY(-2px); border-color: rgba($pri-1,.85); color:#fff; background: rgba($pri-1,.15);
+      box-shadow: 0 10px 22px rgba(0,0,0,.28);
+    }
+    &.active{
+      background: linear-gradient(135deg, $pri-2, $pri-1); color:#071018; border-color:transparent;
+      box-shadow: 0 6px 22px rgba(53,208,255,.35);
+    }
+    &.deleted.active{
+      background: linear-gradient(135deg, #ff6b6b, #ef4444); color:#fff; box-shadow: 0 6px 22px rgba(239,68,68,.35);
+    }
+  }
+}
+
+/* ======================================================
+   LISTA / CARDS — ZONAS
+   ====================================================== */
+.parking-list{
+  padding:0 8px; position:relative; z-index:1; max-width:1200px; margin:0 auto;
+  display:grid; grid-template-columns: repeat(2, 1fr); gap:20px;
+
+  @supports(selector(:has(*))){
+    &:has(.parking-card:hover) .parking-item:not(:hover){
+      filter:saturate(.86) brightness(.94); transform: translateY(4px);
+    }
+  }
+
+  .parking-item{ transition: transform $tr, opacity $tr, filter $tr; }
+
+  .parking-item.deleted-item{
+    opacity:.92; filter:saturate(.92);
+    .parking-card{ border-left:3px solid $err; }
+    .parking-card::after{
+      content:''; position:absolute; inset:0;
+      background: repeating-linear-gradient(45deg, rgba(0,0,0,.62) 0 10px, rgba(0,0,0,.66) 10px 20px);
+      pointer-events:none;
+    }
+  }
+
+  .parking-card{
+    position:relative; overflow:hidden; height:auto; padding:28px; border-radius:$r-xl;
+    background: rgba(20,24,44,.92);
+    border:1px solid rgba(255,255,255,.18); box-shadow:$sh-2;
+    transition: transform $tr, box-shadow $tr, border-color $tr, background $tr, filter $tr;
+    animation: fadeUp .45s ease both; transform-style: preserve-3d;
+
+    &::before{ @include neon-top(4px); }
+    &::after{
+      content:''; position:absolute; inset:-1px; pointer-events:none;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,.08), transparent 40% 60%, rgba(255,255,255,.08)),
+        radial-gradient(800px 400px at -20% 120%, rgba($pri-1,.08), transparent 60%);
+      mix-blend-mode: screen; opacity:.42; transition: opacity $tr;
+    }
+
+    &:hover{
+      transform: translateY(-8px) rotateX(.6deg) rotateY(-.6deg);
+      box-shadow: 0 24px 64px rgba(0,0,0,.4);
+      border-color: rgba($pri-1,.35);
+      background: rgba(22,26,52,.96);
+      &::after{ opacity:.55; }
+    }
+  }
+
+  .parking-header{ display:flex; align-items:flex-start; gap:22px; margin-bottom:14px; }
+  .parking-info{ flex:1; min-width:0; }
+
+  .parking-name{
+    margin:0 0 12px 0; font-size:26px; font-weight:900; line-height:1.15;
+    background: linear-gradient(135deg, #ffffff, #eaf1ff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow: 0 8px 24px rgba(0,0,0,.28);
+    transition: letter-spacing $tr, filter $tr; will-change: letter-spacing;
+    .parking-card:hover &{ letter-spacing:.02em; filter: drop-shadow(0 2px 10px rgba(255,255,255,.08)); }
+  }
+
+  .parking-details{
+    display:flex; flex-direction:column; gap:10px;
+    .detail-row{ display:flex; align-items:center; gap:10px; min-width:0; }
+    .detail-icon{ font-size:20px; color:$ink-2; width:20px; }
+    .detail-text{
+      font-size:15px; color: rgba($ink-1,.92); font-weight:800;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+  }
+
+  /* Estado */
+  .parking-status-section{ display:flex; align-items:flex-start; }
+  .status-wrapper{ display:flex; align-items:center; justify-content:flex-end; }
+
+  .status-badge{
+    --ring: transparent;
+    display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:999px;
+    font-weight:900; font-size:13px; box-shadow: 0 6px 18px rgba(0,0,0,.28), 0 0 0 0 var(--ring);
+    transition: transform $tr, box-shadow $tr, background $tr, filter $tr;
+
+    .status-icon{ font-size:18px; }
+    &:hover{ transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,.34), 0 0 0 6px rgba($pri-1,.10); }
+    &.active{   background: linear-gradient(135deg, #22c55e, #16a34a); color:#07120b; }
+    &.inactive{ background: linear-gradient(135deg, #f59e0b, #d97706); color:#120a05; }
+    &.deleted{  background: linear-gradient(135deg, #ef4444, #dc2626); color:#fff; }
+  }
+
+  /* Aviso de eliminación (overlay central) */
+  .deletion-warning{
+    position:absolute; left:50%; transform: translateX(-50%);
+    top:28%; width:92%; max-width:720px; height:76px;
+    padding:14px 18px; border-radius:$r; z-index:10;
+    display:flex; align-items:center; justify-content:center; gap:12px;
+
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border:1px solid #ffeaa7; box-shadow: 0 10px 28px rgba(0,0,0,.18);
+
+    .warning-icon{ color:#ff6b35; font-size:22px; animation: glow 2.2s ease-in-out infinite; }
+    .warning-text{ color:#8b4513; font-weight:900; font-size:14px; }
+  }
+
+  /* Acciones */
+  .actions-section{ margin-top:6px; }
+  .actions-wrapper{ display:flex; gap:16px; flex-wrap:wrap; }
+
+  .action-btn{
+    flex:1; min-width:140px; border-radius:$r; padding:12px 16px;
+    font-weight:900; letter-spacing:.02em; transition: transform $tr, box-shadow $tr, filter $tr;
+    span{ margin-left:8px; }
+    &:hover:not(:disabled){ transform: translateY(-3px); }
+    &:focus-visible{ outline:2px solid rgba($pri-1,.5); outline-offset:2px; }
+  }
+  .primary-action{
+    background: linear-gradient(135deg, $pri-2, $pri-1) !important; color:#071018 !important;
+    box-shadow: 0 6px 22px rgba(53,208,255,.38) !important;
+    &:hover{ box-shadow: 0 10px 28px rgba(53,208,255,.48) !important; }
+  }
+  .danger-action{
+    background: linear-gradient(135deg, #ff6b6b, #ef4444) !important; color:#fff !important;
+    box-shadow: 0 6px 22px rgba(239,68,68,.35) !important;
+    &:hover{ box-shadow: 0 10px 28px rgba(239,68,68,.48) !important; }
+  }
+  .permanent-action{
+    background: linear-gradient(135deg, #ff6b35, #f97316) !important; color:#fff !important; z-index:2;
+    box-shadow: 0 8px 24px rgba(249,115,22,.36) !important;
+    &:hover{ box-shadow: 0 12px 30px rgba(249,115,22,.48) !important; }
+  }
+  .disabled-action{
+    background:#e5e7eb !important; color:#9ca3af !important; box-shadow:none !important; cursor:not-allowed;
+  }
+}
+
+/* ======================================================
+   EMPTY STATE
+   ====================================================== */
+.empty-state{ position:relative; z-index:1; padding:56px 8px; display:flex; justify-content:center; align-items:center; }
+.empty-content{
+  text-align:center; background: rgba(255,255,255,.92); padding:48px; border-radius:$r-xxl;
+  backdrop-filter: blur(20px); box-shadow: 0 20px 80px rgba(0,0,0,.18); max-width:560px; animation: riseIn .45s ease both;
+
+  .empty-illustration{ position:relative; margin-bottom:24px; }
+  .empty-icon{ font-size:110px; color:#dfe6f6; display:block; margin:0 auto 16px; }
+  .empty-cars{
+    display:flex; justify-content:center; gap:16px;
+    .car-icon{ font-size:28px; color:#c6d3f8; opacity:.8; animation: floaty 3.2s ease-in-out infinite; }
+    .car-icon:nth-child(2){ animation-delay:.5s }
+    .car-icon:nth-child(3){ animation-delay:1s }
+  }
+
+  .empty-title{ font-size:28px; font-weight:900; color:#1f2937; margin:0 0 14px }
+  .empty-subtitle{ font-size:15px; color:#374151; margin:0 0 24px; line-height:1.55 }
+
+  .empty-action-btn{
+    @include btn-primary;
+    padding:14px 22px !important;
+  }
+}
+
+/* ======================================================
+   RESPONSIVE / ACCESIBILIDAD
+   ====================================================== */
+@media (max-width:1180px){
+  .parking-list{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width:860px){
+  .hero-content{ flex-direction:column; text-align:center; gap:20px; }
+  .stats-bar{ justify-content:center; }
+  .filter-chips{ justify-content:center; }
+  .parking-list{ grid-template-columns: 1fr; padding:0 4px; }
+  .parking-card{ height:auto; }
+  .parking-header{ flex-direction:column; text-align:center; gap:16px; }
+  .actions-wrapper{ flex-direction:column; }
+  .action-btn{ min-width:auto; width:100%; }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+}

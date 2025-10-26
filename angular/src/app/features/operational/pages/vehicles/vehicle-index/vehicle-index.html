@@ -1,0 +1,193 @@
+<div class="parking-container">
+  <!-- Hero Section (informativo, sin botón) -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <!-- Aquí puedes dejar título/estadísticas si las necesitas -->
+        <!-- <h1>Vehículos</h1> -->
+      </div>
+      <div class="hero-actions">
+        <!-- botón movido al toolbar para que quede en la misma fila que el search -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+
+        <!-- ROW: botón + búsqueda en la misma línea -->
+        <div class="controls-row">
+          <!-- Botón (lado izquierdo) -->
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Registrar nuevo vehículo">
+              <mat-icon class="title-icon">directions_car</mat-icon>
+              Nuevo Vehículo
+            </button>
+          </div>
+
+          <!-- Search (ocupa el espacio restante) -->
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar por placa, cliente o tipo..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+
+
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Vehicle List -->
+  <div class="vehicle-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="vehicle-card-horizontal"
+      *ngFor="let vehicle of pagedData"
+      [class.deleted-card]="vehicle.isDeleted">
+
+      <!-- Left Section: Placa y Estado -->
+      <div class="card-left">
+        <div class="plate-section">
+          <h2 class="plate-title">{{ vehicle.plate }}</h2>
+          <div
+            class="status-badge"
+            [class.active]="vehicle.asset && !vehicle.isDeleted"
+            [class.inactive]="!vehicle.asset && !vehicle.isDeleted"
+            [class.deleted]="vehicle.isDeleted">
+            <mat-icon>
+              {{ vehicle.isDeleted ? 'block' : (vehicle.asset ? 'check_circle' : 'cancel') }}
+            </mat-icon>
+            <span>{{ vehicle.isDeleted ? 'Eliminado' : (vehicle.asset ? 'Activo' : 'Inactivo') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Section: Información del Vehículo -->
+      <div class="card-center">
+        <div class="info-row">
+          <div class="info-item">
+            <mat-icon>person</mat-icon>
+            <span class="info-text">
+              {{ vehicle.client }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>local_shipping</mat-icon>
+            <span class="info-text">
+              {{ vehicle.typeVehicle }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>palette</mat-icon>
+            <span class="info-text">
+              {{ vehicle.color }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Acciones -->
+      <div class="card-right">
+        <ng-container *ngIf="!vehicle.isDeleted">
+          <button
+            mat-raised-button
+            color="primary"
+            class="action-btn-horizontal edit-btn"
+            (click)="goToEdit(vehicle)"
+            matTooltip="Editar vehículo">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            color="warn"
+            class="action-btn-horizontal delete-btn"
+            (click)="deleteVehicle(vehicle.id!)"
+            matTooltip="Eliminar vehículo">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="vehicle.isDeleted">
+          <button
+            mat-raised-button
+            class="action-btn-horizontal disabled-btn"
+            disabled
+            matTooltip="No se puede editar">
+            <mat-icon>edit_off</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            class="action-btn-horizontal permanent-delete-btn"
+            (click)="deletePermanentVehicle(vehicle.id!)"
+            matTooltip="Eliminar permanentemente">
+            <mat-icon>delete_forever</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Overlay para eliminados -->
+      <div class="deletion-warning-overlay" *ngIf="vehicle.isDeleted">
+        <mat-icon>warning_amber</mat-icon>
+        <span>Este vehículo ha sido eliminado lógicamente del sistema</span>
+      </div>
+    </div>
+  </div>
+
+  <mat-paginator
+  [length]="dataSource.data.length"
+  [pageSizeOptions]="[5, 10, 20]"
+  [pageSize]="5"
+  showFirstLastButtons
+  (page)="onPageChange($event)">
+</mat-paginator>
+
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">directions_car</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay vehículos registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Registrar Vehículo
+      </button>
+    </div>
+  </div>
+</div>

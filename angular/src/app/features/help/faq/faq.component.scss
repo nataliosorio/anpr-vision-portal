@@ -1,0 +1,198 @@
+/* ---------- Paleta (sin neutros) ---------- */
+$transparent: transparent;
+$violet: #7c3aed;   // acento 1
+$teal:   #06b6d4;   // acento 2
+$mint:   #22c55e;   // acento foco/ok
+$coral:  #fb7185;   // feedback
+
+$line-1: rgba(124,58,237,.55);
+$line-2: rgba(6,182,212,.45);
+$glow-1: rgba(124,58,237,.28);
+$glow-2: rgba(6,182,212,.26);
+
+$r-lg: 18px;
+$r-md: 12px;
+$tr: .22s cubic-bezier(.22,.7,.25,1);
+
+/* ---------- FAQ CONTENEDOR (transparente + bordes color) ---------- */
+.faq-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px 18px;
+  background: $transparent;
+  border-radius: $r-lg;
+  border: 2px solid $line-2;
+  box-shadow: 0 10px 26px $glow-2;
+  color: white;                       // 👈 texto blanco
+  transition: transform $tr, box-shadow $tr, border-color $tr;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px $glow-1;
+  }
+
+  /* ---------- Título ---------- */
+  h1 {
+    text-align: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: white;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 0;
+      height: 3px;
+      margin: 10px auto 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, $teal, $violet);
+      transition: width $tr;
+    }
+  }
+  &:hover h1::after { width: 120px; }
+
+  .subtitle {
+    text-align: center;
+    color: white;
+    opacity: .9;
+    font-size: 1rem;
+    margin-bottom: 22px;
+    line-height: 1.5;
+  }
+}
+
+/* ---------- Barra de búsqueda ---------- */
+.search-container {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+
+  .search-field {
+    mat-label { color: $teal; }
+    input, textarea {
+      color: white;                   // 👈 texto blanco
+      background: $transparent;
+      border: 2px solid $line-2;
+      border-radius: $r-md;
+      padding: 10px 12px;
+      transition: border-color $tr, box-shadow $tr;
+
+      &:focus {
+        outline: none;
+        border-color: $violet;
+        box-shadow: 0 0 0 3px rgba(124,58,237,.22);
+      }
+      &::placeholder { color: rgba(255,255,255,.7); }
+    }
+  }
+
+  .actions {
+    display: flex; justify-content: center; gap: 10px;
+
+    button {
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-weight: 800;
+      color: white;
+      background: $transparent;
+      border: 2px solid $line-1;
+      transition: transform $tr, box-shadow $tr, border-color $tr, background $tr;
+
+      &:hover {
+        transform: translateY(-1px);
+        border-color: $teal;
+        box-shadow: 0 8px 20px $glow-2;
+      }
+      &.primary {
+        border-color: $teal;
+        background: linear-gradient(90deg, rgba(6,182,212,.2), rgba(124,58,237,.2));
+      }
+    }
+  }
+}
+
+/* ---------- Texto de resultados ---------- */
+.results { text-align: center; font-weight: 800; color: white; margin-bottom: 12px; }
+
+.no-results {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 14px;
+  color: white;
+  border-radius: $r-md;
+  border: 2px dashed rgba(251,113,133,.8);
+  background: linear-gradient(90deg, rgba(251,113,133,.18), rgba(6,182,212,.12));
+  font-weight: 900;
+  mat-icon { color: $coral; }
+}
+
+/* ---------- Acordeón ---------- */
+mat-expansion-panel {
+  background: $transparent;
+  border-radius: $r-md;
+  margin-bottom: 10px;
+  border: 2px solid $line-1;
+  transition: transform $tr, box-shadow $tr, border-color $tr;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px $glow-2;
+    border-color: $teal;
+  }
+
+  mat-expansion-panel-header {
+    padding: 12px;
+    border-radius: $r-md;
+    color: white !important;         // 👈 preguntas blancas
+    background: linear-gradient(90deg, rgba(6,182,212,.18), rgba(124,58,237,.18));
+    transition: background $tr;
+
+    &:hover {
+      background: linear-gradient(90deg, rgba(124,58,237,.25), rgba(6,182,212,.25));
+    }
+
+    mat-icon {
+      margin-right: 10px;
+      color: white !important;       // 👈 iconos en blanco
+    }
+  }
+
+  .mat-expansion-panel-content,
+  .mat-expansion-panel-body,
+  p {
+    padding: 0 16px 14px;
+    margin: 0;
+    color: white !important;         // 👈 respuestas blancas
+    line-height: 1.6;
+    font-size: .98rem;
+  }
+}
+
+/* ---------- Resaltado ---------- */
+mark {
+  background: linear-gradient(90deg, rgba(250,204,21,.6), rgba(34,197,94,.4));
+  color: white;
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: 900;
+  box-shadow: 0 0 0 2px rgba(250,204,21,.35);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .faq-container { padding: 18px 12px; }
+  h1 { font-size: 1.9rem; }
+  .subtitle { font-size: .95rem; }
+  .search-container .actions { flex-direction: column; button { width: 100%; } }
+}
+mat-expansion-panel-header,
+mat-expansion-panel-header mat-panel-title,
+mat-expansion-panel-header mat-panel-title span {
+  color: white !important;        // 👈 texto blanco
+  font-weight: 600;               // opcional, más fuerte
+}
+
+/* También los íconos junto a la pregunta */
+mat-expansion-panel-header mat-icon {
+  color: white !important;        // 👈 ícono en blanco
+}

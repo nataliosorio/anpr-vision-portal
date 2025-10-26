@@ -1,0 +1,92 @@
+<div class="dashboard-grid">
+
+  <div class="stats-grid">
+
+      @for (card of cards; track card) {
+  <div class="stat-card-wrapper">
+    <app-card
+      [hidHeader]="true"
+      [cardClass]="getCardClassString(card.background, 'stat')">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-title">{{ card.title }}</div>
+          <div class="stat-icon" [class]="getIconClass(card.background)">
+            <i [class]="card.icon"></i>
+          </div>
+        </div>
+
+        <div class="stat-bottom">
+          <div class="stat-number">{{ card.number }}</div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+}
+  </div>
+
+  <div class="charts-grid">
+
+    <div class="card-section">
+      <app-card [hidHeader]="true" cardClass="bg-c-blue chart-card">
+        <h6 class="card-heading">Ocupación de Espacios</h6>
+
+        <apx-chart [series]="occupancyDonutOptions.series" [chart]="occupancyDonutOptions.chart"
+          [labels]="occupancyDonutOptions.labels" [legend]="occupancyDonutOptions.legend"
+          [dataLabels]="occupancyDonutOptions.dataLabels" [plotOptions]="occupancyDonutOptions.plotOptions"
+          [tooltip]="occupancyDonutOptions.tooltip">
+        </apx-chart>
+
+        <div class="chart-caption text-center mt-2">
+          <strong>{{ capacity.occupied }}/{{ capacity.total }}</strong>
+          cupos ocupados (<strong>{{ capacity.percentage | number:'1.0-2' }}%</strong>)
+        </div>
+      </app-card>
+    </div>
+
+    <div class="card-section">
+      <app-card [hidHeader]="true" cardClass="bg-c-yellow chart-card">
+        <h6 class="card-heading">Distribución por tipo de vehículo</h6>
+
+        <apx-chart [series]="vehicleTypePieOptions.series" [chart]="vehicleTypePieOptions.chart"
+          [labels]="vehicleTypePieOptions.labels" [legend]="vehicleTypePieOptions.legend"
+          [dataLabels]="vehicleTypePieOptions.dataLabels" [plotOptions]="vehicleTypePieOptions.plotOptions"
+          [tooltip]="vehicleTypePieOptions.tooltip">
+        </apx-chart>
+
+        <div class="chart-caption text-center mt-2">
+          Total estacionados: <strong>{{ vehicleTypeTotal }}</strong>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="card-section full-width">
+      <app-card [hidHeader]="true" cardClass="bg-c-orange chart-card">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+          <h6 class="card-heading mb-0">Ocupación por zona</h6>
+
+          <div class="zone-pills" *ngIf="zones?.length; else noZones">
+            <button type="button" class="pill-btn" *ngFor="let z of zones" [class.active]="z.value === selectedZoneId"
+              (click)="onZoneBtnClick(z.value)">
+              {{ z.label }}
+            </button>
+          </div>
+          <ng-template #noZones><span class="muted">Cargando zonas…</span></ng-template>
+        </div>
+
+        <apx-chart [series]="zoneDonutOptions.series" [chart]="zoneDonutOptions.chart" [labels]="zoneDonutOptions.labels"
+          [legend]="zoneDonutOptions.legend" [dataLabels]="zoneDonutOptions.dataLabels"
+          [plotOptions]="zoneDonutOptions.plotOptions" [tooltip]="zoneDonutOptions.tooltip">
+        </apx-chart>
+
+        <div class="chart-caption text-center mt-2" *ngIf="zoneCapacity?.name">
+          <strong>{{ zoneCapacity.occupied }}/{{ zoneCapacity.total }}</strong>
+          cupos ocupados en {{ zoneCapacity.name }}
+          (<strong>{{ zoneCapacity.percentage | number:'1.0-2' }}%</strong>)
+        </div>
+      </app-card>
+    </div>
+
+  </div> 
+
+
+</div>

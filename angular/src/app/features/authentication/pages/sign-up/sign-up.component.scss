@@ -1,0 +1,160 @@
+// This file is intentionally left empty to allow customers to add custom CSS if needed.
+html,body{
+    margin: 0;
+    padding: 0;
+}
+.lado-derecho {
+  overflow: hidden !important;
+  margin: auto;
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+   background: url("../../../../../assets/imagen-parqueadero/1.png") no-repeat center center/cover 50%;
+  background-size: cover;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  box-sizing: content-box;
+
+  animation: cambiarImagen 15s infinite;
+}
+
+@keyframes cambiarImagen {
+  0% {
+    background-image: url("../../../../../assets/imagen-parqueadero/1.png");
+  }
+  33% {
+    background-image: url("../../../../../assets/imagen-parqueadero/2.png");
+  }
+  66% {
+    background-image: url("../../../../../assets/imagen-parqueadero/3.webp");
+  }
+  100% {
+    background-image: url("../../../../../assets/imagen-parqueadero/1.png");
+  }
+}
+
+.mini-contener {
+  height: 100%;
+  width: 40%;
+  margin: 0px;
+  padding: .32 .20%;
+  background: #041130;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  div div div div h4,h5{
+
+      color:#30CFD0 !important;
+  }
+  // ✨ Sisa animada
+  clip-path: polygon(
+    0% 0%,
+    10% 10%,
+    0% 20%,
+    10% 30%,
+    0% 40%,
+    10% 50%,
+    0% 60%,
+    10% 70%,
+    0% 80%,
+    10% 90%,
+    0% 100%,
+    100% 100%,
+    100% 0%
+  );
+    transition: all 1s ease;
+
+  animation: animarSisa 3s infinite ease-in-out;
+}
+.mini-contener{
+  border: 1px solid #30CFD0;
+  box-shadow: 0px 0px 10px 4px #30CFD0  !important;
+
+}
+.mini-contener:hover > div div div div:hover > h4{
+    transition: all 1s ease;
+    text-shadow: 0px 0px 10px #30CFD0 ;
+  }
+.mini-contener:hover > div div div div:hover > h5{
+    transition: all 1s ease;
+    text-shadow: 0px 0px 10px #30CFD0 ;
+}
+@keyframes animarSisa {
+  0%, 100% {
+    clip-path: polygon(
+      0% 0%,
+      10% 10%,
+      0% 20%,
+      10% 30%,
+      0% 40%,
+      10% 50%,
+      0% 60%,
+      10% 70%,
+      0% 80%,
+      10% 90%,
+      0% 100%,
+      100% 100%,
+      100% 0%
+    );
+  }
+
+  50% {
+    clip-path: polygon(
+      0% 0%,
+      12% 8%,
+      0% 22%,
+      12% 28%,
+      0% 42%,
+      12% 48%,
+      0% 62%,
+      12% 68%,
+      0% 82%,
+      12% 88%,
+      0% 100%,
+      100% 100%,
+      100% 0%
+    );
+  }
+}
+
+.Formulario-login{
+    border: none;
+    outline: none;
+    line-height: 25px;
+    background: transparent;
+    border-radius: 15px;
+    color:white;
+    transition: all 1s ease;
+    border: 1px solid #30CFD0;
+}
+.Formulario-login:hover{
+  transition: all 1s ease;
+  box-shadow: 0px 0px 10px 1px #30CFD0  !important;
+  
+}
+.input-registro{
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid #30CFD0;
+}
+.mini-contener:hover > div div div div div:hover > .input-registro{
+  box-shadow: 0px 5px 10px 1px #30CFD0  !important;
+
+}
+.fondo-icono{
+    background: #30CFD0;
+    color: #041130;
+    box-shadow: 0px 0px 5px 1px #30CFD0  !important;
+    border:none;
+    outline: none;
+}
+.bttn-inicio-sesion button{
+    color: #30CFD0;
+    background: transparent;
+     box-shadow: 0px 5px 10px 1px #30CFD0  !important;
+
+    border-bottom: 2px solid #30CFD0;
+}

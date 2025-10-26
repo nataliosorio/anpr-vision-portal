@@ -1,0 +1,142 @@
+<!-- HTML Template para Tipos de Vehículos - Vista Horizontal -->
+<div class="vehicle-type-container">
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="controls-row">
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Registrar nuevo tipo de vehículo">
+              <mat-icon class="title-icon">directions_car</mat-icon>
+              Nuevo Tipo de vehículo
+            </button>
+          </div>
+
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o estado..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Vehicles List - Horizontal Cards -->
+  <div class="vehicles-list" *ngIf="pagedData.length > 0">
+    <div *ngFor="let vehicle of pagedData"
+         class="vehicle-card-horizontal"
+         [ngClass]="{'card-deleted': vehicle.isDeleted, 'card-inactive': !vehicle.asset}">
+
+      <!-- Left Section: Icon -->
+      <div class="card-left">
+        <div class="vehicle-icon" [ngClass]="getVehicleIconClass(vehicle.name)">
+          <mat-icon>{{ getVehicleIcon(vehicle.name) }}</mat-icon>
+        </div>
+      </div>
+
+      <!-- Center Section: Content -->
+      <div class="card-center">
+        <div class="vehicle-info">
+          <h3 class="vehicle-name">{{ vehicle.name }}</h3>
+
+          <div class="vehicle-meta">
+            <!-- Status Badge -->
+            <div class="status-badge" [ngClass]="vehicle.asset ? 'badge-active' : 'badge-inactive'">
+              <mat-icon class="status-icon">{{ vehicle.asset ? 'check_circle' : 'pause_circle_filled' }}</mat-icon>
+              <span>{{ vehicle.asset ? 'Activo' : 'Inactivo' }}</span>
+            </div>
+
+            <!-- Deleted Warning -->
+            <div class="deleted-warning" *ngIf="vehicle.isDeleted">
+              <mat-icon class="warning-icon">warning</mat-icon>
+              <span>Eliminado lógicamente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Actions -->
+      <div class="card-right">
+        <button mat-icon-button
+                class="action-btn edit-btn"
+                (click)="goToEdit(vehicle)"
+                matTooltip="Editar tipo de vehículo"
+                [disabled]="vehicle.isDeleted"
+                aria-label="Editar">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <button mat-icon-button
+                class="action-btn delete-btn"
+                (click)="deleteTypeVehicle(vehicle.id)"
+                matTooltip="Eliminar tipo de vehículo"
+                [disabled]="vehicle.isDeleted"
+                aria-label="Eliminar">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+        <button *ngIf="vehicle.isDeleted"
+                mat-icon-button
+                class="action-btn danger-btn"
+                (click)="deletePermanentTypeVehicle(vehicle.id)"
+                matTooltip="Eliminar permanentemente"
+                aria-label="Eliminar Permanentemente">
+          <mat-icon>delete_forever</mat-icon>
+        </button>
+      </div>
+
+      <!-- Deleted Overlay -->
+      <div class="deleted-overlay" *ngIf="vehicle.isDeleted">
+        <div class="deleted-label">
+          <mat-icon>delete_forever</mat-icon>
+          <span>ELIMINADO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginador -->
+  <mat-paginator
+    [length]="dataSource.data.length"
+    [pageSizeOptions]="[5, 10, 20]"
+    [pageSize]="5"
+    showFirstLastButtons
+    (page)="onPageChange($event)">
+  </mat-paginator>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-animation">
+      <div class="membership-animation">
+        <mat-icon>directions_car</mat-icon>
+      </div>
+      <div class="floating-icons">
+        <mat-icon class="float-1">stars</mat-icon>
+        <mat-icon class="float-2">workspace_premium</mat-icon>
+        <mat-icon class="float-3">verified</mat-icon>
+      </div>
+    </div>
+    <h3>No hay tipos de vehículos registrados</h3>
+    <p>Comienza agregando los tipos de vehículos que manejará tu parqueadero</p>
+    <div class="empty-actions">
+      <button mat-raised-button color="primary" (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Crear Primer Tipo
+      </button>
+    </div>
+  </div>
+</div>

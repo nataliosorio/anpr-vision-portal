@@ -1,0 +1,9 @@
+// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.list-inline-item{
+  a{
+    color: white !important;
+    &:hover{
+      color: rgb(62, 152, 194) !important;
+    }
+  }
+}

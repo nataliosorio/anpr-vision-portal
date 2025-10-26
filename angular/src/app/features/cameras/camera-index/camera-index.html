@@ -1,0 +1,145 @@
+<div class="page">
+
+  <!-- Barra de carga -->
+  <mat-progress-bar *ngIf="loadingCameras" mode="indeterminate"></mat-progress-bar>
+
+  <div class="grid">
+    <!-- Visor de la cámara seleccionada -->
+    <mat-card class="viewer" *ngIf="selectedCamera as cam; else emptyState">
+      <div class="viewer-header">
+        <div class="title">
+          <mat-icon>videocam</mat-icon>
+          <span>{{ cam.name || ('Cámara ' + cam.id) }}</span>
+
+          <span class="pill" *ngIf="cam.isDeleted">Eliminada</span>
+        </div>
+
+        <div class="actions">
+          <button mat-stroked-button color="primary" (click)="openDetails()">Detalles</button>
+
+          <a mat-flat-button  [href]="cam.url" target="_blank" rel="noopener">
+            Ver stream
+          </a>
+
+          <button mat-icon-button (click)="copyUrl(cam)" matTooltip="Copiar URL">
+            <mat-icon>content_copy</mat-icon>
+          </button>
+
+          <!-- Eliminar lógico / permanente -->
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="onDelete(cam)"
+            [matTooltip]="cam.isDeleted ? 'Eliminar permanentemente' : 'Eliminar (lógico)'">
+            <mat-icon>{{ cam.isDeleted ? 'delete_forever' : 'delete' }}</mat-icon>
+          </button>
+
+          <button mat-icon-button [matMenuTriggerFor]="menuCam" matTooltip="Más acciones">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="viewer-body" [class.has-details]="showDetails">
+        <!-- Reemplaza por tu <video>/<img> real -->
+       <div class="stream">
+  <!-- <img src="http://192.168.18.49:8080/video" alt="Stream en vivo" style="width:100%; max-width:600px;"> -->
+ <img *ngIf="selectedCamera?.url" [src]="selectedCamera.url"
+       alt="Stream en vivo" style="width:100%; max-width:600px;">
+
+</div>
+
+
+        <!-- Panel de detalles: solo visible cuando se pulsa "Detalles" -->
+        <div class="info" *ngIf="showDetails">
+          <div class="kv">
+            <span class="key">Resolución</span>
+            <strong class="val">{{ cam.resolution || '—' }}</strong>
+          </div>
+
+          <div class="kv">
+            <span class="key">URL</span>
+            <a class="val url mono"
+               [href]="cam.url" target="_blank" rel="noopener"
+               [matTooltip]="cam.url" matTooltipShowDelay="500"
+               [attr.title]="cam.url">
+              {{ cam.url }}
+            </a>
+          </div>
+
+          <div class="kv">
+            <span class="key">Parqueadero</span>
+            <strong class="val">{{ cam.parking || ('ID ' + cam.parkingId) }}</strong>
+          </div>
+
+          <div class="kv">
+            <span class="key">Activa</span>
+            <strong class="val" [class.ok]="cam.asset">{{ cam.asset ? 'Sí' : 'No' }}</strong>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Sidebar: lista de cámaras -->
+    <mat-card class="sidebar">
+      <div class="sidebar-header">
+        <div class="label">Cámaras</div>
+        <button mat-mini-fab color="primary" (click)="addCamera()" aria-label="Añadir cámara">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Buscar</mat-label>
+        <input matInput #camFilter (input)="applyCameraFilter(camFilter.value)"
+               placeholder="Nombre, parking, URL" />
+        <button mat-icon-button matSuffix (click)="clearCameraFilter()" aria-label="Limpiar búsqueda">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-list class="cam-list">
+        <mat-list-item *ngFor="let c of filteredCameras; trackBy: trackById"
+                       [class.active]="selectedCamera?.id === c.id">
+          <div class="cam-item">
+            <div class="left">
+              <span class="name">{{ c.name }}</span>
+              <!-- agrega más metadatos si quieres -->
+            </div>
+            <div class="right">
+              <span class="chip" [class.on]="c.asset">{{ c.asset ? 'Activa' : 'Inactiva' }}</span>
+              <button
+                mat-icon-button
+                (click)="quickView(c)"
+                [attr.aria-label]="'Vista rápida de ' + (c?.name || 'cámara')"
+                matTooltip="Vista rápida">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </mat-card>
+  </div>
+</div>
+
+<ng-template #emptyState>
+  <mat-card class="empty">
+    <mat-icon>videocam_off</mat-icon>
+    <div>No hay cámaras para mostrar.</div>
+  </mat-card>
+</ng-template>
+
+<!-- Menú acciones extra -->
+<mat-menu #menuCam="matMenu">
+   <button mat-menu-item
+          (click)="configure(selectedCamera)"
+          [disabled]="selectedCamera?.isDeleted">
+    <mat-icon>tune</mat-icon>
+    <span>Configurar</span>
+  </button>
+  <button mat-menu-item (click)="refresh()">
+    <mat-icon>refresh</mat-icon>
+    <span>Recargar</span>
+  </button>
+</mat-menu>

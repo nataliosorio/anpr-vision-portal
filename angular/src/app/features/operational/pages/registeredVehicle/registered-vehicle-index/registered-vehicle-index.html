@@ -1,0 +1,228 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalRegisteredVehicles() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveRegisteredVehicles() }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedRegisteredVehicles() }}</span>
+            <span class="stat-label">Eliminados</span>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Registrar nuevo vehículo">
+          <mat-icon class="title-icon">directions_car</mat-icon>
+          Nuevo Registro de Vehículo
+        </button>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar vehículos registrados por vehículo o slot..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Registered Vehicles List -->
+  <div class="parking-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="parking-item"
+      *ngFor="let registeredVehicle of dataSource.data"
+      [class.deleted-item]="registeredVehicle.isDeleted">
+
+      <!-- Registered Vehicle Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ registeredVehicle.vehicle }}</h2>
+            <div class="parking-details">
+
+              <div class="detail-row">
+                <mat-icon class="detail-icon">local_parking</mat-icon>
+                <span class="detail-text">Slot: {{ registeredVehicle.slots }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">login</mat-icon>
+                <span class="detail-text">Entrada: {{ registeredVehicle.entryDate | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="detail-row" *ngIf="registeredVehicle.exitDate">
+                <mat-icon class="detail-icon">logout</mat-icon>
+                <span class="detail-text">Salida: {{ registeredVehicle.exitDate | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="detail-row" *ngIf="!registeredVehicle.exitDate">
+                <mat-icon class="detail-icon">schedule</mat-icon>
+                <span class="detail-text">Estado: En estacionamiento</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <!-- Status Badge -->
+            <div class="status-wrapper">
+              <div
+                class="status-badge"
+                [class.active]="registeredVehicle.asset && !registeredVehicle.isDeleted"
+                [class.inactive]="!registeredVehicle.asset && !registeredVehicle.isDeleted"
+                [class.deleted]="registeredVehicle.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ registeredVehicle.isDeleted ? 'delete' : (registeredVehicle.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ registeredVehicle.isDeleted ? 'Eliminado' : (registeredVehicle.asset ? 'Activo' : 'Inactivo') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="registeredVehicle.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Este registro de vehículo ha sido eliminado lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!registeredVehicle.isDeleted">
+              <!-- <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(registeredVehicle)"
+                matTooltip="Editar registro de vehículo">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button> -->
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteRegisteredVehicle(registeredVehicle.id!)"
+                matTooltip="Eliminar registro de vehículo">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="registeredVehicle.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar un registro de vehículo eliminado">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Registro de vehículo ya eliminado lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentRegisteredVehicle(registeredVehicle.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">directions_car</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">local_parking</mat-icon>
+          <mat-icon class="car-icon">local_parking</mat-icon>
+          <mat-icon class="car-icon">local_parking</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay vehículos registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Registrar Primer Vehículo
+      </button>
+    </div>
+  </div>
+
+</div>

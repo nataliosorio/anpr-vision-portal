@@ -1,0 +1,223 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalCategories() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveCategories() }}</span>
+            <span class="stat-label">Activas</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedCategories() }}</span>
+            <span class="stat-label">Eliminadas</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Crear nueva categoría">
+          <mat-icon class="title-icon">category</mat-icon>
+          Nueva Categoría
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar categorías por nombre, código o descripción..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todas
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activas
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivas
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminadas
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Categories List -->
+  <div class="parking-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="parking-item"
+      *ngFor="let category of dataSource.data"
+      [class.deleted-item]="category.isDeleted">
+
+      <!-- Category Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ category.name }}</h2>
+            <div class="parking-details">
+              <div class="detail-row">
+                <mat-icon class="detail-icon">code</mat-icon>
+                <span class="detail-text">Código: {{ category.code }}</span>
+              </div>
+              <!-- <div class="detail-row">
+                <mat-icon class="detail-icon">tag</mat-icon>
+                <span class="detail-text">ID: {{ category.id }}</span>
+              </div> -->
+              <div class="detail-row" *ngIf="category.description">
+                <mat-icon class="detail-icon">description</mat-icon>
+                <span class="detail-text">{{ category.description }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <!-- Status Badge -->
+            <div class="status-wrapper">
+              <div
+                class="status-badge"
+                [class.active]="category.asset && !category.isDeleted"
+                [class.inactive]="!category.asset && !category.isDeleted"
+                [class.deleted]="category.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ category.isDeleted ? 'delete' : (category.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ category.isDeleted ? 'Eliminada' : (category.asset ? 'Activa' : 'Inactiva') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="category.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Esta categoría ha sido eliminada lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!category.isDeleted">
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(category)"
+                matTooltip="Editar categoría">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteCategory(category.id!)"
+                matTooltip="Eliminar categoría">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="category.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar una categoría eliminada">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Categoría ya eliminada lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentCategory(category.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">category</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">label</mat-icon>
+          <mat-icon class="car-icon">label</mat-icon>
+          <mat-icon class="car-icon">label</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay categorías registradas</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Crear Primera Categoría
+      </button>
+    </div>
+  </div>
+
+</div>

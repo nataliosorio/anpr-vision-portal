@@ -1,0 +1,47 @@
+<div class="parking-selection-container">
+  <div class="header-section">
+    <h2 class="main-title">Selecciona el parqueadero para ingresar</h2>
+    <p class="subtitle">Elige tu ubicación de trabajo</p>
+  </div>
+
+  <div class="cards-container">
+    <mat-card *ngFor="let parking of parkings; let i = index"
+              class="parking-card"
+              (click)="selectParking(parking)"
+              [class.selected]="selectedParkingId === parking.parkingId"
+              [style.animation-delay.ms]="i * 100">
+
+      <div class="card-content">
+        <div class="icon-container">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M9 17V7h3a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2H9"/>
+          </svg>
+        </div>
+
+        <mat-card-header>
+          <mat-card-title>{{ parking.parkingName }}</mat-card-title>
+          <mat-card-subtitle>{{ parking.roleName }}</mat-card-subtitle>
+        </mat-card-header>
+
+        <div class="card-footer">
+          <button mat-raised-button color="primary" class="select-button">
+            <span *ngIf="selectedParkingId !== parking.parkingId">Seleccionar</span>
+            <span *ngIf="selectedParkingId === parking.parkingId">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                   viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Seleccionado
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-glow"></div>
+    </mat-card>
+  </div>
+</div>

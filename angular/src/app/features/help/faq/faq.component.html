@@ -1,0 +1,51 @@
+<div class="faq-container">
+  <h1>❓ Preguntas Frecuentes (FAQ)</h1>
+  <p class="subtitle">
+    Encuentra respuestas rápidas a las dudas más comunes sobre <strong>ANPR Vision</strong>.
+  </p>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar pregunta</mat-label>
+      <input
+        matInput
+        [(ngModel)]="searchQuery"
+        placeholder="Escribe aquí..."
+        style="color:white !important;" />
+      <button mat-icon-button matSuffix *ngIf="searchQuery" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <!-- Botones de control -->
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="expandAll()">Expandir todo</button>
+      <button mat-raised-button color="warn" (click)="collapseAll()">Colapsar todo</button>
+    </div>
+  </div>
+
+  <!-- Contador de resultados -->
+  <p class="results" *ngIf="filteredFaqs.length > 0">
+    🔍 <strong>{{ filteredFaqs.length }}</strong> resultado(s) encontrado(s)
+  </p>
+
+  <!-- Mensaje cuando no hay coincidencias -->
+  <div *ngIf="filteredFaqs.length === 0" class="no-results">
+    <mat-icon>sentiment_dissatisfied</mat-icon>
+    No se encontraron resultados para <strong>"{{ searchQuery }}"</strong>.
+  </div>
+
+  <!-- Acordeón de preguntas -->
+  <mat-accordion multi #accordion="matAccordion">
+    <mat-expansion-panel *ngFor="let faq of filteredFaqs" [(expanded)]="faq.expanded">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="faq-icon">{{ faq.icon }}</mat-icon>
+          <span [innerHTML]="highlightSearch(faq.question)"></span>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <p [innerHTML]="highlightSearch(faq.answer)"></p>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

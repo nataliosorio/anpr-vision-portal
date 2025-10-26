@@ -1,0 +1,225 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalSectors() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveSectors() }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedSectors() }}</span>
+            <span class="stat-label">Eliminados</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Crear nuevo sector">
+          <mat-icon class="title-icon">view_module</mat-icon>
+          Nuevo Sector
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar sectores por nombre, zona o tipo de vehículo..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Parking List -->
+  <div class="parking-list" *ngIf="(dataSource?.data?.length || 0) > 0; else emptyState">
+    <div
+      class="parking-item"
+      *ngFor="let sector of dataSource.data"
+      [class.deleted-item]="sector.isDeleted">
+
+      <!-- Parking Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ sector.name }}</h2>
+            <div class="parking-details">
+              <div class="detail-row">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span class="detail-text">{{ sector.zones }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">directions_car</mat-icon>
+                <span class="detail-text">{{ sector.typeVehicle }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">inventory</mat-icon>
+                <span class="detail-text">Capacidad: {{ sector.capacity }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <!-- Status Badge -->
+            <div class="status-wrapper">
+              <div
+                class="status-badge"
+                [class.active]="sector.asset && !sector.isDeleted"
+                [class.inactive]="!sector.asset && !sector.isDeleted"
+                [class.deleted]="sector.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ sector.isDeleted ? 'delete' : (sector.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ sector.isDeleted ? 'Eliminado' : (sector.asset ? 'Activo' : 'Inactivo') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="sector.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Este sector ha sido eliminado lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!sector.isDeleted">
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(sector)"
+                matTooltip="Editar sector">
+                <mat-icon>edit_location</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteSector(sector.id!)"
+                matTooltip="Eliminar sector">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="sector.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar un sector eliminado">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Sector ya eliminado lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentSector(sector.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+   <ng-template #emptyState>
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">view_module</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">grid_view</mat-icon>
+          <mat-icon class="car-icon">grid_view</mat-icon>
+          <mat-icon class="car-icon">grid_view</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay sectores registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add_box</mat-icon>
+        Crear Primer Sector
+      </button>
+    </div>
+  </div>
+  </ng-template>
+
+</div>

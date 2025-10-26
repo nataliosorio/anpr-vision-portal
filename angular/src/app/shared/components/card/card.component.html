@@ -1,0 +1,70 @@
+<div class="card" [ngClass]="cardClass" [@cardRemove]="cardRemove" #toAnimate
+     role="region" [attr.aria-label]="cardTitle || 'card'">
+
+  <!-- HEADER (ocultable con hidHeader) -->
+  <ng-container *ngIf="!hidHeader">
+    <header class="card-header" [ngClass]="headerClass()">
+
+      <div class="card-header-left">
+        <div class="card-title-row">
+          <!-- optional small accent dot (controlled by cardClass like 'card-accent-blue') -->
+          <span class="card-accent" aria-hidden="true"></span>
+
+          <!-- Título principal -->
+          <h5 class="card-title">{{ cardTitle }}</h5>
+        </div>
+
+        <!-- Subtítulo / Fecha (opcional) -->
+        <span *ngIf="!customDate" class="card-subtitle" aria-hidden="true">{{ CardDate() }}</span>
+
+        <!-- Slot para header personalizado -->
+        <ng-content *ngIf="customHeader" select=".app-card-header"></ng-content>
+      </div>
+
+      <!-- Acciones a la derecha -->
+      <div class="card-header-right" *ngIf="options">
+        <div class="actions" role="toolbar" aria-label="Acciones de la tarjeta">
+          <!-- Maximize / Restore -->
+          <button class="action-btn" type="button" aria-label="Maximize" (click)="fullCardToggle(toAnimate, '', true)">
+            <i class="feather" [ngClass]="fullIcon"></i>
+          </button>
+
+          <!-- Collapse / Expand -->
+          <button class="action-btn" type="button" aria-label="Collapse" (click)="collapsedCardToggle()">
+            <i class="feather" [ngClass]="collapsedIcon"></i>
+          </button>
+
+          <!-- Refresh -->
+          <button class="action-btn" type="button" aria-label="Reload" (click)="cardRefresh()">
+            <i class="feather icon-refresh-cw"></i>
+          </button>
+
+          <!-- Remove -->
+          <button class="action-btn danger" type="button" aria-label="Remove" (click)="cardRemoveAction()">
+            <i class="feather icon-trash"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+  </ng-container>
+
+  <!-- COLLAPSIBLE BODY -->
+  <div [@collapsedCard]="collapsedCard" class="card-collapse-wrapper">
+    <div class="card-body" [ngClass]="blockClass()">
+      <ng-content></ng-content>
+    </div>
+  </div>
+
+  <!-- FOOTER SLOT -->
+  <footer *ngIf="isCardFooter" class="card-footer" [ngClass]="footerClass()">
+    <ng-content select=".app-card-footer"></ng-content>
+  </footer>
+
+  <!-- LOADER OVERLAY -->
+  <div class="card-loader" *ngIf="loadCard" aria-hidden="true">
+    <div class="loader-wrap" role="status" aria-live="polite">
+      <i class="pct-loader1 anim-rotate" aria-hidden="true"></i>
+      <span class="loader-text">Actualizando…</span>
+    </div>
+  </div>
+</div>

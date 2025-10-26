@@ -1,0 +1,220 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalParkings() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveParkings() }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedParkings() }}</span>
+            <span class="stat-label">Eliminados</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Crear nuevo parqueadero">
+          <mat-icon class="title-icon">garage</mat-icon>
+          Nuevo Parqueadero
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar parqueaderos por nombre..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Parking List -->
+  <div class="parking-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="parking-item"
+      *ngFor="let parking of dataSource.data"
+      [class.deleted-item]="parking.isDeleted">
+
+      <!-- Parking Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ parking.name }}</h2>
+            <div class="parking-details">
+              <div class="detail-row">
+                <mat-icon class="detail-icon">place</mat-icon>
+                <span class="detail-text">{{ parking.location }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">category</mat-icon>
+                <span class="detail-text">{{ parking.parkingCategory }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <!-- Status Badge -->
+            <div class="status-wrapper">
+              <div
+                class="status-badge"
+                [class.active]="parking.asset && !parking.isDeleted"
+                [class.inactive]="!parking.asset && !parking.isDeleted"
+                [class.deleted]="parking.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ parking.isDeleted ? 'delete' : (parking.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ parking.isDeleted ? 'Eliminado' : (parking.asset ? 'Activo' : 'Inactivo') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="parking.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Este parqueadero ha sido eliminado lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!parking.isDeleted">
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(parking)"
+                matTooltip="Editar parqueadero">
+                <mat-icon>edit_location</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteParking(parking.id!)"
+                matTooltip="Eliminar parqueadero">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="parking.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar un parqueadero eliminado">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Parqueadero ya eliminado lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentModule(parking.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">garage</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay parqueaderos registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add_business</mat-icon>
+        Crear Primer Parqueadero
+      </button>
+    </div>
+  </div>
+
+
+</div>

@@ -1,0 +1,30 @@
+.notifications-container {
+  padding: 16px;
+}
+
+.notification-card {
+  background: #2a2d35;
+  color: #fff;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  transition: 0.2s ease;
+
+  &.read {
+    opacity: 0.6;
+  }
+
+  h3 {
+    margin: 0 0 6px;
+  }
+
+  button {
+    margin-top: 6px;
+    background: #07bcbe;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+  }
+}

@@ -1,0 +1,78 @@
+  <div class="edit-user-modal" role="dialog" aria-labelledby="editUserTitle" aria-describedby="editUserDesc">
+    <div class="modal-head">
+    <div class="modal-icon" aria-hidden="true"><i class="fas fa-user-edit"></i></div>
+    <h2 id="editUserTitle">Editar Información personal</h2>
+    <button class="close-btn" mat-icon-button aria-label="Cerrar" (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+   <div class="modal-body" mat-dialog-content>
+    <p id="editUserDesc" class="sr-only">Formulario para actualizar datos personales.</p>
+
+   <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Nombres</mat-label>
+        <input matInput [(ngModel)]="data.firstName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Apellidos</mat-label>
+        <input matInput [(ngModel)]="data.lastName">
+      </mat-form-field>
+
+       <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Numero de telefono</mat-label>
+        <input matInput [(ngModel)]="data.phone">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Documento de identidad</mat-label>
+        <input matInput [(ngModel)]="data.document">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Edad</mat-label>
+        <input matInput [(ngModel)]="data.age">
+      </mat-form-field>
+
+
+  <div mat-dialog-actions class="modal-actions" align="end">
+    <button mat-stroked-button type="button" (click)="onCancel()" aria-label="Cancelar" class="btn-cancel">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="onSave()" aria-label="Guardar" class="btn-save">Guardar</button>
+  </div>
+
+  <!-- <h1 mat-dialog-title>Editar Información personal</h1> -->
+    <!-- <div mat-dialog-content>
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Nombres</mat-label>
+        <input matInput [(ngModel)]="data.firstName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Apellidos</mat-label>
+        <input matInput [(ngModel)]="data.lastName">
+      </mat-form-field>
+
+       <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Numero de telefono</mat-label>
+        <input matInput [(ngModel)]="data.phone">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Documento de identidad</mat-label>
+        <input matInput [(ngModel)]="data.document">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>Edad</mat-label>
+        <input matInput [(ngModel)]="data.age">
+      </mat-form-field>
+
+
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="onSave()">Guardar</button>
+    </div> -->
+</div>
+

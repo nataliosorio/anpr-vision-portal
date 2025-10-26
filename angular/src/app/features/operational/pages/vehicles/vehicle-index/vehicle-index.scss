@@ -1,0 +1,831 @@
+.parking-container {
+  min-height: 100vh;
+  position: relative;
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 16px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  // Hero Section
+  .hero-section {
+    position: relative;
+    z-index: 1;
+    padding: 20px 24px;
+
+    .hero-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .hero-text {
+        flex: 1;
+
+        .stats-bar {
+          display: flex;
+          gap: 32px;
+
+          .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 80px;
+
+            .stat-number {
+              font-size: 28px;
+              font-weight: 700;
+              color: #2d9bce;
+              line-height: 1;
+            }
+
+            .stat-label {
+              font-size: 12px;
+              color: rgba(255, 255, 255, 0.8);
+              font-weight: 500;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              margin-top: 4px;
+            }
+          }
+        }
+      }
+
+      .hero-actions {
+        .create-parking-btn {
+          // background: linear-gradient(135deg, #1a6570, #075e78);
+          background: #1cb9ba;
+          color: rgb(4, 4, 4);
+          font-weight: 600;
+          font-size: 16px;
+          padding: 16px 32px;
+          border-radius: 50px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(37, 175, 196, 0.4);
+          }
+
+          mat-icon {
+            margin-right: 8px;
+            font-size: 24px;
+          }
+        }
+      }
+    }
+  }
+
+  // Toolbar Section
+  .toolbar-section {
+    padding: 0 24px 24px;
+    position: relative;
+    z-index: 1;
+
+    .toolbar-card {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: transparent;
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 16px 64px rgba(0, 0, 0, 0.1);
+
+      .toolbar-content {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+
+        /* ---------- controls-row: botón + búsqueda en la misma fila ---------- */
+        .controls-row {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+          width: 100%;
+        }
+
+        .controls-left {
+          /* botón con tamaño fijo para mantener consistencia */
+          flex: 0 0 auto;
+          display: flex;
+          align-items: center;
+        }
+
+        .create-parking-btn {
+          // background: linear-gradient(135deg, #25afc4, #1ec4f7);
+          background: #1cb9ba;
+
+          color: rgb(4, 4, 4);
+          font-weight: 600;
+          font-size: 15px;
+          padding: 12px 20px;
+          border-radius: 28px;
+          transition: all 0.25s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          height: 48px;
+          box-shadow: 0 8px 20px rgba(37, 175, 196, 0.18);
+
+          mat-icon {
+            font-size: 20px;
+          }
+
+          &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(37, 175, 196, 0.28);
+          }
+        }
+
+        .controls-center {
+          /* search ocupa todo el espacio restante */
+          flex: 1 1 auto;
+          min-width: 0; /* para evitar overflow de input en flex */
+        }
+
+        .search-section {
+          .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 999px;
+            padding: 10px 18px;
+            border: 2px solid transparent;
+            transition: all 0.18s ease;
+            width: 100%;
+
+            &:focus-within {
+              border-color: #2196f3;
+              background: #ffffff;
+              box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.06);
+            }
+
+            .search-icon {
+              color: #666;
+              margin-right: 12px;
+              font-size: 22px;
+            }
+
+            .search-input {
+              flex: 1;
+              border: none;
+              outline: none;
+              background: transparent;
+              font-size: 15px;
+              color: #222;
+              min-width: 0;
+
+              &::placeholder {
+                color: #9aa0a6;
+              }
+            }
+          }
+        }
+
+        .controls-right {
+          flex: 0 0 auto;
+          display: flex;
+          gap: 8px;
+          align-items: center;
+        }
+
+        /* ---------- chips (segunda fila) ---------- */
+        .filter-chips {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+        }
+
+        .filter-chip {
+          border-radius: 25px;
+          padding: 8px 20px;
+          font-weight: 500;
+          border: 2px solid #e0e0e0;
+          color: #666;
+          transition: all 0.3s ease;
+
+          // &:hover {
+          //   border-color: #2196f3;
+          //   color: #2196f3;
+          //   transform: translateY(-2px);
+          // }
+
+          &.active {
+            border-color: #1cb9ba;
+            color: #1cb9ba;
+            transform: translateY(-2px);
+          }
+
+
+        }
+      }
+    }
+  }
+
+  // Vehicle List - Diseño Horizontal tipo Lista
+  .vehicle-list {
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .vehicle-card-horizontal {
+      background: rgb(18 17 17 / 29%);
+
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateX(8px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border-color: rgba(37, 175, 196, 0.5);
+      }
+
+      &.deleted-card {
+        border-left: 4px solid #f44336;
+        opacity: 0.75;
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.4);
+          pointer-events: none;
+          z-index: 1;
+        }
+      }
+
+      // Left Section - Placa y Estado
+      .card-left {
+        display: flex;
+        align-items: center;
+        min-width: 220px;
+        position: relative;
+        z-index: 2;
+
+        .plate-section {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .plate-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0;
+            // background: linear-gradient(135deg, #25afc4, #1ec4f7);
+            background:#bdbebf;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+          }
+
+          .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            width: fit-content;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+            }
+
+            &.active {
+              background: linear-gradient(135deg, #4caf50, #45a049);
+              color: white;
+            }
+
+            &.inactive {
+              background: linear-gradient(135deg, #ff9800, #f57c00);
+              color: white;
+            }
+
+            &.deleted {
+              background: linear-gradient(135deg, #f44336, #d32f2f);
+              color: white;
+            }
+          }
+        }
+      }
+
+      // Center Section - Información
+      .card-center {
+        flex: 1;
+        position: relative;
+        z-index: 2;
+
+        .info-row {
+          display: flex;
+          gap: 32px;
+          flex-wrap: wrap;
+
+          .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            mat-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+              color: #25afc4;
+            }
+
+            .info-text {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.8);
+
+              strong {
+                color: rgba(255, 255, 255, 0.5);
+                font-weight: 600;
+                margin-right: 4px;
+              }
+            }
+          }
+        }
+      }
+
+      // Right Section - Acciones
+      .card-right {
+        display: flex;
+        gap: 10px;
+        position: relative;
+        z-index: 2;
+
+        .action-btn-horizontal {
+          min-width: 120px;
+          border-radius: 10px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+          }
+
+          &:hover:not(:disabled) {
+            transform: translateY(-2px);
+          }
+
+          &.edit-btn {
+            // background: linear-gradient(135deg, #2196f3, #1976d2);
+            background-color: #1cb9ba;
+            color: rgb(10, 10, 10);
+
+
+          }
+
+          &.delete-btn {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+
+
+          }
+
+          &.permanent-delete-btn {
+            background: linear-gradient(135deg, #ff5722, #e64a19);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);
+
+            &:hover {
+              box-shadow: 0 6px 16px rgba(255, 87, 34, 0.5);
+            }
+          }
+
+          &.disabled-btn {
+            background: rgba(158, 158, 158, 0.3);
+            color: rgba(255, 255, 255, 0.4);
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      // Warning Overlay
+      .deletion-warning-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border: 2px solid #ff6b35;
+        border-radius: 12px;
+        font-weight: 600;
+        color: #8b4513;
+        font-size: 13px;
+        z-index: 3;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+
+        mat-icon {
+          color: #ff6b35;
+          font-size: 22px;
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
+  }
+
+  // Empty State
+  .empty-state {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .empty-content {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 60px;
+      border-radius: 30px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 80px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+
+      .empty-illustration {
+        position: relative;
+        margin-bottom: 32px;
+
+        .empty-icon {
+          font-size: 120px;
+          color: #e0e0e0;
+          display: block;
+          margin: 0 auto 20px;
+        }
+
+        .empty-cars {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+
+          .car-icon {
+            font-size: 32px;
+            color: #bbb;
+            opacity: 0.6;
+            animation: float 3s ease-in-out infinite;
+
+            &:nth-child(2) {
+              animation-delay: 0.5s;
+            }
+
+            &:nth-child(3) {
+              animation-delay: 1s;
+            }
+          }
+        }
+      }
+
+      .empty-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 32px 0;
+      }
+
+      .empty-action-btn {
+        background: linear-gradient(135deg, #25afc4, #1ec4f7);
+        color: rgb(27, 26, 26);
+        font-weight: 600;
+        padding: 16px 32px;
+        border-radius: 50px;
+
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+// SweetAlert2 Custom Styles
+:host ::ng-deep {
+  .swal2-popup {
+    border-radius: 24px !important;
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .swal2-title {
+    font-weight: 700 !important;
+    font-size: 28px !important;
+  }
+
+  .swal2-confirm {
+    background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 12px 24px !important;
+    border: none !important;
+  }
+
+  .swal2-cancel {
+    background: linear-gradient(135deg, #2196f3, #21cbf3) !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    padding: 12px 24px !important;
+    border: none !important;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1400px) {
+  .parking-container .vehicle-list {
+    .vehicle-card-horizontal {
+      .card-right {
+        flex-direction: column;
+
+        .action-btn-horizontal {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .parking-container {
+    .hero-section .hero-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 32px;
+
+      .hero-text .stats-bar {
+        justify-content: center;
+      }
+    }
+
+    .vehicle-list {
+      .vehicle-card-horizontal {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        .card-left {
+          min-width: auto;
+          width: 100%;
+        }
+
+        .card-center {
+          width: 100%;
+
+          .info-row {
+            flex-direction: column;
+            gap: 12px;
+          }
+        }
+
+        .card-right {
+          width: 100%;
+          flex-direction: row;
+
+          .action-btn-horizontal {
+            flex: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .parking-container {
+    .toolbar-card .toolbar-content {
+      .controls-row {
+        gap: 12px;
+      }
+
+      .create-parking-btn {
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .parking-container {
+    padding: 16px;
+
+    .hero-section {
+      padding: 24px 16px;
+
+      .hero-content .hero-text .stats-bar {
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+
+        .stat-item {
+          width: 100%;
+        }
+      }
+    }
+
+    .vehicle-list {
+      padding: 0 16px;
+
+      .vehicle-card-horizontal {
+        padding: 16px;
+
+        .card-left .plate-section .plate-title {
+          font-size: 24px;
+        }
+
+        .card-right {
+          flex-direction: column;
+          gap: 8px;
+
+          .action-btn-horizontal {
+            min-width: auto;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .parking-container {
+    .toolbar-card .toolbar-content {
+      .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .controls-left,
+      .controls-center,
+      .controls-right {
+        width: 100%;
+      }
+
+      .create-parking-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .search-wrapper {
+        width: 100%;
+      }
+    }
+
+    .toolbar-card .filter-chips {
+      justify-content: flex-start;
+    }
+  }
+}
+
+/* ============================================
+   PAGINADOR - SOLUCIÓN QUE FUNCIONA
+   ============================================ */
+
+/* Paginador base */
+::ng-deep .mat-mdc-paginator {
+  background-color: transparent !important;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Texto (Items per page, range, etc.) - TODO BLANCO */
+::ng-deep .mat-mdc-paginator-range-label,
+::ng-deep .mat-mdc-paginator-page-size-label {
+  color: #ffffff !important;
+  font-size: 14px;
+}
+
+/* Select del pageSize */
+::ng-deep .mat-mdc-paginator-page-size-select {
+  background-color: #2a2d35 !important;
+  color: #ffffff !important;
+  border-radius: 6px;
+  padding: 2px 6px;
+  min-width: 50px !important;
+}
+
+/* Valor seleccionado dentro del select */
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-value,
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-value-text {
+  color: #ffffff !important;
+}
+
+/* Flecha del select */
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-arrow {
+  color: #ffffff !important;
+}
+
+/* Trigger del select (contenedor del valor) */
+::ng-deep .mat-mdc-select-trigger {
+  color: #ffffff !important;
+}
+
+/* ============================================
+   BOTONES DE NAVEGACIÓN - BLANCOS
+   ============================================ */
+
+/* Todos los botones del paginador */
+::ng-deep .mat-mdc-paginator-navigation-first,
+::ng-deep .mat-mdc-paginator-navigation-previous,
+::ng-deep .mat-mdc-paginator-navigation-next,
+::ng-deep .mat-mdc-paginator-navigation-last,
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button {
+  color: #ffffff !important;
+}
+
+/* Iconos dentro de los botones */
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button .mat-icon,
+::ng-deep .mat-mdc-paginator-icon {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* SVG dentro de los iconos (algunos usan SVG directamente) */
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button svg,
+::ng-deep .mat-mdc-paginator-icon svg {
+  fill: #ffffff !important;
+}
+
+/* Hover en botones */
+::ng-deep .mat-mdc-paginator-navigation-first:hover,
+::ng-deep .mat-mdc-paginator-navigation-previous:hover,
+::ng-deep .mat-mdc-paginator-navigation-next:hover,
+::ng-deep .mat-mdc-paginator-navigation-last:hover,
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button:hover {
+  color: #07bcbe !important;
+  background-color: rgba(7, 188, 190, 0.15) !important;
+  border-radius: 50%;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button:hover .mat-icon,
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button:hover svg {
+  color: #07bcbe !important;
+  fill: #07bcbe !important;
+}
+
+/* Botones deshabilitados */
+::ng-deep .mat-mdc-paginator-navigation-first.mat-mdc-button-disabled,
+::ng-deep .mat-mdc-paginator-navigation-previous.mat-mdc-button-disabled,
+::ng-deep .mat-mdc-paginator-navigation-next.mat-mdc-button-disabled,
+::ng-deep .mat-mdc-paginator-navigation-last.mat-mdc-button-disabled,
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button.mat-mdc-button-disabled {
+  color: #5a5a5a !important;
+  opacity: 0.5 !important;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button.mat-mdc-button-disabled .mat-icon,
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button.mat-mdc-button-disabled svg {
+  color: #5a5a5a !important;
+  fill: #5a5a5a !important;
+}
+
+/* Range actions */
+::ng-deep .mat-mdc-paginator-range-actions {
+  font-size: 14px;
+  color: #ffffff !important;
+}
+
+/* Container de range actions (por si acaso) */
+::ng-deep .mat-mdc-paginator-container {
+  color: #ffffff !important;
+}

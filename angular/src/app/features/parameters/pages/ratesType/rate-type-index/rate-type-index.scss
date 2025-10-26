@@ -1,0 +1,477 @@
+.parking-container {
+  min-height: 100vh;
+  position: relative;
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 16px;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.parking-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ============================================
+   TOOLBAR
+============================================ */
+.toolbar-section {
+  padding: 0 24px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.toolbar-card {
+  max-width: 1400px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-content {
+  padding: 20px 24px;
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.controls-left {
+  flex: 0 0 auto;
+}
+
+.controls-center {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Botón Agregar Tipo de Tarifa */
+.create-parking-btn {
+  // background: linear-gradient(135deg, #25afc4, #1ec4f7);
+  background-color: #1cb9ba;
+  color: #040404;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(37, 175, 196, 0.3);
+  height: 48px;
+}
+
+.create-parking-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 175, 196, 0.4);
+}
+
+.create-parking-btn mat-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+/* Search */
+.search-section {
+  flex: 1;
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50px;
+  padding: 10px 20px;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  height: 48px;
+  width: 100%; /* ✅ ahora ocupa todo el ancho */
+}
+
+.search-wrapper:focus-within {
+  border-color: #25afc4;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(37, 175, 196, 0.1);
+}
+
+.search-icon {
+  color: #666;
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #333;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+/* ============================================
+   TARIFAS LISTA - HORIZONTAL
+============================================ */
+.tariff-list {
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tariff-card-horizontal {
+  background: rgb(18 17 17 / 29%);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tariff-card-horizontal:hover {
+  transform: translateX(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: rgba(37, 175, 196, 0.5);
+}
+
+.tariff-card-horizontal.deleted-card {
+  border-left: 4px solid #f44336;
+  opacity: 0.75;
+}
+
+.tariff-card-horizontal .card-left,
+.tariff-card-horizontal .card-center,
+.tariff-card-horizontal .card-right {
+  position: relative;
+  z-index: 2;
+}
+
+.tariff-card-horizontal .card-left {
+  min-width: 200px;
+}
+
+.tariff-card-horizontal .plate-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  background: #bdbebf;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tariff-card-horizontal .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+  color: #fff;
+}
+
+.tariff-card-horizontal .status-badge mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Activo */
+.tariff-card-horizontal .status-badge.active {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+}
+
+/* Inactivo */
+.tariff-card-horizontal .status-badge.inactive {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+}
+
+/* Eliminado */
+.tariff-card-horizontal .status-badge.deleted {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+}
+
+/* Center info */
+.tariff-card-horizontal .card-center {
+  flex: 1;
+}
+
+.tariff-card-horizontal .card-center .info-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.tariff-card-horizontal .info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tariff-card-horizontal .info-item mat-icon {
+  font-size: 20px;
+  color: #25afc4;
+}
+
+.tariff-card-horizontal .info-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Right actions */
+.tariff-card-horizontal .card-right {
+  display: flex;
+  gap: 10px;
+  margin-left: auto; /* ✅ empuja botones a la esquina derecha */
+  justify-content: flex-end;
+}
+
+.tariff-card-horizontal .action-btn-horizontal {
+  min-width: 120px;
+  border-radius: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tariff-card-horizontal .edit-btn {
+  background-color: #1cb9ba;
+  color: #0a0a0a;
+}
+
+.tariff-card-horizontal .delete-btn {
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: #fff;
+}
+
+.tariff-card-horizontal .permanent-delete-btn {
+  background: linear-gradient(135deg, #ff5722, #e64a19);
+  color: #fff;
+}
+
+/* Warning Overlay */
+.tariff-card-horizontal .deletion-warning-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px 24px;
+  color: #8b4513;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ============================================
+   EMPTY STATE
+============================================ */
+.empty-state {
+  position: relative;
+  z-index: 1;
+  padding: 60px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.empty-content {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 50px 40px;
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  max-width: 480px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.empty-illustration {
+  position: relative;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.empty-icon {
+  font-size: 100px;
+  width: 100px;
+  height: 100px;
+  color: #e0e0e0;
+  display: block;
+  margin: 0 auto 16px;
+}
+
+.empty-cars {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.car-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #25afc4;
+  animation: float 2s ease-in-out infinite;
+}
+
+.car-icon:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.car-icon:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.car-icon:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.empty-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 10px 0;
+}
+
+.empty-description {
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 26px 0;
+  line-height: 1.5;
+}
+
+.empty-action-btn {
+  background: linear-gradient(135deg, #25afc4, #1ec4f7);
+  color: #040404;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(37, 175, 196, 0.3);
+  transition: all 0.3s ease;
+}
+
+.empty-action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 175, 196, 0.4);
+}
+
+.empty-action-btn mat-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 768px) {
+  .controls-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .create-parking-btn,
+  .search-section {
+    width: 100%;
+  }
+
+  .tariff-card-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-right {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .action-btn-horizontal {
+    flex: 1;
+    min-width: auto;
+  }
+}
+/* Paginador base */
+::ng-deep .mat-mdc-paginator {
+  background-color: transparent !important;
+  color: #fff !important;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+::ng-deep .mat-mdc-paginator-range-label,
+::ng-deep .mat-mdc-paginator-page-size-label {
+  color: #ffffff !important;
+  font-size: 14px;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button {
+  color: #ffffff !important;
+}
+
+::ng-deep .mat-mdc-paginator .mat-mdc-icon-button:hover {
+  color: #07bcbe !important;
+}
+
+/* ====== ESTILOS PARA EL INPUT DEL PAGINADOR ====== */
+
+/* Texto dentro del select */
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-value,
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-value-text {
+  color: #ffffff !important; /* Texto blanco */
+}
+
+/* Placeholder y número seleccionado */
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-min-line {
+  color: #ffffff !important;
+}
+
+/* Icono de flecha */
+::ng-deep .mat-mdc-paginator-page-size-select .mat-mdc-select-arrow {
+  color: #ffffff !important;
+}
+
+/* Caja del select */
+::ng-deep .mat-mdc-paginator-page-size-select {
+  background-color: #2a2d35 !important; /* gris oscuro */
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 6px;
+}
+

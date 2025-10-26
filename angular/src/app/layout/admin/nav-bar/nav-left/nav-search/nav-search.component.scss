@@ -1,0 +1,168 @@
+$header-height: 62px; // o tu variable real
+
+:root {
+  --accent: #30CFD0;
+  --muted: #9aa6ad;
+  --glass: rgba(255,255,255,0.02);
+}
+
+/* backdrop ocupa toda la pantalla pero la barra se posiciona arriba */
+.search-bar-backdrop {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 2000;
+  pointer-events: auto;
+}
+
+/* ---- barra ahora cubre TODO el ancho del viewport ---- */
+.search-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;                /* ocupa todo el ancho */
+  height: $header-height;
+  margin: 0;                   /* quitar centrado */
+  padding: 8px 18px;
+  background: linear-gradient(180deg, rgba(16,18,20,0.98), rgba(28,31,34,0.98));
+  border-radius: 0;            /* sin curvas para reemplazar navbar */
+  display: flex;
+  align-items: center;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+  z-index: 2050;               /* por encima del navbar */
+  transform-origin: top center;
+  animation: slideDown .12s ease-out;
+}
+
+/* icono izquierdo */
+.search-left {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px;
+  margin-right: 10px;
+  color: var(--accent);
+  font-size: 18px;
+}
+
+/* input ocupa el resto */
+.search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
+  flex: 1 1 auto;
+  padding: 8px 6px;
+}
+
+/* placeholder */
+.search-input::placeholder { color: var(--muted); opacity: 0.95; }
+
+/* botones */
+.clear-btn, .close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.clear-btn:hover, .close-btn:hover { color: #fff; }
+
+/* animación */
+@keyframes slideDown {
+  from { transform: translateY(-6px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* responsive: mantén altura en móvil */
+@media (max-width: 640px) {
+  .search-bar { padding: 6px 10px; height: $header-height; }
+}
+/* SUGGESTIONS: posicionadas respecto a .search-bar */
+.search-bar {
+  position: fixed; /* ya lo tienes */
+  /* ... tus reglas existentes ... */
+  /* necesitamos que el contenedor sea el referente para absolute children */
+  left: 0;
+  right: 0;
+  padding: 8px 18px;
+  z-index: 2050;
+}
+
+/* contenedor de la lista: absoluto, justo debajo de la barra */
+.suggestions {
+  position: absolute;
+  top: calc(100% + 8px);   /* justo abajo de la search-bar */
+  left: 18px;              /* respeta padding de .search-bar */
+  right: 18px;             /* respeta padding de .search-bar */
+  max-width: calc(100vw - 36px);
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  background: linear-gradient(180deg, rgba(20,22,24,0.98), rgba(28,31,34,0.98));
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  z-index: 9999;           /* por encima de todo el layout */
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* elemento de sugerencia */
+.suggestion-item {
+  display: block;
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #e6eef0;
+  font-size: 14px;
+  transition: background .12s ease, color .12s ease, transform .06s ease;
+  border-left: 4px solid transparent;
+}
+
+/* título y path */
+.suggestion-item .s-title {
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 3px;
+  font-size: 14px;
+}
+.suggestion-item .s-path {
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.9;
+}
+
+/* hover y estado activo (flechas / mouse) */
+.suggestion-item:hover,
+.suggestion-item.active {
+  background: rgba(48,207,208,0.04);
+  color: var(--accent);
+  border-left-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* asegurar items enfocados con teclado sean visibles */
+.suggestion-item:focus {
+  outline: none;
+  background: rgba(48,207,208,0.03);
+  color: var(--accent);
+}
+
+/* adaptaciones mobile */
+@media (max-width: 640px) {
+  .suggestions {
+    left: 8px;
+    right: 8px;
+    top: calc(100% + 6px);
+    max-height: 220px;
+  }
+  .suggestion-item { padding: 8px 10px; }
+  .suggestion-item .s-title { font-size: 13px; }
+  .suggestion-item .s-path { font-size: 11px; }
+}

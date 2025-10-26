@@ -1,0 +1,32 @@
+
+
+<!-- edit-user-dialog-component.html -->
+<div class="edit-user-modal" role="dialog" aria-labelledby="editUserTitle" aria-describedby="editUserDesc">
+  <div class="modal-head">
+    <div class="modal-icon" aria-hidden="true"><i class="fas fa-user-edit"></i></div>
+    <h2 id="editUserTitle">Editar Usuario</h2>
+    <button class="close-btn" mat-icon-button aria-label="Cerrar" (click)="onCancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="modal-body" mat-dialog-content>
+    <p id="editUserDesc" class="sr-only">Formulario para actualizar nombre de usuario y correo.</p>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Nombre de usuario</mat-label>
+      <input matInput [(ngModel)]="data.username" cdkFocusInitial (keydown.enter)="onSave()" aria-label="Nombre de usuario" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full">
+      <mat-label>Email</mat-label>
+      <input matInput [(ngModel)]="data.email" (keydown.enter)="onSave()" aria-label="Correo electrónico" />
+    </mat-form-field>
+  </div>
+
+  <div mat-dialog-actions class="modal-actions" align="end">
+    <button mat-stroked-button type="button" (click)="onCancel()" aria-label="Cancelar" class="btn-cancel">Cancelar</button>
+    <button mat-flat-button color="primary" type="button" (click)="onSave()" aria-label="Guardar" class="btn-save">Guardar</button>
+  </div>
+</div>
+

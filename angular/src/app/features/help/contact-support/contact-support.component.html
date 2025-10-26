@@ -1,0 +1,36 @@
+<div class="contact-container">
+  <div class="header">
+    <img src="../../../assets/images/logoANPR.png" alt="ANPR Vision" class="logo" >
+    <h1>📬 Contactar Soporte</h1>
+    <p class="subtitle">Estamos aquí para ayudarte. Completa el formulario y te responderemos lo antes posible.</p>
+  </div>
+
+  <form [formGroup]="supportForm" (ngSubmit)="onSubmit()" novalidate class="contact-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" placeholder="Escribe tu nombre" required>
+      <mat-icon matSuffix>person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="ejemplo@correo.com" required>
+      <mat-icon matSuffix>email</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Mensaje</mat-label>
+      <textarea matInput formControlName="message" rows="4" placeholder="Describe tu consulta..." required></textarea>
+      <mat-icon matSuffix>message</mat-icon>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" class="submit-btn" [disabled]="supportForm.invalid">
+      <mat-icon>send</mat-icon> Enviar mensaje
+    </button>
+  </form>
+
+  <div class="extra-info">
+    <h3>💡 ¿Necesitas ayuda rápida?</h3>
+    <p>Puedes visitar nuestra <a href="../documentation/documentation.component.html">documentación</a> o contactar con nuestro <a href="../faq/faq.component.html">equipo técnico</a>.</p>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<ng-scrollbar (clickOutside)="navMob()" style="height: calc(100vh - 56px)">
+  <div class="navbar-content">
+    <ul class="nav pcoded-inner-navbar" (clickOutside)="fireOutClick()">
+      @for (items of navigation; track items) {
+        @if (items.type === 'group') {
+          <app-nav-group [item]="items" />
+        }
+      }
+    </ul>
+    <app-card [hidHeader]="true" cardClass="text-center">
+      <i class="feather icon-sunset f-40"></i>
+      <h6 class="mt-3">Necesitas ayuda?</h6>
+      <p>Por favor contáctenos a nuestro correo electrónico si necesita ayuda.</p>
+      <a href="https://anpr-vision.support-hub.io/" target="_blank" class="btn btn-primary btn-sm text-white m-0">Soporte</a>
+    </app-card>
+
+  </div>
+</ng-scrollbar>

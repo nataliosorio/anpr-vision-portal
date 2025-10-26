@@ -1,0 +1,256 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalSlots() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveSlots() }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getAvailableSlots() }}</span>
+            <span class="stat-label">Disponibles</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getOccupiedSlots() }}</span>
+            <span class="stat-label">Ocupados</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedSlots() }}</span>
+            <span class="stat-label">Eliminados</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Crear nuevo slot">
+          <!-- <mat-icon class="title-icon">mas</mat-icon> -->
+         + Nuevo Slot
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar slots por nombre o sector..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'available'"
+            (click)="filterByStatus('available')"
+            class="filter-chip">
+            Disponibles
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'occupied'"
+            (click)="filterByStatus('occupied')"
+            class="filter-chip">
+            Ocupados
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Slots List -->
+  <div class="parking-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="parking-item"
+      *ngFor="let slot of dataSource.data"
+      [class.deleted-item]="slot.isDeleted">
+
+      <!-- Slot Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ slot.name }}</h2>
+            <div class="parking-details">
+              <div class="detail-row">
+                <mat-icon class="detail-icon">location_on</mat-icon>
+                <span class="detail-text">{{ slot.sectors }}</span>
+              </div>
+              <!-- <div class="detail-row">
+                <mat-icon class="detail-icon">tag</mat-icon>
+                <span class="detail-text">ID: {{ slot.id }}</span>
+              </div> -->
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <!-- Status Badges -->
+            <div class="status-wrapper">
+              <!-- Estado Badge (Activo/Inactivo) -->
+              <div
+                class="status-badge"
+                [class.active]="slot.asset && !slot.isDeleted"
+                [class.inactive]="!slot.asset && !slot.isDeleted"
+                [class.deleted]="slot.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ slot.isDeleted ? 'delete' : (slot.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ slot.isDeleted ? 'Eliminado' : (slot.asset ? 'Activo' : 'Inactivo') }}
+                </span>
+              </div>
+
+              <!-- Disponibilidad Badge (solo si está activo y no eliminado) -->
+              <div
+                class="status-badge availability-badge"
+                *ngIf="slot.asset && !slot.isDeleted"
+                [class.available]="slot.isAvailable"
+                [class.occupied]="!slot.isAvailable">
+                <mat-icon class="status-icon">
+                  {{ slot.isAvailable ? 'local_parking' : 'directions_car' }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ slot.isAvailable ? 'Disponible' : 'Ocupado' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="slot.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Este slot ha sido eliminado lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!slot.isDeleted">
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(slot)"
+                matTooltip="Editar slot">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteSlot(slot.id!)"
+                matTooltip="Eliminar slot">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="slot.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar un slot eliminado">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Slot ya eliminado lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentSlot(slot.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">local_parking</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay slots registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Crear Primer Slot
+      </button>
+    </div>
+  </div>
+
+</div>

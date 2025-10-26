@@ -1,0 +1,13 @@
+<div class="notifications-container">
+  <h2>Notificaciones</h2>
+
+  <div *ngFor="let n of notifications" class="notification-card" [class.read]="n.isRead">
+    <h3>{{ n.title }}</h3>
+    <p>{{ n.message }}</p>
+    <small>Parking: {{ n.parkingId }}</small>
+
+    <button *ngIf="!n.isRead" (click)="markAsRead(n)">
+      Marcar como leída
+    </button>
+  </div>
+</div>

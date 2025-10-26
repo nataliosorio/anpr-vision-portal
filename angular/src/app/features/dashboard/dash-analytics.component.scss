@@ -1,0 +1,240 @@
+// Palette and common tokens
+:root {
+  --bg-page: #0f1720;         // fondo general oscuro
+  --card-bg: #0f1728;         // fondo ligero de card
+  --muted-text: #9aa4ad;
+  --accent-1: #38b6ff;        // azul principal
+  --accent-2: #2ed8b6;        // verde-accent
+  --accent-3: #f6b04a;        // amarillo naranja (soft)
+  --accent-4: #7c5cff;        // morado para highlights
+  --card-radius: 12px;
+  --glass-border: rgba(255,255,255,0.03);
+  --glass-outline: rgba(255,255,255,0.02);
+}
+
+/* Base resets / layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  width: 100%;
+  padding: 0.8rem 0.6rem;
+}
+
+/* Top stats grid (responsive) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+/* Card wrapper small adjustments */
+.stat-card-wrapper app-card.order-card,
+.card-section app-card.chart-card {
+  display: block;
+  height: 100%;
+}
+
+/* Unified card style applied to your <app-card> children */
+.order-card, .chart-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: var(--card-radius);
+  padding: 1.05rem;
+  color: #e8eef2;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 6px 16px rgba(2,6,23,0.6), inset 0 1px 0 var(--glass-outline);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+/* hover lift */
+.order-card:hover, .chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.75);
+}
+
+/* Stat card content */
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 110px;
+}
+
+.stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-title {
+  font-size: 0.95rem;
+  color: var(--muted-text);
+  font-weight: 700;
+  text-transform: none;
+}
+
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.03);
+  font-size: 1.25rem;
+  color: var(--accent-1);
+}
+
+/* number + change */
+.stat-bottom {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-change {
+  font-size: 0.9rem;
+  color: var(--muted-text);
+  background: rgba(255,255,255,0.02);
+  padding: 4px 8px;
+  border-radius: 999px;
+  align-self: center;
+}
+
+/* mapping backgrounds: usa clases existentes bg-c-blue, etc. */
+.bg-c-blue { background: linear-gradient(90deg, rgba(56,182,255,0.12), rgba(56,182,255,0.06)); .stat-icon { color: var(--accent-1); } }
+.bg-c-green { background: linear-gradient(90deg, rgba(46,216,182,0.10), rgba(46,216,182,0.04)); .stat-icon { color: var(--accent-2); } }
+.bg-c-yellow { background: linear-gradient(90deg, rgba(246,176,74,0.10), rgba(246,176,74,0.03)); .stat-icon { color: var(--accent-3); } }
+.bg-c-orange { background: linear-gradient(90deg, rgba(246,176,74,0.10), rgba(246,176,74,0.03)); .stat-icon { color: var(--accent-3); } }
+.bg-c-red { background: linear-gradient(90deg, rgba(255,120,120,0.06), rgba(255,120,120,0.03)); .stat-icon { color: #ff6b6b; } }
+
+/* Charts grid: dos columnas en desktop, stack en mobile */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.card-section {
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Card heading */
+.card-heading {
+  font-weight: 700;
+  color: #cfeef6;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+}
+
+/* Chart caption */
+.chart-caption {
+  color: var(--muted-text);
+  font-size: 0.95rem;
+}
+
+/* Pills improved (works on dark backgrounds) */
+.zone-pills {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pill-btn {
+  background: rgba(255,255,255,0.03);
+  color: #e6eef3;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform .08s ease, background .12s ease;
+}
+.pill-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
+.pill-btn.active { background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); color: #031521; border: none; box-shadow: 0 6px 18px rgba(2,6,23,0.6); }
+
+/* Alerts */
+.titulo-alert {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.15rem;
+  color: var(--accent-2);
+  font-weight: 800;
+}
+
+.alerts-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+/* Alert card (refinado) */
+.alert-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  gap: 12px;
+  align-items: start;
+  border-left: 4px solid rgba(250,204,21,0.14);
+  color: #dbe7ea;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.45);
+}
+
+.alert-dot {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(180deg, var(--accent-3), #f2a93a);
+  border-radius: 50%;
+  margin-top: 6px;
+  flex: 0 0 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.alert-content {
+  font-size: 0.95rem;
+  color: #e6eef3;
+  line-height: 1.24;
+}
+.alert-content .label {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Small helpers & accessibility */
+.muted { color: var(--muted-text); opacity: 0.95; }
+.order-card .apexcharts-canvas { pointer-events: auto; }
+
+/* Responsive breakpoints */
+@media (min-width: 992px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+ .charts-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto; /* filas automáticas */
+    align-items: start;
+  }
+    .charts-grid .full-width {
+    grid-column: 1 / -1;
+  }
+  .charts-grid .full-width .chart-card {
+    min-height: 420px;
+  }
+  .card-section { min-height: 360px; }
+}
+
+@media (max-width: 600px) {
+  .stat-number { font-size: 1.3rem; }
+  .card-heading { font-size: 0.95rem; }
+  .zona-pills { max-width: 100%; overflow-x: auto; padding-bottom: 6px; }
+}

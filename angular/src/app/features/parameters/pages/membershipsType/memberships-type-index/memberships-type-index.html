@@ -1,0 +1,221 @@
+<div class="parking-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <div class="stats-bar">
+          <div class="stat-item">
+            <span class="stat-number">{{ getTotalMembershipTypes() }}</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getActiveMembershipTypes() }}</span>
+            <span class="stat-label">Activos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{{ getDeletedMembershipTypes() }}</span>
+            <span class="stat-label">Eliminados</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button
+          mat-fab
+          extended
+          color="primary"
+          class="create-parking-btn"
+          (click)="goToCreate()"
+          matTooltip="Crear nuevo tipo de membresía">
+          <mat-icon class="title-icon">card_membership</mat-icon>
+          Nuevo Tipo de Membresía
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+        <div class="search-section">
+          <div class="search-wrapper">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input
+              type="text"
+              placeholder="Buscar tipos de membresía por nombre o descripción..."
+              class="search-input"
+              (keyup)="applyFilter($event)">
+          </div>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'all'"
+            (click)="filterByStatus('all')"
+            class="filter-chip">
+            Todos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'active'"
+            (click)="filterByStatus('active')"
+            class="filter-chip">
+            Activos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'inactive'"
+            (click)="filterByStatus('inactive')"
+            class="filter-chip">
+            Inactivos
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="selectedFilter === 'deleted'"
+            (click)="filterByStatus('deleted')"
+            class="filter-chip deleted">
+            Eliminados
+          </button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Membership Types List -->
+  <div class="parking-list" *ngIf="(dataSource?.data?.length || 0) > 0">
+    <div
+      class="parking-item"
+      *ngFor="let membershipType of (dataSource?.data || [])"
+      [class.deleted-item]="membershipType.isDeleted">
+
+      <!-- Membership Type Card -->
+      <mat-card class="parking-card">
+        <div class="parking-header">
+          <div class="parking-info">
+            <h2 class="parking-name">{{ membershipType.name }}</h2>
+            <div class="parking-details">
+              <div class="detail-row" *ngIf="membershipType.description">
+                <mat-icon class="detail-icon">description</mat-icon>
+                <span class="detail-text">{{ membershipType.description }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">schedule</mat-icon>
+                <span class="detail-text">Duración: {{ membershipType.durationDaysBase }} días</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon class="detail-icon">attach_money</mat-icon>
+                <span class="detail-text">Precio: ${{ membershipType.priceBase | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="parking-status-section">
+            <div class="status-wrapper">
+              <div
+                class="status-badge"
+                [class.active]="membershipType.asset && !membershipType.isDeleted"
+                [class.inactive]="!membershipType.asset && !membershipType.isDeleted"
+                [class.deleted]="membershipType.isDeleted">
+                <mat-icon class="status-icon">
+                  {{ membershipType.isDeleted ? 'delete' : (membershipType.asset ? 'check_circle' : 'cancel') }}
+                </mat-icon>
+                <span class="status-text">
+                  {{ membershipType.isDeleted ? 'Eliminado' : (membershipType.asset ? 'Activo' : 'Inactivo') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deletion Warning -->
+        <div class="deletion-warning" *ngIf="membershipType.isDeleted">
+          <mat-icon class="warning-icon">warning_amber</mat-icon>
+          <span class="warning-text">Este tipo de membresía ha sido eliminado lógicamente del sistema</span>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+          <div class="actions-wrapper">
+            <!-- Normal State Actions -->
+            <ng-container *ngIf="!membershipType.isDeleted">
+              <button
+                mat-raised-button
+                color="primary"
+                class="action-btn primary-action"
+                (click)="goToEdit(membershipType)"
+                matTooltip="Editar tipo de membresía">
+                <mat-icon>edit</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="warn"
+                class="action-btn danger-action"
+                (click)="deleteMembershipType(membershipType.id!)"
+                matTooltip="Eliminar tipo de membresía">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+            </ng-container>
+
+            <!-- Deleted State Actions -->
+            <ng-container *ngIf="membershipType.isDeleted">
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="No se puede editar un tipo de membresía eliminado">
+                <mat-icon>edit_off</mat-icon>
+                <span>Editar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                class="action-btn disabled-action"
+                disabled
+                matTooltip="Tipo de membresía ya eliminado lógicamente">
+                <mat-icon>delete_outline</mat-icon>
+                <span>Eliminar</span>
+              </button>
+
+              <button
+                mat-raised-button
+                color="accent"
+                class="action-btn permanent-action"
+                (click)="deletePermanentMembershipType(membershipType.id!)"
+                matTooltip="Eliminar permanentemente del sistema">
+                <mat-icon>delete_forever</mat-icon>
+                <span>Eliminar Permanente</span>
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="(dataSource?.data?.length || 0) === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">card_membership</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">loyalty</mat-icon>
+          <mat-icon class="car-icon">loyalty</mat-icon>
+          <mat-icon class="car-icon">loyalty</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay tipos de membresía registrados</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Crear Primer Tipo de Membresía
+      </button>
+    </div>
+  </div>
+</div>

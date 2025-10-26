@@ -1,0 +1,304 @@
+/* This file is intentionally left empty to allow customers to add custom CSS if needed. */
+/* This file is intentionally left empty to allow customers to add custom CSS if needed. */
+html,body{
+    margin: 0;
+    padding: 0;
+}
+.lado-derecho {
+  overflow: hidden !important;
+  margin: auto;
+  padding: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: url("../../../../../assets/imagen-parqueadero/1.png") no-repeat center center/cover 50%;
+  background-size: cover;
+  background-attachment: fixed;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  box-sizing: content-box;
+  color:white;
+  animation: cambiarImagen 15s infinite;
+}
+
+@keyframes cambiarImagen {
+  0% {
+    background-image: url("../../../../../assets/imagen-parqueadero/2.png");
+  }
+  33% {
+    background-image: url("../../../../../assets/imagen-parqueadero/8.jpg");
+  }
+  66% {
+    background-image: url("../../../../../assets/imagen-parqueadero/6.jpeg");
+  }
+  100% {
+    background-image: url("../../../../../assets/imagen-parqueadero/1.png");
+  }
+}
+
+.mini-contener {
+  height: 100%;
+  width: 40%;
+  margin: 0px;
+  padding: .32 .20%;
+  background: #041130cc;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #30CFD0;
+  div div div div h4,h5{
+      color:#30CFD0 !important;
+  }
+  /* ✨ Sisa animada */
+  clip-path: polygon(
+    100% 0%,
+    90% 10%,
+    100% 20%,
+    90% 30%,
+    100% 40%,
+    90% 50%,
+    100% 60%,
+    90% 70%,
+    100% 80%,
+    90% 90%,
+    100% 100%,
+    0% 100%,
+    0% 0%
+  );
+  transition: all 1s ease;
+  animation: animarSisaDerecha 3s infinite ease-in-out;
+}
+.mini-contener:hover{
+  box-shadow: 0px 0px 10px 4px #30CFD0  !important;
+}
+.mini-contener:hover > div div div div:hover > h4{
+  transition: all 1s ease;
+  text-shadow: 0px 0px 10px #30CFD0 ;
+}
+.mini-contener:hover > div div div div:hover > h5{
+  transition: all 1s ease;
+  text-shadow: 0px 0px 10px #30CFD0 ;
+}
+.mini-contener > div div div div  p{
+  transition: all 1s ease;
+  color:white;
+  text-shadow: 0px 0px 10px #30CFD0 ;
+}
+
+@keyframes animarSisaDerecha {
+  0%, 100% {
+    clip-path: polygon(
+      100% 0%,
+      90% 10%,
+      100% 20%,
+      90% 30%,
+      100% 40%,
+      90% 50%,
+      100% 60%,
+      90% 70%,
+      100% 80%,
+      90% 90%,
+      100% 100%,
+      0% 100%,
+      0% 0%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      100% 0%,
+      88% 8%,
+      100% 22%,
+      88% 28%,
+      100% 42%,
+      88% 48%,
+      100% 62%,
+      88% 68%,
+      100% 82%,
+      88% 88%,
+      100% 100%,
+      0% 100%,
+      0% 0%
+    );
+  }
+}
+
+.color-p{
+  color:white !important;
+}
+
+.Formulario-login{
+  border: none;
+  outline: none;
+  line-height: 25px;
+  background: transparent;
+  border-radius: 15px;
+  color:white;
+  border: 1px solid #30CFD0;
+  box-shadow: 0px 0px 1px 0px #30CFD0  !important;
+  transition: all 1s ease;
+}
+.Formulario-login:hover{
+  transition: all 1s ease;
+  box-shadow: 0px 0px 10px 1px #30CFD0  !important;
+}
+
+.input-registro{
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid #30CFD0;
+  color:white;
+  font-size: 16px;
+}
+.mini-contener:hover > div div div div div:hover > .input-registro{
+  box-shadow: 0px 5px 10px 1px #30CFD0  !important;
+}
+
+.fondo-icono{
+  background: #30CFD0;
+  color: #041130;
+  box-shadow: 0px 0px 5px 1px #30CFD0  !important;
+  border:none;
+  outline: none;
+}
+
+.bttn-inicio-sesion button{
+  color: #30CFD0;
+  background: transparent;
+  box-shadow: 0px 5px 10px 1px #30CFD0  !important;
+  border-bottom: 2px solid #30CFD0;
+}
+
+/* ====== Restablecer como enlace (no botón) ====== */
+.olvidasteContraseña {
+  /* anula la apariencia de botón bootstrap solo para este elemento */
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+
+  color: #30CFD0 !important;   /* tu color de marca */
+  font-weight: 600;            /* un toque de énfasis */
+  text-decoration: none;       /* sin subrayado por defecto */
+  cursor: pointer;
+}
+
+.olvidasteContraseña:hover,
+.olvidasteContraseña:focus {
+  text-decoration: underline;  /* parecer enlace al pasar/foquear */
+  color: #30CFD0 !important;
+  outline: none;
+}
+
+/* Por si Bootstrap intenta forzar estilos con .btn / .btn-primary */
+.olvidasteContraseña.btn,
+.olvidasteContraseña.btn-primary,
+.olvidasteContraseña.btn-sm {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ====== “Un poquito” más grande la letra en los inputs ====== */
+.input-registro {
+  font-size: 18px;     /* antes tenías 16px */
+  line-height: 1.35;   /* mejora la lectura */
+}
+
+/* (Opcional) ajusta el placeholder para que se vea proporcionado */
+.input-registro::placeholder {
+  font-size: 0.95em;
+}
+
+/* ================= Tipografía más grande (sin tocar .input-registro) ================ */
+/* Aumenta el tamaño base dentro del card */
+.Formulario-login {
+  font-size: 18px;             /* sube el texto general */
+  line-height: 1.45;           /* un pelín más de aire */
+}
+
+/* Título */
+.Formulario-login h4 {
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+/* Texto secundario del párrafo (¿Olvidaste tu contraseña? ...) */
+.color-p,
+.Formulario-login p {
+  font-size: 1.025rem;
+}
+
+/* Botón de iniciar sesión (solo tipografía) */
+.bttn-inicio-sesion button {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+/* “Restablecer” estilo enlace – solo aumentar tamaño */
+.olvidasteContraseña {
+  font-size: 1rem;             /* un poquito más grande */
+}
+
+/* Iconos del input-group (mail/lock) un toque más grandes */
+.fondo-icono,
+.fondo-icono i {
+  font-size: 1.15rem;
+}
+
+/* Si usas algún subtítulo h5 dentro del card */
+.Formulario-login h5 {
+  font-size: 1.2rem;
+}
+
+/* Asegura que los inputs NO cambien (ya están bien en 18px) */
+.input-registro {
+  font-size: 18px !important;  /* mantiene tu tamaño actual */
+}
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.15); // mucho más sutil
+  backdrop-filter: blur(8px); // mantiene el efecto glass
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.spinner-overlay {
+  text-align: center;
+  color: #fff; // texto más elegante sobre el fondo
+  animation: fadeUp 0.5s ease-in-out;
+}
+
+.spinner-overlay p {
+  margin-top: 18px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #f5f5f5; // gris claro delicado
+  letter-spacing: 0.4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Quitar el ojito nativo en Chrome, Edge y derivados */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-reveal-password-button {
+  display: none;
+}
+

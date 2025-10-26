@@ -1,0 +1,73 @@
+<div class="docs-container">
+  <!-- Encabezado -->
+  <div class="docs-header">
+    <img src="../../../assets/images/logoANPR.png" alt="ANPR Vision" class="logo" />
+    <h1>📄 Documentación ANPR Vision</h1>
+    <p class="subtitle">
+      Explora guías, manuales, políticas y recursos para sacar el máximo provecho del sistema.
+    </p>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="search-container">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Buscar documentación</mat-label>
+      <input matInput [(ngModel)]="searchQuery" placeholder="Escribe para filtrar..." />
+      <button mat-icon-button matSuffix *ngIf="searchQuery" (click)="searchQuery = ''">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Categorías -->
+  <div class="categories">
+    <button mat-stroked-button color="primary" (click)="filterCategory('all')">
+      <mat-icon>layers</mat-icon> Todos
+    </button>
+    <button mat-stroked-button color="accent" (click)="filterCategory('manual')">
+      <mat-icon>book</mat-icon> Manuales
+    </button>
+    <button mat-stroked-button color="warn" (click)="filterCategory('security')">
+      <mat-icon>security</mat-icon> Seguridad
+    </button>
+    <button mat-stroked-button color="primary" (click)="filterCategory('install')">
+      <mat-icon>build</mat-icon> Instalación
+    </button>
+    <button mat-stroked-button color="accent" (click)="filterCategory('technical')">
+      <mat-icon>engineering</mat-icon> Técnico
+    </button>
+    <button mat-stroked-button color="warn" (click)="filterCategory('maintenance')">
+      <mat-icon>construction</mat-icon> Mantenimiento
+    </button>
+  </div>
+
+  <!-- Documentos -->
+  <div class="docs-grid">
+    <mat-card
+      *ngFor="let doc of filteredDocuments"
+      class="doc-card"
+      (click)="openDoc(doc.link)"
+    >
+      <mat-card-header>
+        <div mat-card-avatar class="doc-icon">
+          <mat-icon>{{ doc.icon }}</mat-icon>
+        </div>
+        <mat-card-title>{{ doc.title }}</mat-card-title>
+        <mat-card-subtitle>{{ doc.category | titlecase }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p>{{ doc.description }}</p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="openDoc(doc.link)">
+          <mat-icon>cloud_download</mat-icon> Descargar
+        </button>
+        <button mat-icon-button color="accent" (click)="previewDoc(doc.link)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
