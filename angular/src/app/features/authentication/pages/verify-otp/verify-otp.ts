@@ -33,29 +33,54 @@ export class VerifyOtpComponent implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
+  // ngOnInit(): void {
+  //   // Inicializar formulario OTP
+  //   this.otpForm = this.fb.group({
+  //     '0': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //     '1': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //     '2': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //     '3': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //     '4': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //     '5': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  //   });
+
+  //   // Obtener parámetros de la URL
+  //   this.route.queryParams.subscribe(params => {
+  //     this.userId = +params['userId'];
+  //     this.username = params['username'];
+  //     this.password = params['password'];
+
+  //     if (!this.userId || !this.username) {
+  //       Swal.fire('Error', 'Datos de usuario no válidos. Vuelve a iniciar sesión.', 'error');
+  //       this.router.navigate(['/login']);
+  //     }
+  //   });
+  // }
+
   ngOnInit(): void {
-    // Inicializar formulario OTP
-    this.otpForm = this.fb.group({
-      '0': ['', [Validators.required, Validators.pattern('[0-9]')]],
-      '1': ['', [Validators.required, Validators.pattern('[0-9]')]],
-      '2': ['', [Validators.required, Validators.pattern('[0-9]')]],
-      '3': ['', [Validators.required, Validators.pattern('[0-9]')]],
-      '4': ['', [Validators.required, Validators.pattern('[0-9]')]],
-      '5': ['', [Validators.required, Validators.pattern('[0-9]')]],
-    });
+  // Intentar leer desde state (más seguro que queryParams)
+  const navState = history.state;
 
-    // Obtener parámetros de la URL
-    this.route.queryParams.subscribe(params => {
-      this.userId = +params['userId'];
-      this.username = params['username'];
-      this.password = params['password'];
+  this.userId = navState.userId;
+  this.username = navState.username;
+  this.password = navState.password;
 
-      if (!this.userId || !this.username) {
-        Swal.fire('Error', 'Datos de usuario no válidos. Vuelve a iniciar sesión.', 'error');
-        this.router.navigate(['/login']);
-      }
-    });
+  if (!this.userId || !this.username) {
+    Swal.fire('Error', 'Datos de usuario no válidos. Vuelve a iniciar sesión.', 'error');
+    this.router.navigate(['/login']);
   }
+
+  // Inicializar formulario OTP
+  this.otpForm = this.fb.group({
+    '0': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    '1': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    '2': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    '3': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    '4': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    '5': ['', [Validators.required, Validators.pattern('[0-9]')]],
+  });
+}
+
 
   /**
     * Verifica código OTP y completa login

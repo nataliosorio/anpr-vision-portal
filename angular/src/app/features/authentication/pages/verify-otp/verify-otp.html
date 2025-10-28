@@ -1,6 +1,6 @@
 <div class="verify-container">
   <div class="header-section">
-    <h2>🔐 Verificar Código</h2>
+    <h2>Verificar Código</h2>
   </div>
 
   <div class="step-container">
@@ -10,7 +10,7 @@
 
     <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
       <div class="form-group">
-        <label for="otp-0">Código de verificación</label>
+        <!-- <label for="otp-0">Código de verificación</label> -->
 
         <!-- Cajas OTP -->
         <div class="otp-grid" role="group" aria-label="Código de verificación de 6 dígitos">
@@ -37,7 +37,7 @@
       </button>
 
       <button type="button" class="secondary-button" (click)="backToLogin()">
-        ← Volver al login
+        ← Volver a iniciar sesión
       </button>
     </form>
   </div>

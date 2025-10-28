@@ -1,134 +1,220 @@
-/* ================== VERIFY OTP — VIBRANTE (FONDO) + FORM SUAVE ================== */
-/* Centrado + fondo aurora NO cambian */
-:host{
-  display:grid!important;
-  min-height:100dvh!important;
-  place-items:center!important;
-  margin:0!important; padding:0!important;
-  font-size:17px!important; line-height:1.35!important;
-  position:relative; isolation:isolate;
-}
-:host::before{
-  content:""; position:fixed; inset:0; z-index:-2;
-  background:
-    radial-gradient(1200px 800px at 10% 10%, #6c5cff 0%, transparent 60%),
-    radial-gradient(900px 650px at 90% 85%, #22d6ff 0%, transparent 60%),
-    linear-gradient(160deg, #0c1028 0%, #12183b 100%);
-  animation: auroraFloat 22s ease-in-out infinite;
-  filter:saturate(130%);
-}
-:host::after{
-  content:""; position:fixed; inset:-10%; z-index:-1;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.06) 0 40%, transparent 45%) no-repeat,
-    radial-gradient(ellipse at 75% 80%, rgba(255,255,255,0.06) 0 38%, transparent 44%) no-repeat;
-  background-size:80% 60%, 70% 55%;
-  animation:fogDrift 28s linear infinite alternate; pointer-events:none;
+/* ================== VERIFY OTP — DISEÑO COHERENTE CON LOGIN ================== */
+/* Centrado + fondo sutil */
+:host {
+  display: grid !important;
+  min-height: 100dvh !important;
+  place-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 17px !important;
+  line-height: 1.35 !important;
+  position: relative;
+  isolation: isolate;
 }
 
-/* ================== FORM SUAVIZADO (menos brillo) ================== */
-.verify-container{
-  width:min(560px,96vw);
-  padding:40px 32px;
-  border-radius:20px;
+:host::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  /* Fondo más sobrio, sin neón excesivo */
+  background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+}
 
-  /* Fondo más oscuro y uniforme (sin neón fuerte) */
-  background: linear-gradient(135deg, #0f1438 0%, #172359 52%, #0d3f7a 100%);
+:host::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  background: radial-gradient(
+      ellipse at 30% 20%,
+      rgba(66, 153, 225, 0.03) 0 40%,
+      transparent 45%
+    )
+    no-repeat;
+  background-size: 80% 60%;
+  pointer-events: none;
+}
 
-  /* Borde tenue + sombra contenida */
-  border:1px solid #89e7ff;
-  box-shadow:
-    0 12px 34px rgba(0,0,0,.45),
-    0 0 18px rgba(32,214,255,.25);
+/* ================== FORM CARD — Estilo consistente con login ================== */
+.verify-container {
+  width: min(560px, 96vw);
+  padding: 40px 32px;
+  border-radius: 16px;
 
-  color:#eaf3ff;            /* texto base claro en el card */
-  text-align:center;
-  animation: fadeIn .45s ease-out;
+  /* Fondo oscuro uniforme similar al login */
+  background: linear-gradient(135deg, #1e2a3a 0%, #161d28 100%);
+
+  /* Borde sutil cyan/turquesa como el login */
+  border: 1px solid rgba(79, 209, 255, 0.3);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), 0 0 20px rgba(79, 209, 255, 0.1);
+
+  color: #e2e8f0;
+  text-align: center;
+  animation: fadeIn 0.45s ease-out;
 }
 
 /* Header */
-.header-section{ margin-bottom:24px; }
-.header-section h2{
-  margin:0; font-size:34px; font-weight:800; letter-spacing:.2px;
-  background: linear-gradient(90deg, #b6d7ff, #7aa8ff, #4fd3ff);
-  background-size:200% auto;
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  animation: gradientShift 7s ease infinite;
+.header-section {
+  margin-bottom: 24px;
+}
+
+.header-section h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  /* Color cyan/turquesa consistente con el login */
+  color: #06d2cb;
+  text-shadow: 0 2px 8px rgba(79, 211, 255, 0.2);
+}
+
+/* Step container */
+.step-container {
+  margin-top: 20px;
+}
+
+.step-title {
+  font-size: 1rem;
+  color: #cbd5e0;
+  margin-bottom: 24px;
+  font-weight: 500;
 }
 
 /* Grupos / Labels */
-.form-group{ display:grid; gap:10px; margin-bottom:18px; text-align:left; }
-label{ font-size:1.05rem; color:#eaf3ff; font-weight:700; }
-
-/* Botones */
-.primary-button{
-  border:0; outline:0; cursor:pointer; border-radius:12px;
-  padding:14px 16px; width:100%; margin-top:10px;
-  font-weight:800; font-size:1.06rem;
-  color:#ffffff;                                   /* texto claro */
-  background: linear-gradient(90deg, #5f6bff, #1fb7ff);
-  background-size:150% auto;
-  box-shadow: 0 8px 18px rgba(31,183,255,.35);
-  transition: transform .15s ease, box-shadow .2s ease, background-position .3s ease;
-}
-.primary-button:hover{
-  background-position:right center;
-  transform:translateY(-1px);
-  box-shadow:0 12px 24px rgba(31,183,255,.42);
-}
-.primary-button:disabled{
-  opacity:0.6; cursor:not-allowed; transform:none;
-}
-.secondary-button{
-  border-radius:10px; padding:10px 12px; font-weight:700; font-size:1rem;
-  color:#eaf5ff; background:#17276d; border:1.5px solid #2f46c9;
-  box-shadow:0 6px 14px rgba(16,27,82,.45);
-  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-}
-.secondary-button:hover{
-  transform:translateY(-1px); background:#1a2c7d; border-color:#1fd0ff;
+.form-group {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+  text-align: left;
 }
 
-/* ================== OTP "cajitas" (como la segunda imagen) ================== */
-.otp-grid{
-  display:flex; justify-content:center; align-items:center;
-  gap:12px; margin-top:10px; flex-wrap:wrap;      /* no se sale del card */
-}
-.otp-box{
-  width:52px; height:56px;
-  text-align:center;
-  font-size:1.25rem; font-weight:800; color:#ffffff;
-  background:#0b1240;
-  border:2px solid #2f46c9; border-radius:12px;
-  box-shadow:0 6px 12px rgba(6,10,40,.35);
-  outline:0; caret-color:#1fd0ff; font-variant-numeric: tabular-nums;
-  transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
-}
-.otp-box:hover{ transform:translateY(-1px); }
-.otp-box:focus{
-  border-color:#1fd0ff;
-  box-shadow:0 8px 18px rgba(6,10,40,.5), 0 0 10px rgba(31,208,255,.35);
-  transform:translateY(-1px);
-}
-@media (max-width:420px){
-  .otp-box{ width:44px; height:50px; font-size:1.15rem; }
+label {
+  font-size: 1.05rem;
+  color: #e2e8f0;
+  font-weight: 700;
 }
 
-/* Animaciones */
-@keyframes fadeIn{ from{opacity:0; transform:translateY(10px) scale(.98);} to{opacity:1; transform:translateY(0) scale(1);} }
-@keyframes gradientShift{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
-@keyframes auroraFloat{ 0%{filter:saturate(130%) hue-rotate(0deg);} 50%{filter:saturate(140%) hue-rotate(10deg);} 100%{filter:saturate(130%) hue-rotate(0deg);} }
-@keyframes fogDrift{ 0%{transform:translate3d(0,0,0) scale(1); opacity:.55;} 100%{transform:translate3d(-2%,-2%,0) scale(1.06); opacity:.7;} }
+/* ================== OTP BOXES — Estilo consistente ================== */
+.otp-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.otp-box {
+  width: 52px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+
+  /* Fondo oscuro similar al input del login */
+  background: rgba(30, 42, 58, 0.8);
+
+  /* Borde cyan/turquesa como el login */
+  border: 2px solid rgba(79, 209, 255, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  outline: 0;
+  caret-color: #4fd3ff;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.otp-box:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 0.95);
+}
+
+.otp-box:focus {
+  border-color: #4fd3ff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(79, 209, 255, 0.4);
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 1);
+}
+
+@media (max-width: 420px) {
+  .otp-box {
+    width: 44px;
+    height: 50px;
+    font-size: 1.15rem;
+  }
+}
+
+/* ================== BOTONES — Estilo consistente con login ================== */
+.primary-button {
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: 800;
+  font-size: 1.06rem;
+  color: #ffffff;
+
+  /* Degradado cyan/turquesa como el botón del login */
+  background: linear-gradient(90deg, #3b82f6 0%, #4fd3ff 100%);
+  background-size: 150% auto;
+  box-shadow: 0 8px 18px rgba(79, 209, 255, 0.25);
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease,
+    background-position 0.3s ease;
+}
+
+.primary-button:hover {
+  background-position: right center;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(79, 209, 255, 0.35);
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondary-button {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #cbd5e0;
+
+  /* Fondo más oscuro y borde cyan sutil */
+  background: rgba(30, 42, 58, 0.6);
+  border: 1.5px solid rgba(79, 209, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 0.8);
+  border-color: #4fd3ff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
 
 /* ================== Separación entre botones ================== */
-/* Cuando el secundario va debajo del primario (stack) */
 .primary-button + .secondary-button {
-  margin-top: 12px;          /* separación vertical */
+  margin-top: 12px;
 }
 
-/* En pantallas pequeñas, un poco más de espacio */
 @media (max-width: 420px) {
-  .primary-button + .secondary-button { margin-top: 14px; }
+  .primary-button + .secondary-button {
+    margin-top: 14px;
+  }
 }
 
 /* Loading spinner */
@@ -143,5 +229,19 @@ label{ font-size:1.05rem; color:#eaf3ff; font-weight:700; }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

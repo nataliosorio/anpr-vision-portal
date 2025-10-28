@@ -57,21 +57,37 @@ export class SignInComponent {
         this.tempUserId = resp.data?.userId;
         console.log('🧩 UserId recibido:', this.tempUserId);
 
-        Swal.fire({
-          icon: 'info',
-          title: 'Código enviado',
-          text: resp.message || 'Se envió un código de verificación a tu correo.',
-          timer: 2500,
-          showConfirmButton: false,
-        }).then(() => {
-          this.router.navigate(['/verify-otp'], {
-            queryParams: {
-              userId: this.tempUserId,
-              username: this.LoginDto.username,
-              password: this.LoginDto.password,
-            },
-          });
-        });
+      //   Swal.fire({
+      //     icon: 'info',
+      //     title: 'Código enviado',
+      //     text: resp.message || 'Se envió un código de verificación a tu correo.',
+      //     timer: 2500,
+      //     showConfirmButton: false,
+      //   }).then(() => {
+      //     this.router.navigate(['/verify-otp'], {
+      //       queryParams: {
+      //         userId: this.tempUserId,
+      //         username: this.LoginDto.username,
+      //         password: this.LoginDto.password,
+      //       },
+      //     });
+      //   });
+      // },
+      Swal.fire({
+  icon: 'info',
+  title: 'Código enviado',
+  text: resp.message || 'Se envió un código de verificación a tu correo.',
+  timer: 2500,
+  showConfirmButton: false,
+}).then(() => {
+  this.router.navigate(['/verify-otp'], {
+    state: {
+      userId: this.tempUserId,
+      username: this.LoginDto.username,
+      password: this.LoginDto.password,
+    },
+  });
+});
       },
       error: (err: Error) => {
         console.error('❌ Error en login:', err);
