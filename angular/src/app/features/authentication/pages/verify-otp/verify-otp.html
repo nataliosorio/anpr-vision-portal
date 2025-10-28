@@ -1,0 +1,32 @@
+<div class="lado-derecho">
+  <div class="auth-content mini-contener">
+    <div class="card Formulario-login">
+      <div class="row align-items-center text-center">
+        <div class="col-md-12">
+          <div class="card-body">
+            <img src="../../../../../assets/images/logoSolo.png" alt="logo" class="img-fluid mb-4" width="100" />
+            <h4 class="mb-3 f-w-400">Verificar Código</h4>
+
+            <p class="mb-3 text-center">Se envió un código de verificación a tu correo electrónico.</p>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text fondo-icono" id="basic-addon2"><i class="feather icon-shield"></i></span>
+              <input type="text"
+                     class="form-control input-registro"
+                     placeholder="Código de verificación"
+                     [(ngModel)]="otpCode"
+                     name="otpCode"
+                     maxlength="6"
+                     required />
+            </div>
+
+            <div class="d-grid bttn-inicio-sesion">
+              <button class="btn btn-block btn-primary mb-2" (click)="verifyOtp()">Verificar código</button>
+              <button class="btn btn-block btn-outline-secondary" (click)="backToLogin()">Volver al login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

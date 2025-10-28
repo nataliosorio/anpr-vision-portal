@@ -4,26 +4,37 @@ import { Observable } from 'rxjs';
 import { General } from 'src/app/core/services/general.service';
 import { LoginDto } from '../models/loginDto';
 import { AuthData } from '../models/AuthData';
+import { VerificationRequestDto } from '../models/verificationRequestDto';
 import { ApiResponse } from 'src/app/shared/Models/ApiResponse';
-
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends General {
   private readonly baseEndpoint = 'Auth';
 
   /**
-   * Inicia sesión de usuario
-   * POST /User/login
+   * Paso 1: Valida credenciales y envía código OTP
    */
-  login(dto: LoginDto): Observable<AuthData | ApiResponse<AuthData>> {
-    return this.post<AuthData | ApiResponse<AuthData>>(`${this.baseEndpoint}/login`, dto);
+  login(dto: LoginDto): Observable<ApiResponse<{ userId: number }>> {
+    return this.post<ApiResponse<{ userId: number }>>(
+      `${this.baseEndpoint}/login`,
+      dto
+    );
+  }
+
+  /**
+   * Paso 2: Verifica código OTP y genera token
+   */
+  verifyOtp(dto: VerificationRequestDto): Observable<ApiResponse<AuthData>> {
+    return this.post<ApiResponse<AuthData>>(
+      `${this.baseEndpoint}/verify-otp`,
+      dto
+    );
   }
 
   /**
    * Registra un nuevo usuario
-   * POST /User/register
    */
-  register(dto: any): Observable<AuthData | ApiResponse<AuthData>> {
-    return this.post<AuthData | ApiResponse<AuthData>>(`${this.baseEndpoint}/register`, dto);
+  register(dto: any): Observable<ApiResponse<AuthData>> {
+    return this.post<ApiResponse<AuthData>>(`${this.baseEndpoint}/register`, dto);
   }
 }
