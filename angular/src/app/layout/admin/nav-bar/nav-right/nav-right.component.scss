@@ -46,12 +46,26 @@
   color: #06b6d4;
 }
 
-.text-muted {
+.notif-item .text-muted {
   color: white !important;
 }
 
+.notif-empty,
+.notif-content:empty::before {
+  content: "No hay notificaciones recientes";
+  display: block;
+  text-align: center;
+  padding: 24px 0;
+  color: #cbd5e1; /* gris claro, buena legibilidad */
+  font-size: 14px;
+}
+
+// .text-muted {
+//   color: white !important;
+// }
+
 .notif-trigger:hover {
-  background: rgba(6, 182, 212, 0.1);
+  background: rgba(118, 122, 122, 0.525);
 }
 
 /* Badge simple */
@@ -73,19 +87,22 @@
 
 
 
-/* Modal limpio */
 .notif-modal {
   width: 350px;
   max-height: 600px;
-  background: var(--notif-bg);
+  background: rgba(26, 26, 26, 0.92);
+  backdrop-filter: blur(10px);
   color: var(--text-primary);
-  border-radius: 12px;
-  border: 1px solid var(--notif-border);
-  box-shadow: var(--shadow);
-  padding: 0;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
   overflow: hidden;
+  position: absolute;
+  top: calc(100% + 8px);
   right: 0;
+  z-index: 9999;
 }
+
 
 .notif-dropdown .notif-modal {
   position: absolute;
@@ -97,21 +114,13 @@
 
 /* Header simple */
 .notif-header {
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--notif-border);
-  background: #fafafa;
+  padding: 14px 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .notif-title {
-  margin: 0;
-  font-weight: 600;
-  font-size: 16px;
-  color: var(--text-primary);
+  color: #f1f5f9;
 }
-
 .notif-actions {
   display: flex;
   gap: 8px;
@@ -144,12 +153,12 @@
 
    /* Firefox */
   scrollbar-width: thin; /* Tamaño más delgado */
-  scrollbar-color: #404343 #f1f5f9; /* color barra / color fondo */
+  scrollbar-color: #06b6d4 #f1f5f9; /* color barra / color fondo */
 }
 
 /* Scrollbar para navegadores basados en Webkit (Chrome, Edge, Safari) */
 .notif-content::-webkit-scrollbar {
-  width: 8px; /* Grosor del scrollbar */
+  width: 6px; /* Grosor del scrollbar */
 }
 
 .notif-content::-webkit-scrollbar-track {
@@ -160,7 +169,7 @@
 .notif-content::-webkit-scrollbar-thumb {
   background-color: #06b6d4; /* Color del scroll */
   border-radius: 8px; /* Bordes redondeados */
-  border: 2px solid #f1f5f9; /* Espacio alrededor para efecto visual */
+  border: 1px solid #f1f5f9; /* Espacio alrededor para efecto visual */
 }
 
 .notif-content::-webkit-scrollbar-thumb:hover {
@@ -185,7 +194,7 @@
 
 .notif-label-new,
 .notif-label-earlier {
-  color: white;
+  color: var(--text-secondary);
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.5px;
@@ -196,21 +205,21 @@
 .notif-item {
   display: flex;
   gap: 12px;
-  align-items: center;
-  padding: 12px 20px;
-  transition: background 0.2s ease;
+  align-items: flex-start;
+  padding: 14px 20px;
+  transition: all 0.2s ease;
   cursor: pointer;
-  border: none;
-  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .notif-item:hover {
-  background: var(--notif-hover);
+  background: rgba(255, 255, 255, 0.07);
+  // transform: scale(1.01);
 }
 
 .notif-item.notif-unread {
-  background: rgb(120, 123, 123); // Color de fondo para notificaciones
-  border-left: 3px solid var(--accent-primary);
+  background: rgba(6, 182, 212, 0.1);
+  border-left: 3px solid #06b6d4;
   padding-left: 17px;
 }
 
@@ -263,27 +272,39 @@
   justify-content: space-between;
   margin-bottom: 4px;
 }
-
 .notif-username {
   font-weight: 600;
   font-size: 14px;
-  color: var(--text-primary);
+  color: #e2e8f0;
 }
+
+.notif-message {
+  color: #f8fafc !important;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 
 .notif-timestamp {
   font-size: 12px;
-  color: white;
+  color: #94a3b8 !important;
   display: flex;
   gap: 4px;
   align-items: center;
 }
 
-.notif-message {
-  margin: 0;
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.3;
-}
+// .notif-message {
+//   margin: 0;
+//   font-size: 13px;
+//   color: white !important;
+//   line-height: 1.3;
+//   word-wrap: break-word;
+//   overflow-wrap: break-word;
+//   display: -webkit-box;
+//   -webkit-line-clamp: 2;
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+// }
 
 /* Indicador simple */
 .notif-indicator {
@@ -301,11 +322,10 @@
 
 /* Footer simple */
 .notif-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--notif-border);
-  background: #fafafa;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-
 .notif-btn-show-all {
   width: 100%;
   background: var(--accent-primary);
@@ -339,6 +359,6 @@
 .notif-btn:focus,
 .notif-btn-show-all:focus,
 .notif-item:focus {
-  outline: 2px solid var(--accent-primary);
+  outline: 2px solid #0891b2;
   outline-offset: 2px;
 }
