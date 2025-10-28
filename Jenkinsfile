@@ -6,6 +6,10 @@ pipeline {
     }
 
     stages {
+
+        // =========================================================
+        // 1️⃣ Leer entorno desde .env (raíz del repo)
+        // =========================================================
         stage('Leer entorno desde .env') {
             steps {
                 script {
@@ -29,37 +33,60 @@ pipeline {
             }
         }
 
+        // =========================================================
+        // 2️⃣ Instalar dependencias Angular
+        // =========================================================
         stage('Instalar dependencias') {
             steps {
-                bat '''
-                    echo Instalando dependencias...
-                    npm install --legacy-peer-deps
-                '''
+                dir('angular') {   // 👈 Entramos a la carpeta angular
+                    bat '''
+                        echo Instalando dependencias...
+                        npm install --legacy-peer-deps
+                    '''
+                }
             }
         }
 
+        // =========================================================
+        // 3️⃣ Compilar Angular
+        // =========================================================
         stage('Compilar Angular') {
             steps {
-                echo "⚙️ Compilando aplicación Angular..."
-                bat 'npm run build -- --configuration=production'
+                dir('angular') {
+                    echo "⚙️ Compilando aplicación Angular..."
+                    bat 'npm run build -- --configuration=production'
+                }
             }
         }
 
+        // =========================================================
+        // 4️⃣ Construir imagen Docker
+        // =========================================================
         stage('Construir imagen Docker') {
             steps {
-                echo "🐳 Construyendo imagen Docker para FRONT (${env.ENVIRONMENT})"
-                bat "docker build -t anpr-vision-front-${env.ENVIRONMENT}:latest -f Dockerfile ."
+                dir('angular') {
+                    echo "🐳 Construyendo imagen Docker para FRONT (${env.ENVIRONMENT})"
+                    bat "docker build -t anpr-vision-front-${env.ENVIRONMENT}:latest --build-arg ENVIRONMENT=${env.ENVIRONMENT} -f Dockerfile ."
+                }
             }
         }
 
+        // =========================================================
+        // 5️⃣ Desplegar contenedor
+        // =========================================================
         stage('Desplegar contenedor') {
             steps {
-                echo "🚀 Desplegando Frontend en entorno ${env.ENVIRONMENT}"
-                bat "docker compose -f ${env.COMPOSE_FILE} --env-file ${env.ENV_FILE} up -d --build"
+                dir('angular') {
+                    echo "🚀 Desplegando Frontend en entorno ${env.ENVIRONMENT}"
+                    bat "docker compose -f ${env.COMPOSE_FILE} --env-file ${env.ENV_FILE} up -d --build"
+                }
             }
         }
     }
 
+    // =========================================================
+    // 🎯 Resultados finales
+    // =========================================================
     post {
         success {
             echo "🎉 Despliegue completado correctamente para ${env.ENVIRONMENT}"
