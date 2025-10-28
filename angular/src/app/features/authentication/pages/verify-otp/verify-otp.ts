@@ -81,7 +81,6 @@ export class VerifyOtpComponent implements OnInit {
   });
 }
 
-
   /**
     * Verifica código OTP y completa login
     */
