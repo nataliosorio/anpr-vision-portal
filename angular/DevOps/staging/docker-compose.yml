@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  anprvision-front-staging:
+    container_name: anprvision-front-staging
+    build:
+      context: ../..          # raíz del proyecto
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: production
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4202:80"
+    networks:
+      - network_front_staging
+    labels:
+      - com.anprvision.environment=staging
+
+networks:
+  network_front_staging:
+    driver: bridge

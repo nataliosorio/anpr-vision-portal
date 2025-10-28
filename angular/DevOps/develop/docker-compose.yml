@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  anprvision-front-develop:
+    container_name: anprvision-front-develop
+    build:
+      context: ../..        # raíz del proyecto
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4200:80"
+    networks:
+      - network_front_develop
+    labels:
+      - com.anprvision.environment=develop
+
+networks:
+  network_front_develop:
+    driver: bridge

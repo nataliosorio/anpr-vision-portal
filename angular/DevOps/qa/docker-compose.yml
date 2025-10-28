@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  anprvision-front-qa:
+    container_name: anprvision-front-qa
+    build:
+      context: ../..          # raíz del proyecto
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: production
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4201:80"
+    networks:
+      - network_front_qa
+    labels:
+      - com.anprvision.environment=qa
+
+networks:
+  network_front_qa:
+    driver: bridge

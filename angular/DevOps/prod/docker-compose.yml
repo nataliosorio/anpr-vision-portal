@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  anprvision-front-prod:
+    container_name: anprvision-front-prod
+    build:
+      context: ../..          # raíz del proyecto
+      dockerfile: Dockerfile
+      args:
+        ENVIRONMENT: production
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4203:80"
+    networks:
+      - network_front_prod
+    labels:
+      - com.anprvision.environment=prod
+
+networks:
+  network_front_prod:
+    driver: bridge
