@@ -1,0 +1,44 @@
+<div class="verify-container">
+  <div class="header-section">
+    <h2>Verificar Código</h2>
+  </div>
+
+  <div class="step-container">
+    <div class="step-title">
+      Ingresa el código de 6 dígitos enviado a tu correo electrónico
+    </div>
+
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+      <div class="form-group">
+        <!-- <label for="otp-0">Código de verificación</label> -->
+
+        <!-- Cajas OTP -->
+        <div class="otp-grid" role="group" aria-label="Código de verificación de 6 dígitos">
+          <input *ngFor="let i of otpIdx"
+                 class="otp-box"
+                 [id]="'otp-' + i"
+                 type="text"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 maxlength="1"
+                 [formControlName]="i.toString()"
+                 (input)="onOtpInput(i, $event)"
+                 (keydown)="onOtpKeydown(i, $event)"
+                 (paste)="onOtpPaste($event)"/>
+        </div>
+      </div>
+
+      <button type="submit"
+              class="primary-button"
+              [disabled]="loading || otpForm.invalid"
+              [class.loading]="loading">
+        <span *ngIf="!loading">Verificar código</span>
+        <span *ngIf="loading" class="loading-spinner"></span>
+      </button>
+
+      <button type="button" class="secondary-button" (click)="backToLogin()">
+        ← Volver a iniciar sesión
+      </button>
+    </form>
+  </div>
+</div>

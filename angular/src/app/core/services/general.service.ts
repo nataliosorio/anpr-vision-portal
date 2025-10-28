@@ -52,6 +52,16 @@ export class General {
     return res as T;
   }
 
+//   private extractDataOrThrow<T>(res: any): T {
+//   if (res && typeof res === 'object' && 'success' in res) {
+//     // No transformes el ApiResponse, simplemente devuélvelo
+//     return res as T;
+//   }
+//   // Si el backend no usa ApiResponse<T>, devuelve el cuerpo directo
+//   return res as T;
+// }
+
+
   private pickErrorMessage(err: any): string {
     // HttpErrorResponse
     const httpErr = err as HttpErrorResponse;
