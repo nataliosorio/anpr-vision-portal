@@ -2,7 +2,7 @@
 // Angular imports
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // Project imports
 import Swal from 'sweetalert2';
@@ -15,7 +15,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-verify-otp',
   standalone: true,
-  imports: [SharedModule, FormsModule],
+  imports: [SharedModule, ReactiveFormsModule],
   templateUrl: './verify-otp.html',
   styleUrls: ['./verify-otp.scss'],
 })
@@ -24,14 +24,26 @@ export class VerifyOtpComponent implements OnInit {
   username!: string;
   password!: string;
 
-  otpCode = '';
+  otpForm!: FormGroup;
+  otpIdx = [0, 1, 2, 3, 4, 5];
   loading = false;
 
+  private fb = inject(FormBuilder);
   private service = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   ngOnInit(): void {
+    // Inicializar formulario OTP
+    this.otpForm = this.fb.group({
+      '0': ['', [Validators.required, Validators.pattern('[0-9]')]],
+      '1': ['', [Validators.required, Validators.pattern('[0-9]')]],
+      '2': ['', [Validators.required, Validators.pattern('[0-9]')]],
+      '3': ['', [Validators.required, Validators.pattern('[0-9]')]],
+      '4': ['', [Validators.required, Validators.pattern('[0-9]')]],
+      '5': ['', [Validators.required, Validators.pattern('[0-9]')]],
+    });
+
     // Obtener parámetros de la URL
     this.route.queryParams.subscribe(params => {
       this.userId = +params['userId'];
@@ -49,7 +61,7 @@ export class VerifyOtpComponent implements OnInit {
     * Verifica código OTP y completa login
     */
   verifyOtp() {
-    if (!this.otpCode || this.otpCode.length !== 6) {
+    if (this.otpForm.invalid) {
       Swal.fire({
         icon: 'warning',
         title: 'Código inválido',
@@ -60,9 +72,10 @@ export class VerifyOtpComponent implements OnInit {
 
     this.loading = true;
 
+    const otpCode = Object.values(this.otpForm.value).join('');
     const dto: VerificationRequestDto = {
       userId: this.userId,
-      code: this.otpCode,
+      code: otpCode,
     };
 
     this.service.verifyOtp(dto).subscribe({
@@ -119,6 +132,47 @@ export class VerifyOtpComponent implements OnInit {
       return w.data ?? null;
     }
     return resp as AuthData;
+  }
+
+  /**
+    * Maneja el input en las cajitas OTP
+    */
+  onOtpInput(index: number, event: any) {
+    const input = event.target;
+    const value = input.value;
+
+    if (value && !/^\d$/.test(value)) {
+      input.value = '';
+      return;
+    }
+
+    if (value && index < 5) {
+      const nextInput = document.querySelector(`input[id="otp-${index + 1}"]`) as HTMLInputElement;
+      if (nextInput) nextInput.focus();
+    }
+  }
+
+  /**
+    * Maneja el keydown en las cajitas OTP
+    */
+  onOtpKeydown(index: number, event: KeyboardEvent) {
+    if (event.key === 'Backspace' && !this.otpForm.get(index.toString())?.value && index > 0) {
+      const prevInput = document.querySelector(`input[id="otp-${index - 1}"]`) as HTMLInputElement;
+      if (prevInput) prevInput.focus();
+    }
+  }
+
+  /**
+    * Maneja el paste en las cajitas OTP
+    */
+  onOtpPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const paste = event.clipboardData?.getData('text');
+    if (paste && /^\d{6}$/.test(paste)) {
+      for (let i = 0; i < 6; i++) {
+        this.otpForm.get(i.toString())?.setValue(paste[i]);
+      }
+    }
   }
 
   /**

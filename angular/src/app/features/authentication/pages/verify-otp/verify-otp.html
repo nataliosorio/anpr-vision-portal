@@ -1,32 +1,44 @@
-<div class="lado-derecho">
-  <div class="auth-content mini-contener">
-    <div class="card Formulario-login">
-      <div class="row align-items-center text-center">
-        <div class="col-md-12">
-          <div class="card-body">
-            <img src="../../../../../assets/images/logoSolo.png" alt="logo" class="img-fluid mb-4" width="100" />
-            <h4 class="mb-3 f-w-400">Verificar Código</h4>
+<div class="verify-container">
+  <div class="header-section">
+    <h2>🔐 Verificar Código</h2>
+  </div>
 
-            <p class="mb-3 text-center">Se envió un código de verificación a tu correo electrónico.</p>
+  <div class="step-container">
+    <div class="step-title">
+      Ingresa el código de 6 dígitos enviado a tu correo electrónico
+    </div>
 
-            <div class="input-group mb-3">
-              <span class="input-group-text fondo-icono" id="basic-addon2"><i class="feather icon-shield"></i></span>
-              <input type="text"
-                     class="form-control input-registro"
-                     placeholder="Código de verificación"
-                     [(ngModel)]="otpCode"
-                     name="otpCode"
-                     maxlength="6"
-                     required />
-            </div>
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+      <div class="form-group">
+        <label for="otp-0">Código de verificación</label>
 
-            <div class="d-grid bttn-inicio-sesion">
-              <button class="btn btn-block btn-primary mb-2" (click)="verifyOtp()">Verificar código</button>
-              <button class="btn btn-block btn-outline-secondary" (click)="backToLogin()">Volver al login</button>
-            </div>
-          </div>
+        <!-- Cajas OTP -->
+        <div class="otp-grid" role="group" aria-label="Código de verificación de 6 dígitos">
+          <input *ngFor="let i of otpIdx"
+                 class="otp-box"
+                 [id]="'otp-' + i"
+                 type="text"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 maxlength="1"
+                 [formControlName]="i.toString()"
+                 (input)="onOtpInput(i, $event)"
+                 (keydown)="onOtpKeydown(i, $event)"
+                 (paste)="onOtpPaste($event)"/>
         </div>
       </div>
-    </div>
+
+      <button type="submit"
+              class="primary-button"
+              [disabled]="loading || otpForm.invalid"
+              [class.loading]="loading">
+        <span *ngIf="!loading">Verificar código</span>
+        <span *ngIf="loading" class="loading-spinner"></span>
+      </button>
+
+      <button type="button" class="secondary-button" (click)="backToLogin()">
+        ← Volver al login
+      </button>
+    </form>
   </div>
 </div>
