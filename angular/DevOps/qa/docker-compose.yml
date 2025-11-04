@@ -4,20 +4,18 @@ services:
   anprvision-front-qa:
     container_name: anprvision-front-qa
     build:
-      context: ../..          # raíz del proyecto
-      dockerfile: Dockerfile
-      args:
-        ENVIRONMENT: production
+      context: ../..
+      dockerfile: angular/Dockerfile
     restart: always
     env_file:
       - .env
     ports:
-      - "4201:80"
+      - "${FRONT_PORT}:80"
     networks:
-      - network_front_qa
+      - anprvision_network
     labels:
       - com.anprvision.environment=qa
 
 networks:
-  network_front_qa:
-    driver: bridge
+  anprvision_network:
+    external: true
