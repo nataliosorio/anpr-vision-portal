@@ -1,0 +1,247 @@
+/* ================== VERIFY OTP — DISEÑO COHERENTE CON LOGIN ================== */
+/* Centrado + fondo sutil */
+:host {
+  display: grid !important;
+  min-height: 100dvh !important;
+  place-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 17px !important;
+  line-height: 1.35 !important;
+  position: relative;
+  isolation: isolate;
+}
+
+:host::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  /* Fondo más sobrio, sin neón excesivo */
+  background: linear-gradient(135deg, #1a2332 0%, #0f1419 100%);
+}
+
+:host::after {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  background: radial-gradient(
+      ellipse at 30% 20%,
+      rgba(66, 153, 225, 0.03) 0 40%,
+      transparent 45%
+    )
+    no-repeat;
+  background-size: 80% 60%;
+  pointer-events: none;
+}
+
+/* ================== FORM CARD — Estilo consistente con login ================== */
+.verify-container {
+  width: min(560px, 96vw);
+  padding: 40px 32px;
+  border-radius: 16px;
+
+  /* Fondo oscuro uniforme similar al login */
+  background: linear-gradient(135deg, #1e2a3a 0%, #161d28 100%);
+
+  /* Borde sutil cyan/turquesa como el login */
+  border: 1px solid rgba(79, 209, 255, 0.3);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), 0 0 20px rgba(79, 209, 255, 0.1);
+
+  color: #e2e8f0;
+  text-align: center;
+  animation: fadeIn 0.45s ease-out;
+}
+
+/* Header */
+.header-section {
+  margin-bottom: 24px;
+}
+
+.header-section h2 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  /* Color cyan/turquesa consistente con el login */
+  color: #06d2cb;
+  text-shadow: 0 2px 8px rgba(79, 211, 255, 0.2);
+}
+
+/* Step container */
+.step-container {
+  margin-top: 20px;
+}
+
+.step-title {
+  font-size: 1rem;
+  color: #cbd5e0;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+/* Grupos / Labels */
+.form-group {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+label {
+  font-size: 1.05rem;
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+/* ================== OTP BOXES — Estilo consistente ================== */
+.otp-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.otp-box {
+  width: 52px;
+  height: 56px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+
+  /* Fondo oscuro similar al input del login */
+  background: rgba(30, 42, 58, 0.8);
+
+  /* Borde cyan/turquesa como el login */
+  border: 2px solid rgba(79, 209, 255, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  outline: 0;
+  caret-color: #4fd3ff;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.otp-box:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 0.95);
+}
+
+.otp-box:focus {
+  border-color: #4fd3ff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(79, 209, 255, 0.4);
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 1);
+}
+
+@media (max-width: 420px) {
+  .otp-box {
+    width: 44px;
+    height: 50px;
+    font-size: 1.15rem;
+  }
+}
+
+/* ================== BOTONES — Estilo consistente con login ================== */
+.primary-button {
+  border: 0;
+  outline: 0;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: 800;
+  font-size: 1.06rem;
+  color: #ffffff;
+
+  /* Degradado cyan/turquesa como el botón del login */
+  background: linear-gradient(90deg, #3b82f6 0%, #4fd3ff 100%);
+  background-size: 150% auto;
+  box-shadow: 0 8px 18px rgba(79, 209, 255, 0.25);
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease,
+    background-position 0.3s ease;
+}
+
+.primary-button:hover {
+  background-position: right center;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(79, 209, 255, 0.35);
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.secondary-button {
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #cbd5e0;
+
+  /* Fondo más oscuro y borde cyan sutil */
+  background: rgba(30, 42, 58, 0.6);
+  border: 1.5px solid rgba(79, 209, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+
+  transition: transform 0.15s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-1px);
+  background: rgba(30, 42, 58, 0.8);
+  border-color: #4fd3ff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* ================== Separación entre botones ================== */
+.primary-button + .secondary-button {
+  margin-top: 12px;
+}
+
+@media (max-width: 420px) {
+  .primary-button + .secondary-button {
+    margin-top: 14px;
+  }
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

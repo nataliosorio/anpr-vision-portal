@@ -1,30 +1,14 @@
-/* eslint-disable @angular-eslint/prefer-inject */
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Notification } from '../generic/Models/Entitys';
+import { General } from '../../services/general.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private apiUrl = 'http://localhost:5000/api/notification';
-  // 👆 ajusta con tu baseUrl real del backend
+  private general = inject(General);
 
-  constructor(private http: HttpClient) {}
-
-  // 🔹 Obtener notificaciones de un parking
-  getByParking(parkingId: number): Observable<Notification[]> {
-    return this.http.get<Notification[]>(`${this.apiUrl}/by-parking/${parkingId}`);
-  }
-
-  // 🔹 Marcar como leída
-  markAsRead(id: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}/read`, {});
-  }
-
-  // 🔹 Crear notificación manualmente (para pruebas)
-  create(notification: Notification): Observable<Notification> {
-    return this.http.post<Notification>(`${this.apiUrl}/create`, notification);
+  getByParking(): Observable<any[]> {
+    // El helper de General ya agrega el parkingId automáticamente
+    return this.general.get<any[]>('notification/by-parking');
   }
 }
