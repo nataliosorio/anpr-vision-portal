@@ -54,6 +54,7 @@ import { HelpCenterComponent } from './features/help/help-center.component';
 import { GuestComponent } from './layout/guest/guest.component';
 import { SelectParking } from './features/parking/pages/select-parking/select-parking';
 import { ResetPasswordComponent } from './features/authentication/pages/reset-password/reset-password';
+import { VerifyOtpComponent } from './features/authentication/pages/verify-otp/verify-otp';
 
 // project import
 
@@ -183,6 +184,7 @@ const routes: Routes = [
       },
       {path: 'select-parking', component: SelectParking},
       {path: 'reset-password', component: ResetPasswordComponent},
+      {path: 'verify-otp', component: VerifyOtpComponent},
 
     ]
   }

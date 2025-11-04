@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
-
-// ng-bootstrap
 import { NgbDropdown, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
-
-// project imports
 import { Router } from '@angular/router';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { General } from 'src/app/core/services/general.service';
+import { Subscription } from 'rxjs';
+import { NotificationHubService } from 'src/app/core/services/notifications/notification-hub.service';
 
 @Component({
   selector: 'app-nav-right',
@@ -18,52 +16,77 @@ import { General } from 'src/app/core/services/general.service';
   providers: [NgbDropdownConfig],
   animations: [
     trigger('slideInOutLeft', [
-      transition(':enter', [style({ transform: 'translateX(100%)' }), animate('300ms ease-in', style({ transform: 'translateX(0%)' }))]),
-      transition(':leave', [animate('300ms ease-in', style({ transform: 'translateX(100%)' }))])
+      transition(':enter', [
+        style({ transform: 'translateX(100%)' }),
+        animate('300ms ease-in', style({ transform: 'translateX(0%)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ transform: 'translateX(100%)' }))
+      ])
     ]),
     trigger('slideInOutRight', [
-      transition(':enter', [style({ transform: 'translateX(-100%)' }), animate('300ms ease-in', style({ transform: 'translateX(0%)' }))]),
-      transition(':leave', [animate('300ms ease-in', style({ transform: 'translateX(-100%)' }))])
+      transition(':enter', [
+        style({ transform: 'translateX(-100%)' }),
+        animate('300ms ease-in', style({ transform: 'translateX(0%)' }))
+      ]),
+      transition(':leave', [
+        animate('300ms ease-in', style({ transform: 'translateX(-100%)' }))
+      ])
     ])
   ]
 })
-export class NavRightComponent implements OnInit {
-  visibleUserList: boolean;
-  chatMessage: boolean;
+export class NavRightComponent implements OnInit, OnDestroy {
+  visibleUserList = false;
+  chatMessage = false;
   friendId!: number;
+  userName: string | null = null;
+  parkingId: number | null = null; // ✅ Cambiado a number
 
   @ViewChild('notifDropdown') notifDropdown!: NgbDropdown;
 
+  // 🔸 Notificaciones en tiempo real
+  notifications: any[] = [];
+  private notifSub!: Subscription;
+
+  // Inyectamos servicios
   private service = inject(General);
   private route = inject(Router);
-
-  userName: string | null = null;
-
-  constructor() {
-    this.visibleUserList = false;
-    this.chatMessage = false;
-  }
+  private notifHub = inject(NotificationHubService);
 
   ngOnInit(): void {
     this.userName = this.service.getUsername();
+
+    // 🔹 Obtener y convertir el parkingId
+    const storedId = this.service.getParkingId();
+    this.parkingId = storedId ? parseInt(storedId, 10) : null;
+
+    if (this.parkingId && !isNaN(this.parkingId)) {
+      // ✅ Conexión al Hub usando el ID numérico
+      this.notifHub.startConnection(this.parkingId);
+
+      // Suscribirse a las notificaciones en tiempo real
+      this.notifSub = this.notifHub.notifications$.subscribe((list) => {
+        this.notifications = list;
+      });
+    } else {
+      console.warn('⚠️ No se encontró un parkingId válido para iniciar SignalR.');
+    }
   }
 
-  // --- Métodos de chat ---
-  onChatToggle(friendID: any) {
-    this.friendId = friendID;
-    this.chatMessage = !this.chatMessage;
+  ngOnDestroy(): void {
+    if (this.notifSub) this.notifSub.unsubscribe();
+    this.notifHub.stopConnection();
   }
 
+  // =====================
+  // Métodos de UI
+  // =====================
   cerrarSesion() {
     this.closeNotifPanel();
     localStorage.clear();
     this.route.navigate(['/login']);
   }
 
-  viewProfile() {
-    this.closeNotifPanel();
-    this.route.navigate(['/profile-index']);
-  }
   configuracion() {
     this.closeNotifPanel();
     this.route.navigate(['/configuracion']);
@@ -73,7 +96,6 @@ export class NavRightComponent implements OnInit {
     return this.userName ? this.userName.charAt(0).toUpperCase() : '';
   }
 
-  // --- Métodos del panel de notificaciones ---
   openNotifPanel() {
     if (this.notifDropdown && !this.notifDropdown.isOpen()) {
       this.notifDropdown.open();
@@ -93,17 +115,17 @@ export class NavRightComponent implements OnInit {
   }
 
   markAllRead() {
-    // Aquí va tu lógica real de marcar como leídas
     this.closeNotifPanel();
   }
 
   clearAll() {
-    // Aquí va tu lógica real de limpiar
+    this.notifications = [];
     this.closeNotifPanel();
   }
 
   viewAll() {
     this.closeNotifPanel();
-    this.route.navigate(['/notifications']); // Ajusta a tu ruta real
+    this.route.navigate(['/notifications']);
   }
+
 }
