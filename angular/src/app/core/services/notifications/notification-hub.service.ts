@@ -1,38 +1,48 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Notification } from '../generic/Models/Entitys';
 import * as signalR from '@microsoft/signalr';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationHubService {
   private hubConnection!: signalR.HubConnection;
-  private notificationsSubject = new BehaviorSubject<Notification[]>([]);
+  private notificationsSubject = new BehaviorSubject<any[]>([]);
   notifications$ = this.notificationsSubject.asObservable();
 
-  // 🔹 Llamar a esto cuando entres a un parkingId
-  startConnection(parkingId: number) {
+  private currentNotifications: any[] = [];
+
+  startConnection(parkingId: number): void {
+    const hubUrl = `${environment.apiHub}?parkingId=${parkingId}`;
+
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`http://localhost:5000/parkingHub?parkingId=${parkingId}`)
+      .withUrl(hubUrl, {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
       .withAutomaticReconnect()
       .build();
 
     this.hubConnection
       .start()
-      .then(() => console.log('✅ SignalR conectado'))
-      .catch(err => console.error('❌ Error en SignalR: ', err));
+      .then(() => console.log('✅ Conectado al ParkingHub'))
+      .catch(err => console.error('❌ Error al conectar con SignalR:', err));
 
-    // Listener → cuando llega una notificación nueva
-    this.hubConnection.on('ReceiveNotification', (notification: Notification) => {
-      const current = this.notificationsSubject.value;
-      this.notificationsSubject.next([notification, ...current]); // prepend
+    // Suscribirse a las notificaciones
+    this.hubConnection.on('ReceiveNotification', (notification) => {
+      console.log('📩 Notificación recibida:', notification);
+
+      // Añadir a la lista local
+      this.currentNotifications.unshift(notification);
+      this.notificationsSubject.next(this.currentNotifications);
     });
   }
 
-  stopConnection() {
+  stopConnection(): void {
     if (this.hubConnection) {
-      this.hubConnection.stop();
+      this.hubConnection.stop().then(() => console.log('🧩 Conexión cerrada'));
     }
   }
 }
