@@ -2,92 +2,149 @@ pipeline {
     agent any
 
     environment {
-        NODE_HOME = 'C:\\jenkins\\.node'
+        DOCKER_CLI_HINTS = "off"
+        DOCKER_BUILDKIT = '1'
+        NODE_ENV = 'production'
     }
 
     stages {
 
-        // =========================================================
-        // 1️⃣ Leer entorno desde .env (raíz del repo)
-        // =========================================================
+        // =====================================================
+        // 1️⃣ Leer entorno desde .env raíz
+        // =====================================================
         stage('Leer entorno desde .env') {
             steps {
+                sh '''
+                    echo "📂 Leyendo entorno desde .env (raíz)..."
+
+                    ENVIRONMENT=$(grep '^ENVIRONMENT=' .env | cut -d '=' -f2 | tr -d '\\r\\n')
+
+                    if [ -z "$ENVIRONMENT" ]; then
+                        echo "❌ No se encontró ENVIRONMENT en .env"
+                        exit 1
+                    fi
+
+                    echo "✅ Entorno detectado: $ENVIRONMENT"
+                    echo "ENVIRONMENT=$ENVIRONMENT" > env.properties
+                    echo "ENV_DIR=angular/DevOps/$ENVIRONMENT" >> env.properties
+                    echo "COMPOSE_FILE=angular/DevOps/$ENVIRONMENT/docker-compose.yml" >> env.properties
+                    echo "ENV_FILE=angular/DevOps/$ENVIRONMENT/.env" >> env.properties
+                '''
+
                 script {
-                    def envValue = powershell(
-                        script: "(Get-Content .env | Where-Object { \$_ -match '^ENVIRONMENT=' }) -replace '^ENVIRONMENT=', ''",
-                        returnStdout: true
-                    ).trim()
+                    def props = readProperties file: 'env.properties'
+                    env.ENVIRONMENT = props['ENVIRONMENT']
+                    env.ENV_DIR = props['ENV_DIR']
+                    env.COMPOSE_FILE = props['COMPOSE_FILE']
+                    env.ENV_FILE = props['ENV_FILE']
 
-                    if (!envValue) {
-                        error "❌ No se encontró ENVIRONMENT en .env"
-                    }
-
-                    env.ENVIRONMENT = envValue
-                    env.ENV_DIR = "DevOps/${env.ENVIRONMENT}"
-                    env.COMPOSE_FILE = "${env.ENV_DIR}/docker-compose.yml"
-                    env.ENV_FILE = "${env.ENV_DIR}/.env"
-
-                    echo "✅ Entorno detectado: ${env.ENVIRONMENT}"
-                    echo "📄 Archivo compose: ${env.COMPOSE_FILE}"
+                    echo """
+                    ✅ Entorno detectado: ${env.ENVIRONMENT}
+                    📄 Compose FRONT: ${env.COMPOSE_FILE}
+                    📁 Env file: ${env.ENV_FILE}
+                    """
                 }
             }
         }
 
-        // =========================================================
+        // =====================================================
         // 2️⃣ Instalar dependencias Angular
-        // =========================================================
+        // =====================================================
         stage('Instalar dependencias') {
             steps {
-                dir('angular') {   // 👈 Entramos a la carpeta angular
-                    bat '''
-                        echo Instalando dependencias...
-                        npm install --legacy-peer-deps
+                dir('angular') {
+                    sh '''
+                        echo "📦 Instalando dependencias npm..."
+                        npm ci --no-fund --no-audit --legacy-peer-deps
                     '''
                 }
             }
         }
 
-        // =========================================================
+        // =====================================================
         // 3️⃣ Compilar Angular
-        // =========================================================
+        // =====================================================
         stage('Compilar Angular') {
             steps {
                 dir('angular') {
-                    echo "⚙️ Compilando aplicación Angular..."
-                    bat 'npm run build -- --configuration=production'
+                    sh '''
+                        echo "⚙️ Compilando Angular con configuración: $ENVIRONMENT"
+                        npm run build -- --configuration=$ENVIRONMENT
+                    '''
                 }
             }
         }
 
-        // =========================================================
-        // 4️⃣ Construir imagen Docker
-        // =========================================================
+        // =====================================================
+        // 4️⃣ Construir imagen Docker del Frontend
+        // =====================================================
         stage('Construir imagen Docker') {
             steps {
                 dir('angular') {
-                    echo "🐳 Construyendo imagen Docker para FRONT (${env.ENVIRONMENT})"
-                    bat "docker build -t anpr-vision-front-${env.ENVIRONMENT}:latest --build-arg ENVIRONMENT=${env.ENVIRONMENT} -f Dockerfile ."
+                    sh '''
+                        echo "🐳 Construyendo imagen Docker para anpr-vision-front-$ENVIRONMENT..."
+                        docker image prune -f || true
+                        COMMIT_HASH=$(git rev-parse --short HEAD)
+                        docker build -t anprvision-front-$ENVIRONMENT:$COMMIT_HASH -t anprvision-front-$ENVIRONMENT:latest \
+                            --build-arg ENVIRONMENT=$ENVIRONMENT \
+                            -f Dockerfile .
+                    '''
                 }
             }
         }
 
-        
-
-        // =========================================================
-        // 5️⃣ Desplegar contenedor
-        // =========================================================
-        stage('Desplegar contenedor') {
+        // =====================================================
+        // 5️⃣ Preparar red local (solo entornos no prod)
+        // =====================================================
+        stage('Preparar red local') {
+            when { expression { env.ENVIRONMENT != 'prod' } }
             steps {
-                dir('angular') {
-                    echo "🚀 Desplegando Frontend en entorno ${env.ENVIRONMENT}"
-                    bat "docker compose -f ${env.COMPOSE_FILE} --env-file ${env.ENV_FILE} up -d --build"
+                sh '''
+                    echo "🌐 Verificando red anpr-net-$ENVIRONMENT ..."
+                    docker network create anpr-net-$ENVIRONMENT || echo '✅ Red ya existe'
+                '''
+            }
+        }
+
+        // =====================================================
+        // 6️⃣ Desplegar Frontend
+        // =====================================================
+        stage('Desplegar Frontend') {
+            steps {
+                script {
+                    if (env.ENVIRONMENT == 'prod') {
+                        echo "🚀 Despliegue remoto del FRONT en AWS (producción)"
+
+                        withCredentials([
+                            sshUserPrivateKey(credentialsId: 'aws_ssh_key', keyFileVariable: 'SSH_KEY'),
+                            string(credentialsId: 'aws_prod_ip', variable: 'PROD_IP')
+                        ]) {
+                            sh '''
+                                echo "🌍 Conectando al servidor AWS en $PROD_IP"
+                                ssh -o StrictHostKeyChecking=no -i $SSH_KEY ubuntu@$PROD_IP "
+                                    set -e
+                                    echo '📦 Actualizando repositorio del portal...'
+                                    cd /srv/anprvision-portal || exit 1
+                                    git pull
+
+                                    echo '🐳 Desplegando stack del Frontend...'
+                                    docker compose -f angular/DevOps/prod/docker-compose.yml --env-file angular/DevOps/prod/.env up -d --build --remove-orphans
+                                "
+                            '''
+                        }
+                    } else {
+                        echo "🚀 Despliegue local (${env.ENVIRONMENT})"
+                        sh '''
+                            docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d --build --remove-orphans
+                        '''
+                    }
                 }
             }
         }
     }
 
     // =========================================================
-    // 🎯 Resultados finales
+    // Post actions
     // =========================================================
     post {
         success {
@@ -98,3 +155,4 @@ pipeline {
         }
     }
 }
+

@@ -6,16 +6,20 @@ services:
     build:
       context: ../..
       dockerfile: angular/Dockerfile
+      args:
+        ENVIRONMENT: prod
+        API_URL: ${API_URL}   # 👈 pasa la URL al build
     restart: always
     env_file:
       - .env
     ports:
       - "${FRONT_PORT}:80"
     networks:
-      - anprvision_network
+      - anpr-net-prod
     labels:
       - com.anprvision.environment=prod
 
 networks:
-  anprvision_network:
+  anpr-net-prod:
     external: true
+

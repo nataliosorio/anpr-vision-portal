@@ -4,18 +4,24 @@ services:
   anprvision-front-develop:
     container_name: anprvision-front-develop
     build:
-      context: ../..           # raíz del repo
+      context: ../..
       dockerfile: angular/Dockerfile
+      args:
+        ENVIRONMENT: develop
+        API_URL: ${API_URL}
     restart: always
     env_file:
       - .env
     ports:
       - "${FRONT_PORT}:80"
+    volumes:
+      - ../../nginx.local.conf:/etc/nginx/conf.d/default.conf
     networks:
-      - anprvision_network
+      - anpr-net-develop
     labels:
       - com.anprvision.environment=develop
 
 networks:
-  anprvision_network:
+  anpr-net-develop:
     external: true
+
