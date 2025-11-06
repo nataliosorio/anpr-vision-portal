@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_CLI_HINTS = "off"
-        DOCKER_BUILDKIT = '1'
+        DOCKER_BUILDKIT = '0'
         NODE_ENV = 'production'
     }
 
