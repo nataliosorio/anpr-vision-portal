@@ -5,7 +5,7 @@ services:
     container_name: anprvision-front-develop
     build:
       context: ../..
-      dockerfile: angular/Dockerfile
+      dockerfile: Dockerfile
       args:
         ENVIRONMENT: develop
         API_URL: ${API_URL}
