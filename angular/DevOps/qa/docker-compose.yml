@@ -1,28 +1,27 @@
 name: anprvision-front-qa
-version: '3.8'
+version: "3.9"
 
 services:
+  # 🌐 Frontend Angular - QA
   anprvision-front-qa:
     container_name: anprvision-front-qa
     build:
-      context: ../..
-      dockerfile: angular/Dockerfile
+      context: ../..             # raíz del proyecto Angular
+      dockerfile: Dockerfile
       args:
-        ENVIRONMENT: qa
-        API_URL: ${API_URL}
-    restart: always
+        ENVIRONMENT: production  # Angular build usa configuración prod
+        API_URL: ${API_URL}      # URL del backend QA
+    restart: unless-stopped
     env_file:
       - .env
     ports:
-      - "${FRONT_PORT}:80"
-    volumes:
-      - ../../nginx.local.conf:/etc/nginx/conf.d/default.conf
+      - "${FRONT_PORT}:80"       # puerto host → contenedor
     networks:
       - anpr-net-qa
     labels:
       - com.anprvision.environment=qa
+      - com.anprvision.module=frontend
 
 networks:
   anpr-net-qa:
     external: true
-
