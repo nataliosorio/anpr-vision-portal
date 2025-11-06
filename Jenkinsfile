@@ -48,34 +48,6 @@ pipeline {
         }
 
         // =====================================================
-        // 2️⃣ Instalar dependencias Angular
-        // =====================================================
-        stage('Instalar dependencias') {
-            steps {
-                dir('angular') {
-                    sh '''
-                        echo "📦 Instalando dependencias npm..."
-                        npm ci --no-fund --no-audit --legacy-peer-deps
-                    '''
-                }
-            }
-        }
-
-        // =====================================================
-        // 3️⃣ Compilar Angular
-        // =====================================================
-        stage('Compilar Angular') {
-            steps {
-                dir('angular') {
-                    sh '''
-                        echo "⚙️ Compilando Angular con configuración: $ENVIRONMENT"
-                        npm run build -- --configuration=$ENVIRONMENT
-                    '''
-                }
-            }
-        }
-
-        // =====================================================
         // 4️⃣ Construir imagen Docker del Frontend
         // =====================================================
         stage('Construir imagen Docker') {
