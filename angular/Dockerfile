@@ -19,8 +19,7 @@ ENV API_URL=${API_URL}
 
 # 🔹 Inyectar API_URL dinámicamente en environment.prod.ts
 RUN echo "🔧 Inyectando API_URL=${API_URL} en environment.prod.ts" && \
-    sed -i "s|apiURL: .*|apiURL: '${API_URL}',|" src/environments/environment.prod.ts && \
-    sed -i "s|apiHub: .*|apiHub: '${API_URL}/parkingHub',|" src/environments/environment.prod.ts
+    sed -i "s|apiURL: .*|apiURL: '${API_URL}',|" src/environments/environment.prod.ts
 
 # 🔹 Compilar Angular con el entorno correspondiente
 RUN npm run build -- --configuration=${ENVIRONMENT}
@@ -28,14 +27,14 @@ RUN npm run build -- --configuration=${ENVIRONMENT}
 # ============ Nginx (serve estático) ============
 FROM nginx:alpine AS nginx
 
-# ✅ Elimina la configuración por defecto de Nginx
+# ✅ Elimina la configuración por defecto
 RUN rm /etc/nginx/conf.d/default.conf
 
-# ✅ Copia la tuya (desde angular/nginx/nginx.conf)
+# ✅ Copia la tuya
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
 # ✅ Copiar el contenido compilado de Angular
-COPY --from=build /app/dist /usr/share/nginx/html/
+COPY --from=build /app/dist/ /usr/share/nginx/html/
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -46,25 +46,7 @@ pipeline {
                 }
             }
         }
-
-        // =====================================================
-        // 4️⃣ Construir imagen Docker del Frontend
-        // =====================================================
-        stage('Construir imagen Docker') {
-            steps {
-                dir('angular') {
-                    sh '''
-                        echo "🐳 Construyendo imagen Docker para anpr-vision-front-$ENVIRONMENT..."
-                        docker image prune -f || true
-                        COMMIT_HASH=$(git rev-parse --short HEAD)
-                        docker build -t anprvision-front-$ENVIRONMENT:$COMMIT_HASH -t anprvision-front-$ENVIRONMENT:latest \
-                            --build-arg ENVIRONMENT=production \
-                            -f Dockerfile .
-                    '''
-                }
-            }
-        }
-
+        
         // =====================================================
         // 5️⃣ Preparar red local (solo entornos no prod)
         // =====================================================
@@ -115,9 +97,6 @@ pipeline {
         }
     }
 
-    // =========================================================
-    // Post actions
-    // =========================================================
     post {
         success {
             echo "🎉 Despliegue completado correctamente para ${env.ENVIRONMENT}"
@@ -127,4 +106,3 @@ pipeline {
         }
     }
 }
-
