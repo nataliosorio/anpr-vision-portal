@@ -7,7 +7,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
       args:
-        ENVIRONMENT: develop
+        ENVIRONMENT: production
         API_URL: ${API_URL}
     restart: always
     env_file:
