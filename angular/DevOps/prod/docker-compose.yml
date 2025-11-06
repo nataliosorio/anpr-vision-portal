@@ -1,27 +1,21 @@
-name: anprvision-front-prod
-version: "3.9"
+version: '3.8'
 
 services:
-  # 🌐 Frontend Angular - PRODUCCIÓN
   anprvision-front-prod:
     container_name: anprvision-front-prod
     build:
-      context: ../..              # raíz del proyecto Angular
-      dockerfile: Dockerfile
-      args:
-        ENVIRONMENT: production   # Angular build en modo prod
-        API_URL: ${API_URL}       # URL pública del backend prod (HTTPS)
-    restart: unless-stopped
+      context: ../..
+      dockerfile: angular/Dockerfile
+    restart: always
     env_file:
       - .env
     ports:
-      - "${FRONT_PORT}:80"        # Exposición HTTP (servida por NGINX)
+      - "${FRONT_PORT}:80"
     networks:
-      - anpr-net-prod
+      - anprvision_network
     labels:
       - com.anprvision.environment=prod
-      - com.anprvision.module=frontend
 
 networks:
-  anpr-net-prod:
+  anprvision_network:
     external: true

@@ -1,27 +1,21 @@
-name: anprvision-front-staging
-version: "3.9"
+version: '3.8'
 
 services:
-  # 🌐 Frontend Angular - STAGING
   anprvision-front-staging:
     container_name: anprvision-front-staging
     build:
-      context: ../..             # raíz del proyecto Angular
-      dockerfile: Dockerfile
-      args:
-        ENVIRONMENT: production  # Angular build usa configuración prod
-        API_URL: ${API_URL}      # URL del backend staging
-    restart: unless-stopped
+      context: ../..
+      dockerfile: angular/Dockerfile
+    restart: always
     env_file:
       - .env
     ports:
-      - "${FRONT_PORT}:80"       # puerto host → contenedor
+      - "${FRONT_PORT}:80"
     networks:
-      - anpr-net-staging
+      - anprvision_network
     labels:
       - com.anprvision.environment=staging
-      - com.anprvision.module=frontend
 
 networks:
-  anpr-net-staging:
+  anprvision_network:
     external: true

@@ -1,28 +1,21 @@
-name: anprvision-front-develop
-version: "3.9"
+version: '3.8'
 
 services:
-  # 🌐 Frontend Angular - DEVELOP
   anprvision-front-develop:
     container_name: anprvision-front-develop
     build:
-      context: ../..             # raíz del proyecto Angular
-      dockerfile: Dockerfile
-      args:
-        ENVIRONMENT: production  # Angular build usa configuración prod
-        API_URL: ${API_URL}      # URL del backend develop
-    restart: unless-stopped
+      context: ../..           # raíz del repo
+      dockerfile: angular/Dockerfile
+    restart: always
     env_file:
       - .env
     ports:
-      - "${FRONT_PORT}:80"       # puerto host → contenedor
+      - "${FRONT_PORT}:80"
     networks:
-      - anpr-net-develop
+      - anprvision_network
     labels:
       - com.anprvision.environment=develop
-      - com.anprvision.module=frontend
 
 networks:
-  anpr-net-develop:
+  anprvision_network:
     external: true
-
