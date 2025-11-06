@@ -1,5 +1,5 @@
+name: anprvision-front-develop
 version: '3.8'
-
 services:
   anprvision-front-develop:
     container_name: anprvision-front-develop

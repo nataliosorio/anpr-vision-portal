@@ -1,3 +1,4 @@
+name: anprvision-front-prod
 version: '3.8'
 
 services:

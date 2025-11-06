@@ -1,3 +1,4 @@
+name: anprvision-front-staging
 version: '3.8'
 
 services:
