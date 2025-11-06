@@ -16,7 +16,7 @@ services:
       - "${FRONT_PORT}:80"
     # ✅ Montamos el conf local como solo lectura y con ruta limpia
     volumes:
-      - ../../nginx/nginx.local.conf:/etc/nginx/conf.d/local.conf:ro
+      - ../../nginx/nginx.local.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - anpr-net-develop
     labels:
