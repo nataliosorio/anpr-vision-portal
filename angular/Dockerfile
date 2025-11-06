@@ -29,7 +29,7 @@ RUN npm run build -- --configuration=${ENVIRONMENT}
 FROM nginx:alpine AS nginx
 
 # ✅ Copiar config de producción por defecto
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY angular/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # ✅ Copiar el contenido compilado de Angular
 COPY --from=build /app/dist /usr/share/nginx/html/
