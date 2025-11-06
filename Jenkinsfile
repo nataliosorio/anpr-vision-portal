@@ -58,7 +58,7 @@ pipeline {
                         docker image prune -f || true
                         COMMIT_HASH=$(git rev-parse --short HEAD)
                         docker build -t anprvision-front-$ENVIRONMENT:$COMMIT_HASH -t anprvision-front-$ENVIRONMENT:latest \
-                            --build-arg ENVIRONMENT=$ENVIRONMENT \
+                            --build-arg ENVIRONMENT=production \
                             -f Dockerfile .
                     '''
                 }
