@@ -27,11 +27,15 @@ RUN npm run build -- --configuration=${ENVIRONMENT}
 
 # ============ Nginx (serve estático) ============
 FROM nginx:alpine AS nginx
-COPY /nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copiar el contenido compilado
+# ✅ Elimina la configuración por defecto de Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# ✅ Copia la tuya (desde angular/nginx/nginx.conf)
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+# ✅ Copiar el contenido compilado de Angular
 COPY --from=build /app/dist /usr/share/nginx/html/
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
-
