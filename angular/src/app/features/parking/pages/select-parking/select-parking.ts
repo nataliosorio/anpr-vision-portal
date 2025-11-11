@@ -63,7 +63,7 @@ export class SelectParking implements OnInit {
   .subscribe({
     next: (newToken) => {
       localStorage.setItem('authToken', newToken.token);
-      this.router.navigate(['/analytics']);
+      this.router.navigate(['/dashboard']);
     },
     error: () => {
       Swal.fire('Error', 'No se pudo actualizar el token con el parking seleccionado.', 'error');
