@@ -70,7 +70,7 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
-        path: 'analytics',
+        path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dash-analytics.component').then((c) => c.DashAnalyticsComponent)
       },
       {
