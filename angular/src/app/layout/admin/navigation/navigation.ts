@@ -29,7 +29,7 @@ export const NavigationItems: NavigationItem[] = [
         id: 'dashboard',
         title: 'Dashboard',
         type: 'item',
-        url: '/analytics',
+        url: '/dashboard',
         icon: 'feather icon-home'
       }
     ]
