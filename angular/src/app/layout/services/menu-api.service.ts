@@ -10,41 +10,41 @@ export class MenuApiService {
 
   /** 🔹 MAPA DE FORMULARIOS A RUTAS QUEMADAS TEMPORALMENTE */
   /** 🔹 MAPA DE FORMULARIOS A RUTAS QUEMADAS (según DB y menú original) */
-private formRouteMap: Record<string, string> = {
-  'Principal': '/analytics',
-  'Dashboard': '/analytics',
+// private formRouteMap: Record<string, string> = {
+//   'Principal': '/analytics',
+//   'Dashboard': '/analytics',
 
-  // Monitoreo y control
-  'Cámaras': '/cameras-index',
-  'Vehículos': '/vehicles-index',
-  'Distribución del Parqueadero': '/parking-management',
+//   // Monitoreo y control
+//   'Cámaras': '/cameras-index',
+//   'Vehículos': '/vehicles-index',
+//   'Distribución del Parqueadero': '/parking-management',
 
-  // Módulo Operacional
-  'Tarifas': '/rates-index',
-  'Registros de Entradas': '/registeredVehicle-index',
-  'Lista Negra': '/blackList-index',
+//   // Módulo Operacional
+//   'Tarifas': '/rates-index',
+//   'Registros de Entradas': '/registeredVehicle-index',
+//   'Lista Negra': '/blackList-index',
 
-  // Módulo de Parámetros
-  'Clientes': '/client-index',
-  'Tipo de Vehículos': '/TypeVehicle-index',
-  'Tipo de Tarifas': '/RatesType-index',
-  'Zonas': '/Zones-index',
-  'Sectores': '/sectors-index',
-  'Espacios': '/slots-index',
+//   // Módulo de Parámetros
+//   'Clientes': '/client-index',
+//   'Tipo de Vehículos': '/TypeVehicle-index',
+//   'Tipo de Tarifas': '/RatesType-index',
+//   'Zonas': '/Zones-index',
+//   'Sectores': '/sectors-index',
+//   'Espacios': '/slots-index',
 
-  // Módulo de Seguridad
-  'Roles': '/role-index',
-  'Permisos': '/permission-index',
-  'Módulos': '/module-index',
-  'Formularios por Módulos': '/form-module-index',
-  'Permisos por Roles y Formularios': '/rolFormPermission-index',
-  'Usuarios': '/user-index',
-  'Personas': '/persons-index',
+//   // Módulo de Seguridad
+//   'Roles': '/role-index',
+//   'Permisos': '/permission-index',
+//   'Módulos': '/module-index',
+//   'Formularios por Módulos': '/form-module-index',
+//   'Permisos por Roles y Formularios': '/rolFormPermission-index',
+//   'Usuarios': '/user-index',
+//   'Personas': '/persons-index',
 
-  // Configuración y soporte
-  'Configuración': '/configuracion',
-  'Ayuda': '/help-center'
-};
+//   // Configuración y soporte
+//   'Configuración': '/configuracion',
+//   'Ayuda': '/help-center'
+// };
 
 
   getUserMenu(): Observable<NavigationItem[]> {
@@ -85,15 +85,15 @@ private formRouteMap: Record<string, string> = {
 
         for (const form of module.forms) {
           // 🔹 Buscar URL quemada o generar una por defecto
-          const route =
-            this.formRouteMap[form.formName] ||
-            `/${form.formName.replace(/\s+/g, '-').toLowerCase()}-index`;
+          // const route =
+          //   this.formRouteMap[form.formName] ||
+          //   `/${form.formName.replace(/\s+/g, '-').toLowerCase()}-index`;
 
           const item: NavigationItem = {
             id: `form-${form.formId}`,
             title: form.formName,
             type: 'item',
-            url: route,
+            url: form.formUrl || `/${form.formName.replace(/\s+/g, '-').toLowerCase()}-index`,
             icon: 'feather icon-file-text',
             classes: 'nav-item'
           };
