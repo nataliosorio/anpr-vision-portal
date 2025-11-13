@@ -11,12 +11,17 @@ COPY . .
 
 ARG ENVIRONMENT=production
 ARG API_URL
+ARG API_HUB
+
 ENV ENVIRONMENT=${ENVIRONMENT}
 ENV API_URL=${API_URL}
+ENV API_HUB=${API_HUB}
 
-RUN echo "🔧 Inyectando API_URL=${API_URL} en environment.prod.ts" && \
-    sed -i "s|apiURL: .*|apiURL: '${API_URL}',|" src/environments/environment.prod.ts
-
+# 🔧 Reemplazo dinámico en environment.prod.ts
+RUN echo "🔧 Inyectando API_URL=${API_URL} y API_HUB=${API_HUB}" && \
+    sed -i "s|apiURL:.*|apiURL: '${API_URL}',|" src/environments/environment.prod.ts && \
+    sed -i "s|apiHub:.*|apiHub: '${API_HUB}'|" src/environments/environment.prod.ts
+    
 RUN npm run build -- --configuration=${ENVIRONMENT}
 
 # ===============================
