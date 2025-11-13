@@ -11,6 +11,7 @@ services:
       args:
         ENVIRONMENT: production  # Angular build usa configuración prod
         API_URL: ${API_URL}      # URL del backend QA
+        API_HUB: ${API_HUB}
     restart: unless-stopped
     env_file:
       - .env
