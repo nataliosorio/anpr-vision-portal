@@ -11,6 +11,7 @@ services:
       args:
         ENVIRONMENT: production  # Angular build usa configuración prod
         API_URL: ${API_URL}      # URL del backend develop
+        API_HUB: ${API_HUB}      # URL del SignalR develop
     restart: unless-stopped
     env_file:
       - .env
