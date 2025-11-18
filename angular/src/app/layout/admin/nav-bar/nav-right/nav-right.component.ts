@@ -7,6 +7,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { General } from 'src/app/core/services/general.service';
 import { Subscription } from 'rxjs';
 import { NotificationHubService } from 'src/app/core/services/notifications/notification-hub.service';
+import { NotificationService } from 'src/app/core/services/notifications/notification.service';
 
 @Component({
   selector: 'app-nav-right',
@@ -52,6 +53,8 @@ export class NavRightComponent implements OnInit, OnDestroy {
   private service = inject(General);
   private route = inject(Router);
   private notifHub = inject(NotificationHubService);
+  private apiService = inject(NotificationService);
+
 
   ngOnInit(): void {
     this.userName = this.service.getUsername();
@@ -61,13 +64,22 @@ export class NavRightComponent implements OnInit, OnDestroy {
     this.parkingId = storedId ? parseInt(storedId, 10) : null;
 
     if (this.parkingId && !isNaN(this.parkingId)) {
+
+       // Traer existentes
+  this.apiService.getByParking().subscribe((data) => {
+    this.notifications = data;
+  });
       // ✅ Conexión al Hub usando el ID numérico
       this.notifHub.startConnection(this.parkingId);
 
       // Suscribirse a las notificaciones en tiempo real
-      this.notifSub = this.notifHub.notifications$.subscribe((list) => {
-        this.notifications = list;
-      });
+    this.notifSub = this.notifHub.notifications$.subscribe((nueva) => {
+      if (nueva) {
+        console.log('Nueva notificación en tiempo real:', nueva);
+        this.notifications.unshift(nueva);
+      }
+    });
+
     } else {
       console.warn('⚠️ No se encontró un parkingId válido para iniciar SignalR.');
     }
@@ -113,6 +125,25 @@ export class NavRightComponent implements OnInit, OnDestroy {
       this.notifDropdown.toggle();
     }
   }
+markAsRead(n: any, index: number) {
+  this.apiService.markAsRead(n.id).subscribe({
+    next: () => {
+      this.notifications[index].isRead = true;
+    },
+    error: (err: any) => console.error('Error al marcar como leída:', err)
+  });
+}
+
+deleteNotification(n: any, index: number) {
+  this.apiService.delete(n.id).subscribe({
+    next: () => {
+      this.notifications.splice(index, 1);
+    },
+    error: (err: any) => console.error('Error al eliminar notificación:', err)
+  });
+}
+
+  
 
   markAllRead() {
     this.closeNotifPanel();
