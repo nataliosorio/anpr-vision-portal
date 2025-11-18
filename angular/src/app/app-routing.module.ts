@@ -47,6 +47,7 @@ import { CameraIndex } from './features/cameras/camera-index/camera-index';
 import { BlackListForm } from './features/segurity/pages/backlist/black-list-form/black-list-form';
 import { VehicleForm } from './features/operational/pages/vehicles/vehicle-form/vehicle-form';
 import { ParkingManagement } from './features/parking/pages/parking-management/parking-management';
+import { ParkingEntry } from './features/parking/pages/parking-entry/parking-entry';
 // import { RegisteredVehicleIndex } from './features/operational/pages/registeredVehicle/registered-vehicle-index/registered-vehicle-index';
 import { ClientIndex } from './features/segurity/pages/client/client-index/client-index';
 import { ClientForm } from './features/segurity/pages/client/client-form/client-form';
@@ -134,6 +135,7 @@ const routes: Routes = [
       {path: 'vehicles-form', component: VehicleForm},
       {path: 'vehicles-form/:id', component: VehicleForm},
       {path: 'parking-management', component: ParkingManagement},
+      {path: 'parking-entry', component: ParkingEntry},
       {path: 'registeredVehicle-index', component: RegisteredVehiclesIndex},
       {path: 'client-index', component: ClientIndex},
       {path: 'client-form', component: ClientForm},
