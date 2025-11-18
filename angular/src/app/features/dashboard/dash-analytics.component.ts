@@ -42,7 +42,7 @@ type NonAxisChartOptions = {
   dataLabels: ApexDataLabels;
   plotOptions: ApexPlotOptions;
   tooltip: ApexTooltip;
-  colors?: string[];
+  colors: string[];
   stroke?: ApexStroke;
 };
 /** Tipado auxiliar para opciones de zona */
@@ -72,23 +72,23 @@ export class DashAnalyticsComponent implements OnInit {
    * 🎨 Paleta de colores suaves para mantener coherencia visual.
    * Usada en los gráficos y tarjetas.
    */
-  private softPalette = {
-    primary: '#5aa8c8',      // azul suave, menos vivo
-    primaryDark: '#3f8fb8',  // azul slightly stronger for gradients
-    green: '#6fc9a8',        // verde suave
-    yellow: '#d8b46a',       // amarillo cálido y desaturado
-    purple: '#9b86d6',       // morado suave
-    neutral: '#98a3ad'       // texto/leyendas muted
-  };
+private softPalette = {
+  primary: '#4a9eff',      // azul más suave pero visible
+  primaryDark: '#3d7dd9',  // azul oscuro para gradientes
+  green: '#5dd9a8',        // verde azulado elegante
+  yellow: '#f0b454',       // amarillo cálido refinado
+  purple: '#a78bfa',       // morado lavanda
+  neutral: '#94a3b8'       // gris azulado para textos
+};
    /** Colores alternativos para gráficos de distribución */
-  private piePalette = [
-    '#d8b46a', // amarillo suave
-    '#5aa8c8', // azul suave
-    '#6fc9a8', // verde suave
-    '#a6b3bb', // gris azulado (categorías pequeñas)
-    '#9b86d6', // morado suave
-    '#ffb4aa'  // coral muy suave
-  ];
+private piePalette = [
+  '#f0b454', // amarillo dorado
+  '#4a9eff', // azul cielo
+  '#5dd9a8', // verde menta
+  '#a78bfa', // lavanda
+  '#fb7185', // rosa coral
+  '#67e8f9'  // cyan suave
+];
    /** Datos de formulario modal */
   formData: any = {};
    /** Listas de selección */
@@ -140,7 +140,8 @@ export class DashAnalyticsComponent implements OnInit {
       // states is accepted by Apex, but some versions may ignore; keeping minimal hover effects
       // to avoid bright highlight we rely on stroke & fill opacities instead.
     },
-    colors: [ this.softPalette.primary, this.softPalette.green ],
+    colors: [ '#f7b48f', '#c9a5ff' ],  // Colores directos
+    // colors: [ this.softPalette.primary, this.softPalette.green ],
     labels: ['Ocupados', 'Libres'],
     legend: {
       position: 'bottom',
@@ -181,7 +182,8 @@ export class DashAnalyticsComponent implements OnInit {
   vehicleTypePieOptions: NonAxisChartOptions = {
     series: [1],
     chart: { type: 'pie', height: 240, toolbar: { show: false } },
-    colors: this.piePalette,
+    colors: ['#7fd5faff', '#84f8dfff', '#f59aa6', '#f4d06f', '#c9a5ff', '#f7b48f'],  // Paleta directa
+    // colors: this.piePalette,
     labels: ['Sin datos'],
     legend: {
       position: 'bottom',
@@ -213,7 +215,8 @@ export class DashAnalyticsComponent implements OnInit {
   zoneDonutOptions: NonAxisChartOptions = {
     series: [0.0001, 0.0001],
     chart: { type: 'donut', height: 240, toolbar: { show: false } },
-    colors: [ this.softPalette.primary, this.softPalette.green ],
+    colors: [ '#f7b48f', '#c9a5ff' ],  // Colores directos
+    // colors: [ this.softPalette.primary, this.softPalette.green ],
     labels: ['Ocupados', 'Libres'],
     legend: {
       position: 'bottom',
@@ -410,7 +413,7 @@ export class DashAnalyticsComponent implements OnInit {
           const percentage = totalSlots ? (occupied / totalSlots) * 100 : 0;
 
           this.capacity = { occupied, total: totalSlots, free, percentage };
-          this.occupancyDonutOptions = { ...this.occupancyDonutOptions, series: [Math.max(occupied, 0.0001), Math.max(free, 0.0001)] };
+          this.occupancyDonutOptions = { ...this.occupancyDonutOptions,  colors: ['#f7b48f', '#c9a5ff'], series: [Math.max(occupied, 0.0001), Math.max(free, 0.0001)] };
         }
 
         // distribución por tipo
