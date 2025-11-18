@@ -1,198 +1,303 @@
-/* ---------- Paleta (sin neutros) ---------- */
-$transparent: transparent;
-$violet: #7c3aed;   // acento 1
-$teal:   #06b6d4;   // acento 2
-$mint:   #22c55e;   // acento foco/ok
-$coral:  #fb7185;   // feedback
+/* ===================== FAQ — Estilo Oscuro Mejorado ===================== */
 
-$line-1: rgba(124,58,237,.55);
-$line-2: rgba(6,182,212,.45);
-$glow-1: rgba(124,58,237,.28);
-$glow-2: rgba(6,182,212,.26);
+// Paleta ajustada al diseño del sistema
+$primary: #22d3ee;      // cyan principal
+$accent: #3b82f6;       // azul
+$success: #22c55e;      // verde
+$warning: #f59e0b;      // naranja
+$danger: #ef4444;       // rojo
 
-$r-lg: 18px;
+$txt-100: #ffffff;
+$txt-200: rgba(255, 255, 255, 0.92);
+$txt-300: rgba(255, 255, 255, 0.75);
+$txt-400: rgba(255, 255, 255, 0.6);
+
+$border: rgba(255, 255, 255, 0.1);
+$border-hover: rgba(34, 211, 238, 0.35);
+$bg-card: rgba(255, 255, 255, 0.03);
+$bg-panel: rgba(34, 211, 238, 0.08);
+
+$r-lg: 16px;
 $r-md: 12px;
-$tr: .22s cubic-bezier(.22,.7,.25,1);
+$tr: 0.24s cubic-bezier(0.22, 0.7, 0.25, 1);
 
-/* ---------- FAQ CONTENEDOR (transparente + bordes color) ---------- */
+/* ===================== Contenedor ===================== */
 .faq-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 24px 18px;
-  background: $transparent;
-  border-radius: $r-lg;
-  border: 2px solid $line-2;
-  box-shadow: 0 10px 26px $glow-2;
-  color: white;                       // 👈 texto blanco
-  transition: transform $tr, box-shadow $tr, border-color $tr;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0;
+  background: transparent;
+  color: $txt-200;
+}
 
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 38px $glow-1;
-  }
+/* ===================== Título ===================== */
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 12px;
+  color: $txt-100;
+  letter-spacing: -0.02em;
 
-  /* ---------- Título ---------- */
-  h1 {
-    text-align: center;
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin: 0 0 8px;
-    color: white;
-
-    &::after {
-      content: '';
-      display: block;
-      width: 0;
-      height: 3px;
-      margin: 10px auto 0;
-      border-radius: 999px;
-      background: linear-gradient(90deg, $teal, $violet);
-      transition: width $tr;
-    }
-  }
-  &:hover h1::after { width: 120px; }
-
-  .subtitle {
-    text-align: center;
-    color: white;
-    opacity: .9;
-    font-size: 1rem;
-    margin-bottom: 22px;
-    line-height: 1.5;
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
   }
 }
 
-/* ---------- Barra de búsqueda ---------- */
+.subtitle {
+  text-align: center;
+  color: $txt-300;
+  font-size: 1rem;
+  margin-bottom: 32px;
+  line-height: 1.6;
+
+  strong {
+    color: $primary;
+    font-weight: 700;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+  }
+}
+
+/* ===================== Buscador ===================== */
 .search-container {
   display: grid;
-  gap: 14px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-bottom: 24px;
 
   .search-field {
-    mat-label { color: $teal; }
-    input, textarea {
-      color: white;                   // 👈 texto blanco
-      background: $transparent;
-      border: 2px solid $line-2;
-      border-radius: $r-md;
-      padding: 10px 12px;
-      transition: border-color $tr, box-shadow $tr;
+    width: 100%;
 
-      &:focus {
-        outline: none;
-        border-color: $violet;
-        box-shadow: 0 0 0 3px rgba(124,58,237,.22);
+    ::ng-deep {
+      /* Input blanco */
+      .mat-mdc-input-element {
+        color: $txt-100 !important;
+        caret-color: $primary;
       }
-      &::placeholder { color: rgba(255,255,255,.7); }
+
+      .mat-mdc-input-element::placeholder {
+        color: $txt-400 !important;
+      }
+
+      /* Label blanco */
+      .mdc-floating-label,
+      .mat-mdc-floating-label {
+        color: $txt-300 !important;
+      }
+
+      /* Outline */
+      .mat-mdc-form-field {
+        --mdc-outlined-text-field-outline-color: #{$border};
+        --mdc-outlined-text-field-hover-outline-color: #{$border-hover};
+        --mdc-outlined-text-field-focus-outline-color: #{$primary};
+      }
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $border !important;
+        transition: border-color $tr;
+      }
+
+      &:hover .mdc-notched-outline__leading,
+      &:hover .mdc-notched-outline__notch,
+      &:hover .mdc-notched-outline__trailing {
+        border-color: $border-hover !important;
+      }
+
+      &.mdc-text-field--focused .mdc-notched-outline__leading,
+      &.mdc-text-field--focused .mdc-notched-outline__notch,
+      &.mdc-text-field--focused .mdc-notched-outline__trailing {
+        border-color: $primary !important;
+        box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3);
+      }
+
+      /* Iconos blancos */
+      .mat-icon {
+        color: $txt-100 !important;
+      }
     }
   }
 
+  /* Botones de acción */
   .actions {
-    display: flex; justify-content: center; gap: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
 
     button {
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-weight: 800;
-      color: white;
-      background: $transparent;
-      border: 2px solid $line-1;
-      transition: transform $tr, box-shadow $tr, border-color $tr, background $tr;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: $txt-100;
+      background: $bg-card;
+      border: 1px solid $border;
+      transition: $tr;
+      text-transform: none;
+
+      mat-icon {
+        margin-right: 6px;
+      }
 
       &:hover {
-        transform: translateY(-1px);
-        border-color: $teal;
-        box-shadow: 0 8px 20px $glow-2;
+        transform: translateY(-2px);
+        border-color: $primary;
+        background: rgba(34, 211, 238, 0.12);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
       }
-      &.primary {
-        border-color: $teal;
-        background: linear-gradient(90deg, rgba(6,182,212,.2), rgba(124,58,237,.2));
+
+      &[color="primary"] {
+        border-color: $primary;
+        background: rgba(34, 211, 238, 0.1);
+      }
+
+      &[color="warn"] {
+        border-color: rgba(239, 68, 68, 0.5);
+        background: rgba(239, 68, 68, 0.08);
+
+        &:hover {
+          border-color: $danger;
+          background: rgba(239, 68, 68, 0.15);
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      button {
+        width: 100%;
       }
     }
   }
 }
 
-/* ---------- Texto de resultados ---------- */
-.results { text-align: center; font-weight: 800; color: white; margin-bottom: 12px; }
+/* ===================== Resultados ===================== */
+.results {
+  text-align: center;
+  font-weight: 700;
+  color: $txt-200;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
 
-.no-results {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 12px 14px;
-  color: white;
-  border-radius: $r-md;
-  border: 2px dashed rgba(251,113,133,.8);
-  background: linear-gradient(90deg, rgba(251,113,133,.18), rgba(6,182,212,.12));
-  font-weight: 900;
-  mat-icon { color: $coral; }
+  strong {
+    color: $primary;
+  }
 }
 
-/* ---------- Acordeón ---------- */
-mat-expansion-panel {
-  background: $transparent;
+.no-results {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 20px;
+  color: $txt-200;
   border-radius: $r-md;
-  margin-bottom: 10px;
-  border: 2px solid $line-1;
-  transition: transform $tr, box-shadow $tr, border-color $tr;
+  border: 2px dashed rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.08);
+  font-weight: 600;
+  margin: 24px 0;
 
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px $glow-2;
-    border-color: $teal;
+  mat-icon {
+    color: $danger;
+  }
+
+  strong {
+    color: $txt-100;
+  }
+}
+
+/* ===================== Acordeón ===================== */
+::ng-deep {
+  mat-expansion-panel {
+    background: $bg-card !important;
+    border-radius: $r-md !important;
+    margin-bottom: 12px !important;
+    border: 1px solid $border !important;
+    transition: $tr;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+      border-color: $border-hover !important;
+    }
+
+    &.mat-expanded {
+      border-color: $primary !important;
+      box-shadow: 0 8px 32px rgba(34, 211, 238, 0.2) !important;
+    }
   }
 
   mat-expansion-panel-header {
-    padding: 12px;
-    border-radius: $r-md;
-    color: white !important;         // 👈 preguntas blancas
-    background: linear-gradient(90deg, rgba(6,182,212,.18), rgba(124,58,237,.18));
-    transition: background $tr;
+    padding: 16px 18px !important;
+    border-radius: $r-md !important;
+    color: $txt-100 !important;
+    background: $bg-panel !important;
+    transition: $tr;
+    height: auto !important;
+    min-height: 64px;
 
     &:hover {
-      background: linear-gradient(90deg, rgba(124,58,237,.25), rgba(6,182,212,.25));
+      background: rgba(34, 211, 238, 0.15) !important;
+    }
+
+    mat-panel-title {
+      color: $txt-100 !important;
+      font-weight: 700 !important;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      line-height: 1.4;
+
+      @media (max-width: 768px) {
+        font-size: 0.95rem;
+      }
     }
 
     mat-icon {
-      margin-right: 10px;
-      color: white !important;       // 👈 iconos en blanco
+      color: $primary !important;
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
     }
   }
 
-  .mat-expansion-panel-content,
-  .mat-expansion-panel-body,
-  p {
-    padding: 0 16px 14px;
-    margin: 0;
-    color: white !important;         // 👈 respuestas blancas
-    line-height: 1.6;
-    font-size: .98rem;
+  .mat-expansion-panel-content {
+    background: transparent !important;
+  }
+
+  .mat-expansion-panel-body {
+    padding: 0 18px 20px !important;
+    color: $txt-300 !important;
+    line-height: 1.7;
+    font-size: 0.95rem;
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+      padding: 0 16px 18px !important;
+    }
   }
 }
 
-/* ---------- Resaltado ---------- */
-mark {
-  background: linear-gradient(90deg, rgba(250,204,21,.6), rgba(34,197,94,.4));
-  color: white;
+/* ===================== Resaltado de búsqueda ===================== */
+::ng-deep mark {
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.5), rgba(34, 197, 94, 0.3));
+  color: $txt-100;
   padding: 2px 6px;
-  border-radius: 8px;
-  font-weight: 900;
-  box-shadow: 0 0 0 2px rgba(250,204,21,.35);
+  border-radius: 6px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 768px) {
-  .faq-container { padding: 18px 12px; }
-  h1 { font-size: 1.9rem; }
-  .subtitle { font-size: .95rem; }
-  .search-container .actions { flex-direction: column; button { width: 100%; } }
-}
-mat-expansion-panel-header,
-mat-expansion-panel-header mat-panel-title,
-mat-expansion-panel-header mat-panel-title span {
-  color: white !important;        // 👈 texto blanco
-  font-weight: 600;               // opcional, más fuerte
-}
-
-/* También los íconos junto a la pregunta */
-mat-expansion-panel-header mat-icon {
-  color: white !important;        // 👈 ícono en blanco
+/* ===================== Accesibilidad ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .faq-container,
+  mat-expansion-panel {
+    transition: none !important;
+  }
 }
