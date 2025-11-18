@@ -82,14 +82,14 @@ pipeline {
                                     git pull
 
                                     echo '🐳 Desplegando stack del Frontend...'
-                                    docker compose -f angular/DevOps/prod/docker-compose.yml --env-file angular/DevOps/prod/.env up -d --build --remove-orphans
+                                    docker compose -f angular/DevOps/prod/docker-compose.yml --env-file angular/DevOps/prod/.env up -d --build --force-recreate --remove-orphans
                                 "
                             '''
                         }
                     } else {
                         echo "🚀 Despliegue local (${env.ENVIRONMENT})"
                         sh '''
-                            docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d --build --remove-orphans
+                            docker compose -f $COMPOSE_FILE --env-file $ENV_FILE up -d --build --force-recreate --remove-orphans
                         '''
                     }
                 }
