@@ -829,3 +829,62 @@
 ::ng-deep .mat-mdc-paginator-container {
   color: #ffffff !important;
 }
+
+// Manual Entry Dialog Styles
+.manual-entry-dialog {
+  .mat-mdc-dialog-title {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0;
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+
+      .full-width {
+        width: 100%;
+      }
+
+      .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+          background-color: #f5f5f5;
+          border-radius: 8px;
+        }
+
+        .mat-mdc-form-field-label {
+          color: #666;
+        }
+
+        .mat-mdc-input-element {
+          color: #333;
+        }
+      }
+
+      .mat-mdc-select {
+        .mat-mdc-select-value {
+          color: #333;
+        }
+      }
+    }
+  }
+
+  .mat-mdc-dialog-actions {
+    padding: 20px 0 0 0;
+    margin: 0;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .mat-mdc-button {
+      border-radius: 8px;
+      font-weight: 500;
+      padding: 8px 16px;
+      min-width: 100px;
+    }
+  }
+}
