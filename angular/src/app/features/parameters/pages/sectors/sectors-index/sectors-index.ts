@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Sectors } from '../sectors';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,14 +14,15 @@ import { General } from 'src/app/core/services/general.service';
 
 @Component({
   selector: 'app-sectors-index',
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule, MatPaginator],
   templateUrl: './sectors-index.html',
   styleUrl: './sectors-index.scss'
 })
 export class SectorsIndex implements OnInit {
-dataSource = new MatTableDataSource<Sectors>();
- originalData: Sectors[] = [];
- selectedFilter: string = 'all';
+ dataSource = new MatTableDataSource<Sectors>();
+  originalData: Sectors[] = [];
+  selectedFilter: string = 'all';
+  pagedData: Sectors[] = [];
 columns = [
   { key: 'name', label: 'Nombre' },
   { key: 'capacity', label: 'Capacidad' },
@@ -47,10 +48,13 @@ getAllParkings(): void {
     next: (sectors) => {
       this.dataSource.data = sectors;       // <<— ya viene T directo
       this.originalData = sectors;
-      this.dataSource.paginator = this.paginator;
+      this.applyPagination(); // ✅ inicializar con la primera página
     },
     error: (e) => {
       Swal.fire('Error', e.message || 'No se pudo cargar sectores', 'error');
+      this.originalData = [];
+      this.dataSource.data = [];
+      this.pagedData = [];
     }
   });
 }
@@ -221,6 +225,20 @@ filterByStatus(status: string): void {
       case 'all':
       default:
         return data;
+    }
+  }
+
+  onPageChange(event: PageEvent) {
+    const startIndex = event.pageIndex * event.pageSize;
+    const endIndex = startIndex + event.pageSize;
+    this.pagedData = this.dataSource.data.slice(startIndex, endIndex);
+  }
+
+  private applyPagination() {
+    // siempre resetear a la primera página con tamaño 5
+    this.pagedData = this.dataSource.data.slice(0, 5);
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
   }
 }
