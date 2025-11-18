@@ -7,8 +7,7 @@ import { takeUntil, catchError } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { General } from 'src/app/core/services/general.service';
 import { User, Person } from 'src/app/shared/Models/Entitys';
-import { EditPersonDialogComponent } from '../../segurity/pages/profile/edit-person-dialog-component/edit-person-dialog-component';
-import { EditUserDialogComponent } from '../../segurity/pages/profile/edit-user-dialog-component/edit-user-dialog-component';
+// Dialog components are imported dynamically when needed
 
 
 
@@ -17,7 +16,7 @@ import { EditUserDialogComponent } from '../../segurity/pages/profile/edit-user-
 
 @Component({
   selector: 'app-configuration',
-  imports: [CommonModule, FormsModule, MatDialogModule, EditUserDialogComponent, EditPersonDialogComponent],
+  imports: [CommonModule, FormsModule, MatDialogModule],
   templateUrl: './configuration.html',
   styleUrls: ['./configuration.scss']
 })
@@ -40,8 +39,6 @@ parkingCategoryLoading = false;
 
   errorMessage = '';
 
-  // estado para mostrar/ocultar sidebar
-  showSidebar = false;
 
   userProfile = {
     name: 'Usuario',
@@ -87,8 +84,20 @@ parkingCategoryLoading = false;
       console.warn('No userId disponible en General.getUserId()');
     }
 
-    // Cargamos el parqueadero con id "quemado" = 3
-    this.loadParking(3);
+    // Cargamos el parqueadero usando el ID desde localStorage
+    const parkingIdStr = this.service.getParkingId();
+    console.log('ParkingId desde localStorage:', parkingIdStr);
+
+    const parkingId = parkingIdStr ? Number(parkingIdStr) : null;
+    console.log('ParkingId convertido a número:', parkingId);
+
+    if (parkingId && !isNaN(parkingId) && parkingId > 0) {
+      console.log('Cargando parqueadero con ID:', parkingId);
+      this.loadParking(parkingId);
+    } else {
+      this.parkingError = 'No se encontró ID de parqueadero en localStorage';
+      console.warn('No parkingId disponible en General.getParkingId()', { parkingIdStr, parkingId });
+    }
   }
 
   ngOnDestroy(): void {
@@ -171,9 +180,10 @@ parkingCategoryLoading = false;
   }
 
   // ---------------- acciones UI (sin tocar la lógica original) ----------------
-  openEditUserDialog(): void {
+  async openEditUserDialog(): Promise<void> {
     try {
-      const ref = this.dialog.open(EditUserDialogComponent, { width: '420px',panelClass: 'custom-edit-dialog', data: { ...(this.userData ?? {}) }});
+      const { EditUserDialogComponent } = await import('../../segurity/pages/profile/edit-user-dialog-component/edit-user-dialog-component');
+      const ref = this.dialog.open(EditUserDialogComponent, { width: '420px', panelClass: 'custom-edit-dialog', data: { ...(this.userData ?? {}) } });
       ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((res) => {
         if (res === 'updated') this.reload();
       });
@@ -182,9 +192,10 @@ parkingCategoryLoading = false;
     }
   }
 
-  openEditPersonDialog(): void {
+  async openEditPersonDialog(): Promise<void> {
     try {
-      const ref = this.dialog.open(EditPersonDialogComponent, { width: '420px',panelClass: 'custom-edit-dialog', data: { ...(this.personData ?? {}) }});
+      const { EditPersonDialogComponent } = await import('../../segurity/pages/profile/edit-person-dialog-component/edit-person-dialog-component');
+      const ref = this.dialog.open(EditPersonDialogComponent, { width: '420px', panelClass: 'custom-edit-dialog', data: { ...(this.personData ?? {}) } });
       ref.afterClosed().pipe(takeUntil(this.destroy$)).subscribe((res) => {
         if (res === 'updated') this.reload();
       });
@@ -197,30 +208,6 @@ parkingCategoryLoading = false;
     if (this.userid) this.loadUser(this.userid);
   }
 
-  /**
-   * Abre la sidebar (muestra la columna derecha).
-   * Prevents default si viene de un <a>.
-   */
-  openParkInfo(event?: Event): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.showSidebar = true;
-
-    // opcional: desplazarse suavemente para que el usuario vea la sidebar
-    setTimeout(() => {
-      const container = document.querySelector('.profile-container');
-      if (container) container.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // y opcionalmente enfocar la sidebar
-      const sidebar = document.querySelector('.sidebar-section');
-      (sidebar as HTMLElement | null)?.focus();
-    }, 80);
-  }
-
-  closeSidebar(): void {
-    this.showSidebar = false;
-  }
 
   // ------------------ NUEVO: Cargar información del parqueadero por ID (quemado = 3) ------------------
 // ------------------ Cargar información del parqueadero por ID (quemado = 3) ------------------
@@ -228,6 +215,7 @@ loadParking(id: number): void {
   this.parkingLoading = true;
   this.parkingError = '';
 
+  console.log('Haciendo petición GET a Parking con ID:', id);
   this.service.getById<any>('Parking', id)
     .pipe(
       takeUntil(this.destroy$),
@@ -239,6 +227,8 @@ loadParking(id: number): void {
       })
     )
     .subscribe((resp) => {
+      console.log('Respuesta completa del servidor para Parking:', resp);
+
       // termina estado de loading principal (pero si vamos a cargar categoría, lo manejamos abajo)
       if (!resp) {
         this.parkingLoading = false;
@@ -246,8 +236,27 @@ loadParking(id: number): void {
         return;
       }
 
-      // Soporta wrapper { data: {...} } o la entidad directa
-      const payload = (resp && (resp as any).data) ? (resp as any).data : resp;
+      // Manejar diferentes formatos de respuesta
+      let payload: any;
+
+      // Si viene con formato { data: {...}, success: true, ... }
+      if ((resp as any).data) {
+        payload = (resp as any).data;
+      }
+      // Si viene directo como entidad
+      else if (resp && typeof resp === 'object' && (resp as any).id) {
+        payload = resp;
+      }
+      // Si no se puede determinar el formato
+      else {
+        console.error('Formato de respuesta desconocido:', resp);
+        this.parkingLoading = false;
+        this.parkingData = null;
+        this.parkingError = 'Formato de respuesta del servidor no reconocido';
+        return;
+      }
+
+      console.log('Payload del parqueadero:', payload);
 
       // Mapeamos **solo** los campos que tu back devuelve
       this.parkingData = {
@@ -266,6 +275,7 @@ loadParking(id: number): void {
         this.parkingCategoryLoading = true;
 
         // Asumo que la entidad se llama 'ParkingCategory' — si en tu API tiene otro nombre, cámbialo
+        console.log('Haciendo petición GET a ParkingCategory con ID:', catId);
         this.service.getById<any>('ParkingCategory', Number(catId))
           .pipe(
             takeUntil(this.destroy$),
@@ -277,10 +287,23 @@ loadParking(id: number): void {
             })
           )
           .subscribe((catResp) => {
+            console.log('Respuesta completa del servidor para ParkingCategory:', catResp);
             this.parkingCategoryLoading = false;
             if (!catResp) return;
 
-            const catPayload = (catResp && (catResp as any).data) ? (catResp as any).data : catResp;
+            // Manejar diferentes formatos de respuesta para la categoría
+            let catPayload: any;
+
+            if ((catResp as any).data) {
+              catPayload = (catResp as any).data;
+            } else if (catResp && typeof catResp === 'object' && (catResp as any).id) {
+              catPayload = catResp;
+            } else {
+              console.warn('Formato de respuesta de categoría desconocido:', catResp);
+              catPayload = null;
+            }
+
+            console.log('Payload de la categoría:', catPayload);
 
             // Si la respuesta tiene nombre, lo dejamos como objeto completo para acceder a .name en template
             this.parkingData = {

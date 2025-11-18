@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -22,6 +22,7 @@ export class ZonesIndex implements OnInit {
   dataSource = new MatTableDataSource<Zones>();
   originalData: Zones[] = [];
   selectedFilter: string = 'all';
+  pagedData: Zones[] = [];
 
   columns = [
     { key: 'name', label: 'Nombre' },
@@ -52,12 +53,13 @@ export class ZonesIndex implements OnInit {
       next: (zones) => {
         this.originalData = zones || [];
         this.dataSource.data = zones || [];
-        this.dataSource.paginator = this.paginator;
+        this.applyPagination(); // ✅ inicializar con la primera página
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar las zonas.', 'error');
         this.originalData = [];
         this.dataSource.data = [];
+        this.pagedData = [];
       }
     });
   }
@@ -170,6 +172,7 @@ export class ZonesIndex implements OnInit {
   // Búsqueda + estado
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
     let filteredData = this.originalData;
 
     if (filterValue) {
@@ -180,7 +183,9 @@ export class ZonesIndex implements OnInit {
     }
 
     filteredData = this.applyStatusFilter(filteredData);
+
     this.dataSource.data = filteredData;
+    this.applyPagination(); // ✅ aplicar paginación después del filtro
   }
 
   filterByStatus(status: string): void {
@@ -199,7 +204,9 @@ export class ZonesIndex implements OnInit {
     }
 
     filteredData = this.applyStatusFilter(filteredData);
+
     this.dataSource.data = filteredData;
+    this.applyPagination(); // ✅ aplicar paginación después del filtro
   }
 
   private applyStatusFilter(data: Zones[]): Zones[] {
@@ -213,6 +220,20 @@ export class ZonesIndex implements OnInit {
       case 'all':
       default:
         return data;
+    }
+  }
+
+  onPageChange(event: PageEvent) {
+    const startIndex = event.pageIndex * event.pageSize;
+    const endIndex = startIndex + event.pageSize;
+    this.pagedData = this.dataSource.data.slice(startIndex, endIndex);
+  }
+
+  private applyPagination() {
+    // siempre resetear a la primera página con tamaño 5
+    this.pagedData = this.dataSource.data.slice(0, 5);
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
   }
 }

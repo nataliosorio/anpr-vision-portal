@@ -1,195 +1,235 @@
-/* ===================== Centro de Ayuda — sobrio/pro (CONTENEDOR TRANSPARENTE) ===================== */
-/* Paleta */
-$primary:   #3b82f6;   /* azul */
-$accent:    #22d3ee;   /* cian */
-$success:   #22c55e;   /* menta */
+/* ===================== Centro de Ayuda — Diseño Oscuro Mejorado ===================== */
 
-$txt-100:   #ffffff;
-$txt-200:   rgba(255,255,255,.90);
-$txt-300:   rgba(255,255,255,.75);
+// Variables que coinciden con el estilo del sistema
+$primary-color: #22d3ee;      // cyan del sistema
+$accent-color: #3b82f6;       // azul
+$success-color: #22c55e;      // verde
+$text-primary: #ffffff;
+$text-secondary: rgba(255, 255, 255, 0.85);
+$text-muted: rgba(255, 255, 255, 0.6);
+$bg-card: rgba(255, 255, 255, 0.03);
+$border-color: rgba(255, 255, 255, 0.12);
+$border-color-hover: rgba(34, 211, 238, 0.4);
 
-$border:    rgba(255,255,255,.12);
-$border-2:  rgba(255,255,255,.18);
+$transition: all 0.24s cubic-bezier(0.22, 0.7, 0.25, 1);
 
-$radius-lg: 18px;
-$radius-md: 12px;
-$tr:        .25s cubic-bezier(.22,.7,.25,1);
-
-/* ===================== Contenedor (sin fondo, sin borde, sin sombra) ===================== */
+/* ===================== Contenedor Principal ===================== */
 .help-container {
-  max-width: 1100px;
-  margin: 32px auto;
-  padding: 26px;
-  border-radius: $radius-lg;
-  color: $txt-200;
-  background: transparent;    /* ⬅️ sin color de fondo */
-  /* sin border, sin box-shadow */
-  transition: transform $tr;
-  &:hover { transform: translateY(-1px); }
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  min-height: 100vh;
+  background: transparent;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 20px 16px;
+  }
 }
 
-/* ===================== Título ===================== */
-.help-title {
-  margin: 0 0 14px;
+/* ===================== Header ===================== */
+.help-header {
   text-align: center;
-  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
-  font-weight: 800;
-  color: $txt-100;
-  letter-spacing: .2px;
+  margin-bottom: 40px;
+  position: relative;
 
-  &::after {
-    content: '';
-    display: block;
-    width: 92px;
-    height: 3px;
-    margin: 12px auto 0;
-    border-radius: 999px;
-    background: linear-gradient(90deg, $primary, $accent);
-    box-shadow: 0 0 10px rgba(34,211,238,.35);
-    animation: barGlow 2.8s ease-in-out infinite alternate;
+  @media (max-width: 768px) {
+    margin-bottom: 32px;
   }
 }
 
-/* ===================== Tabs (Angular Material MDC) ===================== */
-/* Si este SCSS vive dentro del componente, usamos ::ng-deep para atravesar el encapsulado */
-:host ::ng-deep .custom-tabs {
-  padding: 6px 8px 0;
+.help-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: $text-primary;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.02em;
+  
+  // Efecto de gradiente sutil en el texto
+  background: linear-gradient(135deg, $text-primary 0%, rgba(34, 211, 238, 0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 
-  /* Ink bar (activo) */
-  .mat-ink-bar {
-    background: linear-gradient(90deg, $primary, $accent) !important;
-    height: 2.5px !important;
-    border-radius: 999px;
-    box-shadow: 0 0 8px rgba(34,211,238,.35);
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
   }
-  .mdc-tab-indicator__content--underline {
-    border-top: 2.5px solid $primary !important;
-    border-radius: 999px;
-    box-shadow: 0 0 8px rgba(34,211,238,.35);
-  }
+}
 
-  /* Carril de labels */
-  .mat-mdc-tab-labels,
-  .mat-tab-labels {
-    justify-content: center;
-    gap: 8px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed $border-2;
-  }
+.help-subtitle {
+  font-size: 1.05rem;
+  color: $text-muted;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 400;
+  max-width: 700px;
+  margin: 0 auto;
 
-  /* Píldoras */
-  .mat-mdc-tab,
-  .mat-tab-label {
-    border: 1px solid $border;
-    border-radius: 999px !important;
-    padding: 2px 2px;
-    background: rgba(255,255,255,.03);  /* leve, sin sobrecargar fondo global */
-    transition: transform $tr, border-color $tr, background $tr, box-shadow $tr;
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
   }
+}
 
-  /* Texto del tab */
-  .mdc-tab__text-label,
-  .mat-tab-label-content {
-    font-size: .98rem;
-    font-weight: 600;
-    color: $txt-300 !important;
-    padding: 8px 14px;
-    display: inline-block;
-  }
+/* ===================== Tabs ===================== */
+.help-tabs {
+  margin-top: 24px;
+  background: $bg-card;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  transition: $transition;
 
-  /* Hover/focus */
-  .mat-mdc-tab:hover,
-  .mat-tab-label:hover {
-    transform: translateY(-1px);
-    background: rgba(59,130,246,.08);
-    border-color: rgba(59,130,246,.35);
-    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+  &:hover {
+    border-color: $border-color-hover;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
   }
 
-  /* Activo */
-  .mat-mdc-tab.mdc-tab--active,
-  .mat-tab-label.mat-tab-label-active {
-    background: rgba(59,130,246,.12);
-    border-color: rgba(59,130,246,.5);
-    box-shadow: 0 8px 22px rgba(0,0,0,.28);
-  }
-  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label,
-  .mat-tab-label.mat-tab-label-active .mat-tab-label-content {
-    color: $txt-100 !important;
-  }
+  ::ng-deep {
+    /* Header de tabs */
+    .mat-mdc-tab-header,
+    .mat-tab-header {
+      border-bottom: 1px solid $border-color;
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 0;
+      backdrop-filter: blur(10px);
+    }
 
-  /* Quitar ripple pesado (opcional) */
-  .mdc-tab__ripple::before,
-  .mdc-tab__ripple::after { opacity: 0 !important; }
+    /* Ink bar (indicador activo) */
+    .mat-ink-bar {
+      background: linear-gradient(90deg, $primary-color, $accent-color) !important;
+      height: 3px !important;
+      border-radius: 3px 3px 0 0;
+    }
 
-  /* Panel del cuerpo (contenedor interior, no el wrapper externo) */
-  .mat-mdc-tab-body-wrapper,
-  .mat-tab-body-wrapper {
-    padding: 20px;
-    border-radius: $radius-md;
-    border: 1px solid $border;
-    background: rgba(255,255,255,.03);  /* leve panel para legibilidad */
-    color: $txt-200;
-    animation: panelIn .28s both;
+    .mdc-tab-indicator__content--underline {
+      border-top: 3px solid $primary-color !important;
+      border-radius: 3px 3px 0 0;
+    }
 
-    h1, h2, h3, h4, h5, h6 { color: $txt-100 !important; }
-    p, li, span, label, small { color: $txt-300 !important; }
-    a {
-      color: $accent;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      transition: color $tr;
-      &:hover { color: $primary; }
+    /* Contenedor de labels */
+    .mat-mdc-tab-labels,
+    .mat-tab-labels {
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 24px;
+
+      @media (max-width: 768px) {
+        gap: 4px;
+        padding: 8px 12px;
+      }
+    }
+
+    /* Tabs individuales */
+    .mat-mdc-tab,
+    .mat-tab-label {
+      min-width: auto;
+      padding: 0 4px;
+      background: transparent;
+      border: none;
+      transition: $transition;
+      opacity: 1;
+      height: 56px;
+    }
+
+    /* Contenido del tab */
+    .mdc-tab__content,
+    .mat-tab-label-content {
+      padding: 14px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: $text-secondary !important;
+      transition: $transition;
+      border-radius: 10px;
+      letter-spacing: 0.01em;
+
+      @media (max-width: 768px) {
+        font-size: 0.88rem;
+        padding: 12px 16px;
+      }
+    }
+
+    /* Hover */
+    .mat-mdc-tab:hover,
+    .mat-tab-label:hover {
+      .mdc-tab__content,
+      .mat-tab-label-content {
+        color: $text-primary !important;
+        background: rgba(34, 211, 238, 0.08);
+      }
+    }
+
+    /* Tab activo */
+    .mat-mdc-tab.mdc-tab--active,
+    .mat-tab-label.mat-tab-label-active {
+      .mdc-tab__content,
+      .mat-tab-label-content {
+        color: $primary-color !important;
+        font-weight: 700;
+        background: rgba(34, 211, 238, 0.12);
+      }
+    }
+
+    /* Panel del cuerpo */
+    .mat-mdc-tab-body-wrapper,
+    .mat-tab-body-wrapper {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    /* Animación de contenido */
+    .mat-mdc-tab-body,
+    .mat-tab-body {
+      overflow: visible !important;
+    }
+
+    .mat-mdc-tab-body-content,
+    .mat-tab-body-content {
+      overflow: visible !important;
     }
   }
+}
 
-  /* Expansion panels/listas (si las usas dentro del tab) */
-  .mat-mdc-expansion-panel, .mat-expansion-panel {
-    background: rgba(255,255,255,.03) !important;
-    color: $txt-200 !important;
-    border: 1px solid $border !important;
-    border-radius: $radius-md !important;
-  }
-  .mat-mdc-expansion-panel-header-title,
-  .mat-expansion-panel-header-title {
-    color: $txt-100 !important;
-    font-weight: 600;
-  }
-  .mat-mdc-expansion-panel-content,
-  .mat-expansion-panel-content {
-    color: $txt-300 !important;
+/* ===================== Contenido de Tabs ===================== */
+.tab-content {
+  padding: 32px 24px;
+  animation: fadeInUp 0.4s cubic-bezier(0.22, 0.7, 0.25, 1);
+
+  @media (max-width: 768px) {
+    padding: 24px 16px;
   }
 }
 
 /* ===================== Animaciones ===================== */
-@keyframes panelIn {
-  from { opacity: 0; transform: translateY(6px) scale(.99); }
-  to   { opacity: 1; transform: translateY(0)   scale(1);   }
-}
-@keyframes barGlow {
-  from { box-shadow: 0 0 6px rgba(34,211,238,.25); transform: scaleX(1); }
-  to   { box-shadow: 0 0 12px rgba(59,130,246,.45); transform: scaleX(1.04); }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ===================== Responsive / accesibilidad ===================== */
-@media (max-width: 768px) {
-  .help-container { padding: 18px; }
-  .help-title { font-size: 1.55rem; }
-  :host ::ng-deep .custom-tabs .mdc-tab__text-label,
-  :host ::ng-deep .custom-tabs .mat-tab-label-content {
-    font-size: .95rem;
-    padding: 7px 12px;
-  }
-}
+/* ===================== Mejoras de accesibilidad ===================== */
 @media (prefers-reduced-motion: reduce) {
   .help-container,
-  :host ::ng-deep .custom-tabs .mat-mdc-tab,
-  :host ::ng-deep .custom-tabs .mat-tab-label {
+  .help-tabs ::ng-deep .mat-mdc-tab,
+  .help-tabs ::ng-deep .mat-tab-label,
+  .tab-content {
+    animation: none !important;
     transition: none !important;
   }
-  .help-title::after,
-  .mat-mdc-tab-body-wrapper,
-  .mat-tab-body-wrapper {
-    animation: none !important;
+}
+
+/* Focus visible para teclado */
+.help-tabs ::ng-deep {
+  .mat-mdc-tab:focus-visible,
+  .mat-tab-label:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+    border-radius: 8px;
   }
 }

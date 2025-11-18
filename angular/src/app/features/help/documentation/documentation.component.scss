@@ -1,171 +1,186 @@
-/* ===================== Documentación — sobrio/pro, contenedor TRANSPARENTE ===================== */
-/* Paleta */
-$primary:   #3b82f6;   /* azul */
-$accent:    #22d3ee;   /* cian */
-$success:   #22c55e;   /* menta */
+/* ===================== Documentación — Estilo Oscuro Profesional ===================== */
 
-$txt-100:   #ffffff;                 /* blanco sólido */
-$txt-200:   rgba(255,255,255,.92);
-$txt-300:   rgba(255,255,255,.78);
+// Paleta ajustada al sistema
+$primary: #3b82f6;      // azul
+$accent: #22d3ee;       // cyan
+$success: #22c55e;      // verde
 
-$border:    rgba(255,255,255,.14);
-$border-2:  rgba(255,255,255,.22);
+$txt-100: #ffffff;
+$txt-200: rgba(255, 255, 255, 0.92);
+$txt-300: rgba(255, 255, 255, 0.75);
+$txt-400: rgba(255, 255, 255, 0.6);
 
-$r-lg:      18px;
-$r-md:      12px;
-$tr:        .24s cubic-bezier(.22,.7,.25,1);
+$border: rgba(255, 255, 255, 0.1);
+$border-hover: rgba(34, 211, 238, 0.35);
+$bg-card: rgba(255, 255, 255, 0.03);
 
-/* ===================== Contenedor (sin fondo) ===================== */
+$r-lg: 16px;
+$r-md: 12px;
+$tr: 0.24s cubic-bezier(0.22, 0.7, 0.25, 1);
+
+/* ===================== Contenedor ===================== */
 .docs-container {
-  padding: 28px;
-  max-width: 1100px;
-  margin: 32px auto;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
   color: $txt-200;
-
-  /* SIN fondo, SIN sombra, SIN borde */
   background: transparent;
-  border-radius: $r-lg;
-
-  /* Hover sutil: solo un leve “lift” del contenido interno (no del fondo) */
-  transition: transform $tr;
-  &:hover { transform: translateY(-1px); }
 }
 
 /* ===================== Header ===================== */
 .docs-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
 
   .logo {
-    width: 88px; height: auto;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 6px 18px rgba(34,211,238,.25));
+    width: 80px;
+    height: auto;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 8px 24px rgba(34, 211, 238, 0.3));
+    transition: $tr;
+
+    &:hover {
+      transform: scale(1.05);
+      filter: drop-shadow(0 12px 32px rgba(34, 211, 238, 0.5));
+    }
   }
 
   h1 {
-    margin: 0 0 6px;
-    font-size: clamp(1.8rem, 3vw, 2.3rem);
-    font-weight: 900;
+    margin: 0 0 12px;
+    font-size: clamp(1.8rem, 3vw, 2.2rem);
+    font-weight: 800;
     color: $txt-100;
-
-    &::after {
-      content: '';
-      display: block;
-      width: 92px; height: 3px;
-      margin: 12px auto 0;
-      border-radius: 999px;
-      background: linear-gradient(90deg, $primary, $accent);
-      box-shadow: 0 0 10px rgba(34,211,238,.35);
-      animation: barGlow 2.8s ease-in-out infinite alternate;
-    }
+    letter-spacing: -0.02em;
+    
+    background: linear-gradient(135deg, $txt-100 0%, $accent 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   .subtitle {
     color: $txt-300;
     font-size: 1rem;
     margin: 0;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+
+    @media (max-width: 768px) {
+      font-size: 0.95rem;
+    }
   }
 }
 
-/* ===================== Buscador (Angular Material MDC) ===================== */
-/* Si este SCSS está dentro del componente, usamos ::ng-deep para atravesar el encapsulado */
-:host ::ng-deep .docs-container {
-  .search-container {
-    display: flex;
-    justify-content: center;
-    margin: 18px 0 24px;
+/* ===================== Buscador ===================== */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0 32px;
 
-    .search-field {
-      width: min(560px, 100%);
-      border-radius: $r-md;
+  .search-field {
+    width: min(600px, 100%);
+    
+    ::ng-deep {
+      /* Input blanco */
+      .mat-mdc-input-element {
+        color: $txt-100 !important;
+        caret-color: $accent;
+      }
+
+      .mat-mdc-input-element::placeholder {
+        color: $txt-400 !important;
+      }
+
+      /* Label blanco */
+      .mdc-floating-label,
+      .mat-mdc-floating-label {
+        color: $txt-300 !important;
+      }
+
+      /* Outline */
+      .mat-mdc-form-field {
+        --mdc-outlined-text-field-outline-color: #{$border};
+        --mdc-outlined-text-field-hover-outline-color: #{$border-hover};
+        --mdc-outlined-text-field-focus-outline-color: #{$accent};
+      }
+
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $border !important;
+        transition: border-color $tr;
+      }
+
+      &:hover .mdc-notched-outline__leading,
+      &:hover .mdc-notched-outline__notch,
+      &:hover .mdc-notched-outline__trailing {
+        border-color: $border-hover !important;
+      }
+
+      &.mdc-text-field--focused .mdc-notched-outline__leading,
+      &.mdc-text-field--focused .mdc-notched-outline__notch,
+      &.mdc-text-field--focused .mdc-notched-outline__trailing {
+        border-color: $accent !important;
+        box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.3);
+      }
+
+      /* Iconos blancos */
+      .mat-icon {
+        color: $txt-100 !important;
+      }
     }
   }
-
-  /* Input y placeholder blancos */
-  .mat-mdc-input-element {
-    color: $txt-100 !important;
-    caret-color: $accent;
-  }
-  .mat-mdc-input-element::placeholder {
-    color: rgba(255,255,255,.65) !important;
-    opacity: 1 !important;
-  }
-
-  /* Label flotante BLANCO */
-  .mdc-floating-label,
-  .mat-mdc-floating-label,
-  .mat-form-field-label {
-    color: $txt-100 !important;
-    opacity: 1 !important;
-  }
-
-  /* Outline del form-field (bordes claros, focus azul) */
-  .mat-mdc-form-field {
-    --mdc-outlined-text-field-outline-color: rgba(255,255,255,.28);
-    --mdc-outlined-text-field-hover-outline-color: rgba(255,255,255,.38);
-    --mdc-outlined-text-field-focus-outline-color: #3b82f6;
-
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border-color: rgba(255,255,255,.28) !important;
-      transition: border-color $tr;
-    }
-    &:hover .mdc-notched-outline__leading,
-    &:hover .mdc-notched-outline__notch,
-    &:hover .mdc-notched-outline__trailing {
-      border-color: rgba(255,255,255,.38) !important;
-    }
-    &.mdc-text-field--focused .mdc-notched-outline__leading,
-    &.mdc-text-field--focused .mdc-notched-outline__notch,
-    &.mdc-text-field--focused .mdc-notched-outline__trailing {
-      border-color: $primary !important;
-      box-shadow: 0 0 0 2px rgba(59,130,246,.25);
-    }
-  }
-
-  /* Iconos del suffix/prefix en blanco */
-  .mat-mdc-form-field-icon-suffix .mat-icon,
-  .mat-mdc-form-field-icon-prefix .mat-icon,
-  .mat-icon {
-    color: $txt-100 !important;
-  }
-
-  /* Ocultar sub-mensajes si no se usan */
-  .mat-mdc-form-field-subscript-wrapper { display: none; }
 }
 
-/* ===================== Categorías (píldoras, sin fondo sólido) ===================== */
+/* ===================== Categorías ===================== */
 .categories {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 22px;
+  margin-bottom: 32px;
+  padding: 0 12px;
 
-  :host ::ng-deep .mat-mdc-outlined-button {
-    --mdc-outlined-button-label-text-color: #ffffff;
-    --mdc-outlined-button-outline-color: rgba(255,255,255,.28);
-
+  ::ng-deep button {
     color: $txt-100 !important;
-    border-color: rgba(255,255,255,.28) !important;
+    border-color: $border !important;
     border-radius: 999px !important;
     text-transform: none !important;
     font-weight: 700;
-    padding: 4px 14px;
-    background: rgba(255,255,255,.03);
-    transition: transform $tr, border-color $tr, background $tr, box-shadow $tr;
+    padding: 8px 18px !important;
+    background: $bg-card;
+    transition: $tr;
+    border-width: 1px !important;
+    font-size: 0.9rem;
+    height: auto !important;
+    line-height: 1.4;
+
+    mat-icon {
+      margin-right: 6px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
 
     &:hover {
-      transform: translateY(-1px);
-      border-color: rgba(59,130,246,.55) !important;
-      background: rgba(59,130,246,.10);
-      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+      transform: translateY(-2px);
+      border-color: $accent !important;
+      background: rgba(34, 211, 238, 0.12);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     &.active {
       border-color: $success !important;
-      box-shadow: 0 0 0 3px rgba(34,197,94,.25);
-      background: rgba(34,197,94,.12);
+      background: rgba(34, 197, 94, 0.12);
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+    }
+  }
+
+  @media (max-width: 768px) {
+    ::ng-deep button {
+      font-size: 0.85rem;
+      padding: 7px 14px !important;
     }
   }
 }
@@ -173,109 +188,154 @@ $tr:        .24s cubic-bezier(.22,.7,.25,1);
 /* ===================== Grid de documentos ===================== */
 .docs-grid {
   display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  padding: 0;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
-/* Cards sin fondo del contenedor: usamos leve fondo translúcido en cada card */
-:host ::ng-deep .doc-card.mat-mdc-card {
-  background: rgba(255,255,255,.03) !important;        /* muy sutil, se lee bien sobre fondos variados */
+/* ===================== Cards ===================== */
+::ng-deep .doc-card {
+  background: $bg-card !important;
   border: 1px solid $border !important;
   border-radius: $r-lg !important;
   color: $txt-200 !important;
-  box-shadow: 0 10px 26px rgba(0,0,0,.25) !important;
-  transition: transform $tr, box-shadow $tr, border-color $tr !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  transition: $tr;
   cursor: pointer;
+  overflow: hidden;
 
   &:hover {
-    transform: translateY(-3px);
-    border-color: rgba(59,130,246,.45) !important;
-    box-shadow: 0 16px 36px rgba(0,0,0,.35) !important;
+    transform: translateY(-4px);
+    border-color: $border-hover !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
   }
 
   .mat-mdc-card-header {
-    padding: 14px 16px 6px !important;
-    gap: 12px;
+    padding: 18px 20px 12px !important;
+    gap: 14px;
+    align-items: center;
   }
+
   .doc-icon {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    display: grid; place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
     color: $txt-100;
     background: linear-gradient(135deg, $primary, $accent);
-    box-shadow: 0 8px 18px rgba(34,211,238,.25);
+    box-shadow: 0 8px 20px rgba(34, 211, 238, 0.3);
+    flex-shrink: 0;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
   }
-  .mat-mdc-card-title,
-  .mat-mdc-card-subtitle { color: $txt-100 !important; }
-  .mat-mdc-card-subtitle { opacity: .82; }
+
+  .mat-mdc-card-title {
+    color: $txt-100 !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+    margin: 0 !important;
+
+    @media (max-width: 768px) {
+      font-size: 1rem !important;
+    }
+  }
+
+  .mat-mdc-card-subtitle {
+    color: $txt-300 !important;
+    font-size: 0.85rem !important;
+    margin-top: 4px !important;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
 
   .mat-mdc-card-content {
-    padding: 0 16px 8px !important;
-    color: $txt-200 !important;
+    padding: 0 20px 12px !important;
+    color: $txt-300 !important;
+    line-height: 1.6;
+    font-size: 0.95rem;
+
+    p {
+      margin: 0;
+    }
   }
 
   .mat-mdc-card-actions {
     display: flex;
     justify-content: space-between;
-    padding: 10px 12px 14px !important;
-    gap: 8px;
+    align-items: center;
+    padding: 12px 16px 18px !important;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 
-    .mat-mdc-raised-button.mat-primary {
+    .mat-mdc-raised-button {
       color: $txt-100 !important;
       border-radius: 10px !important;
-      background: linear-gradient(180deg, rgba(59,130,246,.22), rgba(34,211,238,.20)) !important;
-      border: 1px solid rgba(255,255,255,.18) !important;
-      font-weight: 800;
-      transition: transform $tr, box-shadow $tr, background $tr, border-color $tr;
+      background: rgba(34, 211, 238, 0.12) !important;
+      border: 1px solid rgba(34, 211, 238, 0.3) !important;
+      font-weight: 700;
+      transition: $tr;
+      text-transform: none;
+      height: 40px;
+      padding: 0 16px !important;
+      font-size: 0.9rem;
+
+      mat-icon {
+        margin-right: 6px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
 
       &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 22px rgba(0,0,0,.28) !important;
-        background: linear-gradient(180deg, rgba(59,130,246,.28), rgba(34,211,238,.26)) !important;
-        border-color: rgba(59,130,246,.45) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+        background: rgba(34, 211, 238, 0.2) !important;
+        border-color: $accent !important;
       }
     }
 
-    .mat-mdc-icon-button.mat-accent {
+    .mat-mdc-icon-button {
       color: $txt-100 !important;
-      border: 1px solid rgba(255,255,255,.18) !important;
+      border: 1px solid $border !important;
       border-radius: 10px !important;
-      width: 40px; height: 40px;
-      background: rgba(255,255,255,.03);
-      transition: transform $tr, box-shadow $tr, border-color $tr, background $tr;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: $tr;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
 
       &:hover {
-        transform: translateY(-1px);
-        background: rgba(59,130,246,.10);
-        border-color: rgba(59,130,246,.45) !important;
-        box-shadow: 0 8px 18px rgba(0,0,0,.25);
+        transform: translateY(-2px);
+        background: rgba(34, 211, 238, 0.12);
+        border-color: $accent !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
       }
     }
   }
 }
 
-/* ===================== Links ===================== */
-.docs-container a {
-  color: $accent;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color $tr;
-  &:hover { color: $primary; }
-}
-
-/* ===================== Animaciones ===================== */
-@keyframes barGlow {
-  from { box-shadow: 0 0 6px rgba(34,211,238,.25); transform: scaleX(1); }
-  to   { box-shadow: 0 0 12px rgba(59,130,246,.45); transform: scaleX(1.04); }
-}
-
-/* ===================== Responsive / accesibilidad ===================== */
-@media (max-width: 768px) {
-  .docs-container { padding: 20px; margin: 22px auto; }
-  :host ::ng-deep .mat-mdc-card-title { font-size: 1.05rem !important; }
-  :host ::ng-deep .mat-mdc-card-subtitle { font-size: .92rem !important; }
-}
+/* ===================== Accesibilidad ===================== */
 @media (prefers-reduced-motion: reduce) {
-  .docs-container { transition: none !important; }
-  .docs-header h1::after { animation: none !important; }
+  .docs-container,
+  .docs-header .logo,
+  ::ng-deep .doc-card {
+    transition: none !important;
+  }
 }

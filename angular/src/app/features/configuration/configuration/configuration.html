@@ -1,263 +1,202 @@
 <!-- profile-config.component.html -->
-<div class="profile-container" [class.sidebar-visible]="showSidebar">
-  <!-- LEFT: Info de usuario -->
-  <div class="profile-section">
-    <!-- card: avatar + info -->
-    <div class="user-card" role="region" aria-label="Ficha de usuario">
-      <div class="user-avatar">
-        <div class="patient-photo" aria-hidden="true">
+<div class="config-container">
+  <!-- Header Section: User Profile -->
+  <div class="profile-header" role="region" aria-label="Perfil del usuario">
+    <div class="profile-avatar-section">
+      <div class="avatar-container">
+        <div class="avatar-circle">
           {{ firstLetter }}
         </div>
-      </div>
-
-      <div class="user-info">
-        <div class="user-top">
-          <h3 class="user-name">{{ userProfile.name }}</h3>
-
-          <!-- Edit user -->
-          <button class="edit-profile-btn" title="Editar usuario" (click)="openEditUserDialog()"
-            aria-label="Editar usuario">
-            <i class="fas fa-edit" aria-hidden="true"></i>
-          </button>
-        </div>
-
-        <!-- Loading skeleton -->
-        <div *ngIf="loading" class="skeleton">
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-          <div class="skeleton-line"></div>
-        </div>
-
-        <!-- Datos que SI vienen del backend -->
-        <div class="user-details" *ngIf="!loading">
-          <div class="detail-item">
-            <span class="label">
-              <i class="fas fa-user" aria-hidden="true"></i>
-              Nombre de usuario:
-            </span>
-            <span class="value">{{ userData?.username ?? '—' }}</span>
-          </div>
-
-          <div class="detail-item">
-            <span class="label">
-              <i class="fas fa-envelope" aria-hidden="true"></i>
-              Correo:
-            </span>
-            <span class="value">{{ userData?.email }}</span>
-          </div>
-
-          <ng-container *ngIf="personData; else noPersonTpl">
-            <div class="detail-item">
-              <span class="label">
-                <i class="fas fa-id-badge" aria-hidden="true"></i>
-                Nombres:
-              </span>
-              <span class="value">{{ personData?.firstName ?? '—' }}</span>
-            </div>
-
-            <div class="detail-item">
-              <span class="label">
-                <i class="fas fa-signature" aria-hidden="true"></i>
-                Apellidos:
-              </span>
-              <span class="value">{{ personData?.lastName ?? '—' }}</span>
-            </div>
-
-            <div class="detail-item">
-              <span class="label">
-                <i class="fas fa-id-card" aria-hidden="true"></i>
-                Documento:
-              </span>
-              <span class="value">{{ personData?.document ?? '—' }}</span>
-            </div>
-
-            <div class="detail-item">
-              <span class="label">
-                <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-                Edad:
-              </span>
-              <span class="value">{{ personData?.age ?? '—' }}</span>
-            </div>
-
-            <div class="detail-item">
-              <span class="label">
-                <i class="fas fa-phone" aria-hidden="true"></i>
-                Número de teléfono:
-              </span>
-              <span class="value">{{ personData.phone ?? '—' }}</span>
-            </div>
-
-
-
-
-
-            <div class="detail-item person-edit-row">
-              <button class="edit-person-btn" title="Editar persona" (click)="openEditPersonDialog()"
-                aria-label="Editar persona">
-                <i class="fas fa-user-edit"></i>
-                <span>Editar datos personales</span>
-              </button>
-            </div>
-          </ng-container>
-
-          <ng-template #noPersonTpl>
-            <div class="detail-item no-person-item">
-              <span class="label">
-                <i class="fas fa-user-slash" aria-hidden="true"></i>
-                Persona:
-              </span>
-              <span class="value warning-text">No hay datos de persona asociados</span>
-            </div>
-            <div class="detail-item person-edit-row">
-              <button class="edit-person-btn create-person-btn" title="Crear perfil de persona"
-                (click)="openEditPersonDialog()" aria-label="Crear perfil de persona">
-                <i class="fas fa-user-plus"></i>
-                <span>Crear datos personales</span>
-              </button>
-            </div>
-          </ng-template>
-        </div>
-
-        <div *ngIf="errorMessage" class="error-message">
-          <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-          {{ errorMessage }}
-        </div>
+        <div class="avatar-glow"></div>
       </div>
     </div>
 
-    <!-- Tarjeta destacada (hard-coded) -->
-    <div class="featured-course-wrapper">
-      <div class="featured-course-card" role="article" aria-label="Curso destacado">
-        <div class="featured-left">
-          <div class="featured-title">
-            <h4>Información del Parqueadero</h4>
-          </div>
-
-          <p class="featured-desc">
-            Aquí puedes consultar y editar la información principal del parqueadero,
-            gestionar las cámaras de seguridad y configurar los accesos.
-          </p>
-
-          <!-- <div class="featured-meta">
-            <span class="lessons-count">
-              <i class="fas fa-info-circle" aria-hidden="true"></i>
-              Ver detalles
-            </span>
-            <span class="featured-status">
-              <i class="fas fa-check-circle" aria-hidden="true"></i>
-              Disponible
-            </span>
-          </div> -->
+    <div class="profile-info-section">
+      <div class="profile-main-info">
+        <h2 class="profile-name">{{ userProfile.name }}</h2>
+        <div class="profile-status">
+          <span class="status-badge">
+            <i class="fas fa-circle"></i>
+            Activo
+          </span>
         </div>
+      </div>
 
-        <div class="featured-cta">
-          <!-- ahora llamamos a método para mostrar la sidebar en vez de navegar -->
-          <button class="cta-circle" (click)="openParkInfo($event)" title="Abrir información del parqueadero"
-            aria-label="Abrir información">
-            <i class="fas fa-arrow-right" aria-hidden="true"></i>
-          </button>
-        </div>
+      <div class="profile-actions">
+        <button class="action-btn secondary" (click)="openEditUserDialog()" aria-label="Editar usuario">
+          <i class="fas fa-edit"></i>
+          <span>Editar Perfil</span>
+        </button>
+        <button class="action-btn secondary" (click)="openEditPersonDialog()" aria-label="Editar datos personales">
+          <i class="fas fa-user-edit"></i>
+          <span>Datos Personales</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- RIGHT: Pagos y premium (sidebar) -->
-  <div class="sidebar-section" role="complementary" aria-label="Información del parqueadero - sidebar">
-    <!-- botón cerrar -->
-    <button class="close-sidebar" (click)="closeSidebar()" aria-label="Cerrar panel">
-      <i class="fas fa-times" aria-hidden="true"></i>
-    </button>
-
-
-
-    <div class="payment-card">
-      <h4 class="card-title">
-        <i class="fas fa-parking" aria-hidden="true"></i>
-        Información del parqueadero
-      </h4>
-
-      <div class="card-info">
-        <!-- Loading / error -->
-        <div *ngIf="parkingLoading" class="card-row">
-          <span class="card-label"><i class="fas fa-spinner fa-spin"></i> Estado:</span>
-          <span class="card-number">Cargando...</span>
-        </div>
-        <div *ngIf="parkingError && !parkingLoading" class="card-row">
-          <span class="card-label"><i class="fas fa-exclamation-triangle"></i> Error:</span>
-          <span class="card-number">{{ parkingError }}</span>
-        </div>
-
-        <!-- Si no hay datos y no hay error -->
-        <div *ngIf="!parkingData && !parkingLoading && !parkingError" class="card-row">
-          <span class="card-label"><i class="fas fa-info-circle"></i> Estado:</span>
-          <span class="card-number">Sin datos</span>
-        </div>
-
-        <!-- MOSTRAR SOLO LOS CAMPOS QUE DEVUELVE EL BACK -->
-        <div *ngIf="parkingData">
-
-
-          <div class="card-row">
-            <span class="card-label"><i class="fas fa-parking"></i> Nombre:</span>
-            <span class="card-number">{{ parkingData.name ?? '—' }}</span>
-          </div>
-
-          <div class="card-row">
-            <span class="card-label"><i class="fas fa-map-marker-alt"></i> Ubicación:</span>
-            <span class="card-number">{{ parkingData.location ?? '—' }}</span>
-          </div>
-
-
-
-          <div class="card-row">
-            <span class="card-label"><i class="fas fa-tag"></i> parkingCategory:</span>
-            <span class="card-number">
-              <ng-container *ngIf="parkingCategoryLoading">Cargando...</ng-container>
-              <ng-container *ngIf="!parkingCategoryLoading">
-                {{ parkingData.parkingCategory?.name ?? parkingData.parkingCategory ?? '—' }}
-              </ng-container>
-            </span>
-          </div>
-
-          <div class="card-row">
-            <span class="card-label"><i class="fas fa-check-circle"></i> Asset:</span>
-            <span class="card-number">{{ parkingData.asset === true ? 'Sí' : (parkingData.asset === false ? 'No' : '—')
-              }}</span>
-          </div>
-
-
-        </div>
-      </div>
-    </div>
-
-
-  <div class="premium-card" role="region" aria-label="Información app móvil ANPR Vision">
-  <div class="premium-header">
-    <h4 class="premium-title">
-      <i class="fas fa-qrcode" aria-hidden="true"></i>
-      Aplicación Móvil
-    </h4>
-
-  </div>
-
-  <div class="premium-body">
-
-
-    <div class="app-info" aria-label="Descarga la app ANPR Vision">
-
-      <div class="app-qr" aria-hidden="false">
-        <!-- QR: reemplaza el parámetro 'chl' con la URL de tu app o deep link -->
-        <img id="qrImage" alt="Código QR para descargar la app ANPR Vision"
-             src="assets/images/qr/codigo.png" />
-        <div class="qr-caption">Escanea para descargar</div>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-section">
+    <div class="loading-card">
+      <div class="loading-skeleton">
+        <div class="skeleton-line title"></div>
+        <div class="skeleton-line subtitle"></div>
+        <div class="skeleton-line content"></div>
+        <div class="skeleton-line content short"></div>
       </div>
     </div>
   </div>
 
-</div>
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-banner">
+    <div class="error-content">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+  </div>
 
+  <!-- Main Content Layout -->
+  <div class="main-content-layout" *ngIf="!loading">
+    <!-- Left Column: User Details + Parking -->
+    <div class="left-column">
+      <!-- User Details Card -->
+      <div class="info-card user-details-card" role="region" aria-label="Detalles del usuario">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-user"></i>
+          </div>
+          <h3 class="card-title">Información Personal</h3>
+        </div>
+
+        <div class="card-content">
+          <div class="info-grid">
+            <div class="info-item">
+              <label class="info-label">Usuario</label>
+              <span class="info-value">{{ userData?.username || '—' }}</span>
+            </div>
+            <div class="info-item">
+              <label class="info-label">Correo</label>
+              <span class="info-value">{{ userData?.email || '—' }}</span>
+            </div>
+
+            <ng-container *ngIf="personData">
+              <div class="info-item">
+                <label class="info-label">Nombres</label>
+                <span class="info-value">{{ personData.firstName || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <label class="info-label">Apellidos</label>
+                <span class="info-value">{{ personData.lastName || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <label class="info-label">Documento</label>
+                <span class="info-value">{{ personData.document || '—' }}</span>
+              </div>
+              <div class="info-item">
+                <label class="info-label">Edad</label>
+                <span class="info-value">{{ personData.age || '—' }}</span>
+              </div>
+              <div class="info-item full-width">
+                <label class="info-label">Teléfono</label>
+                <span class="info-value">{{ personData.phone || '—' }}</span>
+              </div>
+            </ng-container>
+
+            <ng-template #noPersonTpl>
+              <div class="info-item full-width no-data">
+                <span class="no-data-text">
+                  <i class="fas fa-user-slash"></i>
+                  No hay datos personales asociados
+                </span>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Parking Info Card -->
+      <div class="info-card parking-card" role="region" aria-label="Información del parqueadero">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-parking"></i>
+          </div>
+          <h3 class="card-title">Parqueadero</h3>
+        </div>
+
+        <div class="card-content">
+          <div *ngIf="parkingLoading" class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Cargando información...</span>
+          </div>
+          <div *ngIf="parkingError && !parkingLoading" class="error-state">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ parkingError }}</span>
+          </div>
+          <div *ngIf="!parkingData && !parkingLoading && !parkingError" class="empty-state">
+            <i class="fas fa-info-circle"></i>
+            <span>Sin información disponible</span>
+          </div>
+
+          <div *ngIf="parkingData" class="parking-info">
+            <div class="parking-main">
+              <div class="parking-name">{{ parkingData.name || '—' }}</div>
+              <div class="parking-location">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ parkingData.location || 'Sin ubicación' }}
+              </div>
+            </div>
+
+            <div class="parking-details">
+              <div class="detail-row">
+                <span class="detail-label">Categoría:</span>
+                <span class="detail-value">
+                  <ng-container *ngIf="parkingCategoryLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                  </ng-container>
+                  <ng-container *ngIf="!parkingCategoryLoading">
+                    {{ parkingData.parkingCategory?.name || parkingData.parkingCategory || '—' }}
+                  </ng-container>
+                </span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Estado:</span>
+                <span class="detail-value status" [class.active]="parkingData.asset === true">
+                  {{ parkingData.asset === true ? 'Activo' : (parkingData.asset === false ? 'Inactivo' : '—') }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Mobile App (Full Height) -->
+    <div class="right-column">
+      <div class="info-card app-card full-height" role="region" aria-label="Aplicación móvil">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3 class="card-title">App Móvil</h3>
+        </div>
+
+        <div class="card-content">
+          <div class="app-content">
+            <div class="app-description">
+              <p>Descarga nuestra aplicación móvil para gestionar tu parqueadero desde cualquier lugar.</p>
+            </div>
+
+            <div class="qr-section">
+              <div class="qr-container">
+                <img src="assets/images/qr/codigo.png" alt="Código QR para descargar la app" />
+              </div>
+              <p class="qr-text">Escanea para descargar</p>
+            </div>
+
+           
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

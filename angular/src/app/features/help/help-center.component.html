@@ -1,17 +1,20 @@
 <div class="help-container">
-  <h1 class="help-title">Centro de Ayuda</h1>
+  <div class="help-header">
+    <h1 class="help-title">Centro de Ayuda</h1>
+    <p class="help-subtitle">Encuentra respuestas a tus preguntas y accede a la documentación completa</p>
+  </div>
 
-  <mat-tab-group animationDuration="400ms" class="custom-tabs">
-    <mat-tab label="FAQ">
-      <app-faq></app-faq>
+  <mat-tab-group animationDuration="300ms" class="help-tabs">
+    <mat-tab label="Preguntas Frecuentes">
+      <div class="tab-content">
+        <app-faq></app-faq>
+      </div>
     </mat-tab>
 
     <mat-tab label="Documentación">
-      <app-documentation></app-documentation>
+      <div class="tab-content">
+        <app-documentation></app-documentation>
+      </div>
     </mat-tab>
-
-    <!-- <mat-tab label="Soporte">
-      <app-contact-support></app-contact-support>
-    </mat-tab> -->
   </mat-tab-group>
 </div>
