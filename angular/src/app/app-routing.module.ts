@@ -47,7 +47,7 @@ import { CameraIndex } from './features/cameras/camera-index/camera-index';
 import { BlackListForm } from './features/segurity/pages/backlist/black-list-form/black-list-form';
 import { VehicleForm } from './features/operational/pages/vehicles/vehicle-form/vehicle-form';
 import { ParkingManagement } from './features/parking/pages/parking-management/parking-management';
-import { RegisteredVehicleIndex } from './features/operational/pages/registeredVehicle/registered-vehicle-index/registered-vehicle-index';
+// import { RegisteredVehicleIndex } from './features/operational/pages/registeredVehicle/registered-vehicle-index/registered-vehicle-index';
 import { ClientIndex } from './features/segurity/pages/client/client-index/client-index';
 import { ClientForm } from './features/segurity/pages/client/client-form/client-form';
 import { HelpCenterComponent } from './features/help/help-center.component';
@@ -55,6 +55,7 @@ import { GuestComponent } from './layout/guest/guest.component';
 import { SelectParking } from './features/parking/pages/select-parking/select-parking';
 import { ResetPasswordComponent } from './features/authentication/pages/reset-password/reset-password';
 import { VerifyOtpComponent } from './features/authentication/pages/verify-otp/verify-otp';
+import { RegisteredVehiclesIndex } from './features/operational/pages/registered-vehicles/registered-vehicles-index/registered-vehicles-index';
 
 // project import
 
@@ -133,7 +134,7 @@ const routes: Routes = [
       {path: 'vehicles-form', component: VehicleForm},
       {path: 'vehicles-form/:id', component: VehicleForm},
       {path: 'parking-management', component: ParkingManagement},
-      {path: 'registeredVehicle-index', component: RegisteredVehicleIndex},
+      {path: 'registeredVehicle-index', component: RegisteredVehiclesIndex},
       {path: 'client-index', component: ClientIndex},
       {path: 'client-form', component: ClientForm},
       {path: 'client-form/:id', component: ClientForm},
