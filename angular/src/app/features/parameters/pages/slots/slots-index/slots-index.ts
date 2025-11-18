@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
@@ -14,14 +14,15 @@ import { General } from 'src/app/core/services/general.service';
 
 @Component({
   selector: 'app-slots-index',
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule, MatPaginator],
   templateUrl: './slots-index.html',
   styleUrl: './slots-index.scss'
 })
 export class SlotsIndex implements OnInit {
-dataSource = new MatTableDataSource<Slots>();
- originalData: Slots[] = [];
- selectedFilter: string = 'all';
+ dataSource = new MatTableDataSource<Slots>();
+  originalData: Slots[] = [];
+  selectedFilter: string = 'all';
+  pagedData: Slots[] = [];
 columns = [
   { key: 'name', label: 'Nombre' },
   { key: 'sectors', label: 'Sector' },
@@ -46,7 +47,7 @@ getAllSlots(): void {
     next: (data) => {
       this.dataSource.data = data ?? [];
       this.originalData = data ?? [];
-      this.dataSource.paginator = this.paginator;
+      this.applyPagination(); // ✅ inicializar con la primera página
     },
     error: (err: Error) => {
       Swal.fire({
@@ -56,6 +57,7 @@ getAllSlots(): void {
       });
       this.dataSource.data = [];
       this.originalData = [];
+      this.pagedData = [];
     }
   });
 }
@@ -155,25 +157,26 @@ deletePermanentSlot(id: number): void {
 
    // Función para aplicar filtro de búsqueda
   // Función para aplicar filtro de búsqueda
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+ applyFilter(event: Event): void {
+   const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
 
-    let filteredData = this.originalData;
+   let filteredData = this.originalData;
 
-    // Aplicar filtro de búsqueda
-    if (filterValue) {
-      filteredData = filteredData.filter(slot =>
-        slot.name?.toLowerCase().includes(filterValue) ||
-        slot.sectors?.toLowerCase().includes(filterValue) ||
-        slot.id?.toString().includes(filterValue)
-      );
-    }
+   // Aplicar filtro de búsqueda
+   if (filterValue) {
+     filteredData = filteredData.filter(slot =>
+       slot.name?.toLowerCase().includes(filterValue) ||
+       slot.sectors?.toLowerCase().includes(filterValue) ||
+       slot.id?.toString().includes(filterValue)
+     );
+   }
 
-    // Aplicar filtro de estado si hay uno activo
-    filteredData = this.applyStatusFilter(filteredData);
+   // Aplicar filtro de estado si hay uno activo
+   filteredData = this.applyStatusFilter(filteredData);
 
-    this.dataSource.data = filteredData;
-  }
+   this.dataSource.data = filteredData;
+   this.applyPagination(); // ✅ aplicar paginación después del filtro
+ }
   // Función para filtrar por estado
   filterByStatus(status: string): void {
     this.selectedFilter = status;
@@ -197,6 +200,7 @@ deletePermanentSlot(id: number): void {
     filteredData = this.applyStatusFilter(filteredData);
 
     this.dataSource.data = filteredData;
+    this.applyPagination(); // ✅ aplicar paginación después del filtro
   }
 // Función auxiliar para aplicar filtro de estado
   private applyStatusFilter(data: Slots[]): Slots[] {
@@ -214,6 +218,20 @@ deletePermanentSlot(id: number): void {
       case 'all':
       default:
         return data;
+    }
+  }
+
+  onPageChange(event: PageEvent) {
+    const startIndex = event.pageIndex * event.pageSize;
+    const endIndex = startIndex + event.pageSize;
+    this.pagedData = this.dataSource.data.slice(startIndex, endIndex);
+  }
+
+  private applyPagination() {
+    // siempre resetear a la primera página con tamaño 5
+    this.pagedData = this.dataSource.data.slice(0, 5);
+    if (this.paginator) {
+      this.paginator.firstPage();
     }
   }
 }
