@@ -181,9 +181,9 @@ export class ParkingEntry implements OnInit, OnDestroy {
   // Método para obtener el color según el tipo
   getNotificationColor(type: string): string {
     switch (type) {
-      case 'entrada': return '#10B981'; // Verde
-      case 'salida': return '#EF4444'; // Rojo
-      default: return '#3B82F6'; // Azul
+      case 'entrada': return '#2ed8b6'; // Color de éxito del sistema
+      case 'salida': return '#ff5370'; // Color de peligro del sistema
+      default: return '#4099ff'; // Color primario del sistema
     }
   }
 
