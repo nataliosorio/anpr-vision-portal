@@ -1,0 +1,193 @@
+<div class="parking-container">
+  <!-- Hero Section (informativo, sin botón) -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <div class="hero-text">
+        <!-- Aquí puedes dejar título/estadísticas si las necesitas -->
+        <!-- <h1>Registros de Entradas</h1> -->
+      </div>
+      <div class="hero-actions">
+        <!-- botón movido al toolbar para que quede en la misma fila que el search -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+
+        <!-- ROW: botón + búsqueda en la misma línea -->
+        <div class="controls-row">
+          <!-- Botón (lado izquierdo) -->
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Registrar nueva entrada">
+              <mat-icon class="title-icon">directions_car</mat-icon>
+              Nueva Entrada
+            </button>
+          </div>
+
+          <!-- Search (ocupa el espacio restante) -->
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar por vehículo, fecha, slot..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+
+
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Vehicle List -->
+  <div class="vehicle-list" *ngIf="dataSource.data.length > 0">
+    <div
+      class="vehicle-card-horizontal"
+      *ngFor="let entry of pagedData"
+      [class.deleted-card]="entry.isDeleted">
+
+      <!-- Left Section: Vehículo y Estado -->
+      <div class="card-left">
+        <div class="plate-section">
+          <h2 class="plate-title">{{ entry.vehicle }}</h2>
+          <div
+            class="status-badge"
+            [class.active]="!entry.exitDate && !entry.isDeleted"
+            [class.inactive]="entry.exitDate && !entry.isDeleted"
+            [class.deleted]="entry.isDeleted">
+            <mat-icon>
+              {{ entry.isDeleted ? 'block' : (entry.exitDate ? 'exit_to_app' : 'check_circle') }}
+            </mat-icon>
+            <span>{{ entry.isDeleted ? 'Eliminado' : (entry.exitDate ? 'Salida' : 'Activo') }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Section: Información de la Entrada -->
+      <div class="card-center">
+        <div class="info-row">
+          <div class="info-item">
+            <mat-icon>event</mat-icon>
+            <span class="info-text">
+              {{ entry.entryDate | date:'short' }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>exit_to_app</mat-icon>
+            <span class="info-text">
+              {{ entry.exitDate ? (entry.exitDate | date:'short') : 'Sin salida' }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>location_on</mat-icon>
+            <span class="info-text">
+              {{ entry.slots }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Acciones -->
+      <div class="card-right">
+        <ng-container *ngIf="!entry.isDeleted">
+          <button
+            mat-raised-button
+            color="primary"
+            class="action-btn-horizontal edit-btn"
+            (click)="goToEdit(entry)"
+            matTooltip="Editar entrada">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            color="warn"
+            class="action-btn-horizontal delete-btn"
+            (click)="deleteEntry(entry.id!)"
+            matTooltip="Eliminar entrada">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="entry.isDeleted">
+          <button
+            mat-raised-button
+            class="action-btn-horizontal disabled-btn"
+            disabled
+            matTooltip="No se puede editar">
+            <mat-icon>edit_off</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            class="action-btn-horizontal permanent-delete-btn"
+            (click)="deletePermanentEntry(entry.id!)"
+            matTooltip="Eliminar permanentemente">
+            <mat-icon>delete_forever</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Overlay para eliminados -->
+      <div class="deletion-warning-overlay" *ngIf="entry.isDeleted">
+        <mat-icon>warning_amber</mat-icon>
+        <span>Esta entrada ha sido eliminada lógicamente del sistema</span>
+      </div>
+    </div>
+  </div>
+
+  <mat-paginator
+  [length]="dataSource.data.length"
+  [pageSizeOptions]="[5, 10, 20]"
+  [pageSize]="5"
+  showFirstLastButtons
+  (page)="onPageChange($event)">
+  </mat-paginator>
+
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">directions_car</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+          <mat-icon class="car-icon">directions_car</mat-icon>
+        </div>
+      </div>
+      <h2 class="empty-title">No hay entradas registradas</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        class="empty-action-btn"
+        (click)="goToCreate()">
+        <mat-icon>add</mat-icon>
+        Registrar Entrada
+      </button>
+    </div>
+  </div>
+</div>
