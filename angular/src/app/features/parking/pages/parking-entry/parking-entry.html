@@ -1,0 +1,108 @@
+<div class="parking-entry-container">
+  <div class="header">
+    <h1 class="title">
+      <mat-icon class="title-icon">directions_car</mat-icon>
+      Pantalla de Entrada - Parqueadero
+    </h1>
+  </div>
+
+  <div class="content">
+    <!-- Notificaciones en tiempo real -->
+    <div class="notifications-section">
+      
+
+      <div class="notifications-grid" *ngIf="realtimeNotifications.length > 0; else noNotifications">
+        <mat-card class="notification-card"
+                  *ngFor="let notification of realtimeNotifications; trackBy: trackByNotification"
+                  [style.border-left-color]="getNotificationColor(getNotificationType(notification.data))">
+
+          <mat-card-header>
+            <mat-card-title class="notification-title">
+              <mat-icon [style.color]="getNotificationColor(getNotificationType(notification.data))">
+                {{ getNotificationIcon(getNotificationType(notification.data)) }}
+              </mat-icon>
+              <span>{{ notification.data.title || 'Nueva Notificación' }}</span>
+            </mat-card-title>
+            <mat-card-subtitle class="notification-time">
+              {{ notification.timestamp | date:'short' }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="notification-content">
+            <p class="message">{{ notification.data.message || notification.data.description }}</p>
+
+            <!-- Información del slot si está disponible -->
+            <div class="slot-info" *ngIf="getSlotInfo(notification.data) as slotInfo">
+              <mat-chip-listbox>
+                <mat-chip [color]="'primary'" selected>
+                  <mat-icon>local_parking</mat-icon>
+                  Slot: {{ slotInfo.slot }}
+                </mat-chip>
+                <mat-chip [color]="'accent'" selected>
+                  <mat-icon>location_on</mat-icon>
+                  Sector: {{ slotInfo.sector }}
+                </mat-chip>
+                <mat-chip [color]="'warn'" selected>
+                  <mat-icon>map</mat-icon>
+                  Zona: {{ slotInfo.zona }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="notification-actions">
+            <!-- Barra de progreso para auto-eliminación -->
+            <div class="auto-dismiss-progress">
+              <div class="progress-bar" [style.animation-duration]="'8s'"></div>
+            </div>
+            <span class="auto-dismiss-text">Se oculta automáticamente en 8 segundos</span>
+            <button mat-button color="primary" (click)="acceptNotification(notification.id)">
+              <mat-icon>check_circle</mat-icon>
+              Aceptar
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
+      <ng-template #noNotifications>
+        <div class="no-notifications">
+          <mat-icon class="no-notifications-icon">notifications_off</mat-icon>
+          <h3>No hay notificaciones activas</h3>
+          <p>Las notificaciones aparecerán aquí en tiempo real cuando haya actividad en el parqueadero.</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="info-section">
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Información para Conductores
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ul class="info-list">
+            <li>
+              <mat-icon>check_circle</mat-icon>
+              Siga las instrucciones en pantalla para estacionar correctamente
+            </li>
+            <li>
+              <mat-icon>check_circle</mat-icon>
+              Respete las señales de tránsito dentro del parqueadero
+            </li>
+            <li>
+              <mat-icon>check_circle</mat-icon>
+              Mantenga su ticket de estacionamiento visible
+            </li>
+            <li>
+              <mat-icon>check_circle</mat-icon>
+              En caso de duda, contacte al personal del parqueadero
+            </li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -115,6 +115,13 @@ export class MenuApiService {
       icon: 'icon-group',
       children: [
         {
+          id: 'pantalla-entrada',
+          title: 'Pantalla de Entrada',
+          type: 'item',
+          url: '/parking-entry',
+          icon: 'feather icon-monitor'
+        },
+        {
           id: 'configuracion',
           title: 'Configuración',
           type: 'item',
