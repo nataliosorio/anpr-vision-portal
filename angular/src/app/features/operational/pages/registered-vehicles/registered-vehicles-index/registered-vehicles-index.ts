@@ -1,21 +1,26 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { RegisteredVehicle } from 'src/app/shared/Models/Entitys';
 
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-registered-vehicles-index',
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule, MatPaginator, DatePipe],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, MatPaginator, DatePipe, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, ReactiveFormsModule],
   templateUrl: './registered-vehicles-index.html',
   styleUrl: './registered-vehicles-index.scss'
 })
@@ -24,6 +29,9 @@ export class RegisteredVehiclesIndex implements OnInit {
   originalData: RegisteredVehicle[] = [];
   selectedFilter: string = 'all';
   pagedData: RegisteredVehicle[] = [];
+
+  vehicleTypes: VehicleType[] = [];
+  manualEntryForm: FormGroup;
 
   columns = [
     { key: 'vehicle', label: 'Vehículo' },
@@ -34,12 +42,35 @@ export class RegisteredVehiclesIndex implements OnInit {
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild('manualEntryDialog') manualEntryDialogTemplate!: TemplateRef<any>;
 
   private _generalService = inject(General);
   private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private dialog = inject(MatDialog);
+
+  constructor() {
+    this.manualEntryForm = this.fb.group({
+      plate: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/i)]],
+      parkingId: [this._generalService.getParkingId() ? parseInt(this._generalService.getParkingId()!) : null, [Validators.required, Validators.min(1)]],
+      typeVehicleId: [null, [Validators.required, Validators.min(1)]]
+    });
+  }
 
   ngOnInit(): void {
     this.getAllEntries();
+    this.loadVehicleTypes();
+  }
+
+  loadVehicleTypes(): void {
+    this._generalService.get<VehicleType[]>('TypeVehicle/select').subscribe({
+      next: (vehicleTypes) => {
+        this.vehicleTypes = vehicleTypes || [];
+      },
+      error: (err: Error) => {
+        console.error('Error loading vehicle types:', err);
+      }
+    });
   }
 
   getAllEntries(): void {
@@ -59,7 +90,59 @@ export class RegisteredVehiclesIndex implements OnInit {
   }
 
   goToCreate(): void {
-    this.router.navigate(['/registered-vehicles-form']);
+    this.openManualEntryDialog();
+  }
+
+  openManualEntryDialog(): void {
+    this.manualEntryForm.reset();
+    // Set parkingId from localStorage
+    const parkingId = this._generalService.getParkingId();
+    if (parkingId) {
+      this.manualEntryForm.patchValue({ parkingId: parseInt(parkingId) });
+    }
+    const dialogRef = this.dialog.open(this.manualEntryDialogTemplate, {
+      width: '500px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'submit') {
+        this.submitManualEntry();
+      }
+    });
+  }
+
+  submitManualEntry(): void {
+    if (this.manualEntryForm.valid) {
+      const formValue = this.manualEntryForm.value;
+      const data = {
+        plate: formValue.plate.trim().toUpperCase(),
+        parkingId: formValue.parkingId,
+        typeVehicleId: formValue.typeVehicleId
+      };
+
+      this._generalService.post('RegisteredVehicles/manual-entry', data).subscribe({
+        next: () => {
+          Swal.fire({
+            title: '¡Éxito!',
+            text: 'Entrada manual registrada correctamente.',
+            icon: 'success',
+            confirmButtonColor: '#4caf50'
+          });
+          this.getAllEntries(); // Recargar la lista
+        },
+        error: (err: Error) => {
+          // El general.service.ts ya extrae el message del ApiResponse
+          const errorMessage = err.message || 'Error al procesar la entrada manual.';
+          Swal.fire({
+            title: 'Error',
+            text: errorMessage,
+            icon: 'error',
+            confirmButtonColor: '#f44336'
+          });
+        }
+      });
+    }
   }
 
   goToEdit(entry: RegisteredVehicle): void {
@@ -85,7 +168,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        this._generalService.delete('RegisteredVehicle', id).subscribe({
+        this._generalService.delete('RegisteredVehicles', id).subscribe({
           next: () => {
             Swal.fire({
               title: '¡Eliminado!',
@@ -127,7 +210,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        this._generalService.delete('RegisteredVehicle/permanent', id).subscribe({
+        this._generalService.delete('RegisteredVehicles/permanent', id).subscribe({
           next: () => {
             Swal.fire({
               title: '¡Eliminado permanentemente!',

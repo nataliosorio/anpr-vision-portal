@@ -191,3 +191,44 @@
     </div>
   </div>
 </div>
+
+<!-- Manual Entry Dialog -->
+<ng-template #manualEntryDialog>
+  <div class="manual-entry-dialog">
+    <h2 mat-dialog-title>Entrada Manual de Vehículo</h2>
+    <mat-dialog-content>
+      <form [formGroup]="manualEntryForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Placa del Vehículo</mat-label>
+          <input matInput formControlName="plate" placeholder="ABC-123" required>
+          <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('required')">
+            La placa es requerida.
+          </mat-error>
+          <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('pattern')">
+            Formato de placa inválido.
+          </mat-error>
+        </mat-form-field>
+
+        <input type="hidden" formControlName="parkingId">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Tipo de Vehículo</mat-label>
+          <mat-select formControlName="typeVehicleId" required>
+            <mat-option *ngFor="let type of vehicleTypes" [value]="type.id">
+              {{ type.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="manualEntryForm.get('typeVehicleId')?.hasError('required')">
+            Seleccione un tipo de vehículo.
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancelar</button>
+      <button mat-raised-button color="primary" [disabled]="manualEntryForm.invalid" mat-dialog-close="submit">
+        Registrar Entrada
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
