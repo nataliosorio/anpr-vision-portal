@@ -16,6 +16,11 @@ import { General } from 'src/app/core/services/general.service';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { RegisteredVehicle } from 'src/app/shared/Models/Entitys';
 
+// Interface for the new response with PDF
+interface ManualEntryResponseDto extends RegisteredVehicle {
+  ticketPdfBytes: string;
+}
+
 import Swal from 'sweetalert2';
 
 @Component({
@@ -121,13 +126,16 @@ export class RegisteredVehiclesIndex implements OnInit {
         typeVehicleId: formValue.typeVehicleId
       };
 
-      this._generalService.post('RegisteredVehicles/manual-entry', data).subscribe({
-        next: () => {
+      this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
+        next: (response: ManualEntryResponseDto) => {
           Swal.fire({
             title: '¡Éxito!',
             text: 'Entrada manual registrada correctamente.',
             icon: 'success',
             confirmButtonColor: '#4caf50'
+          }).then(() => {
+            // Abrir el PDF en una nueva pestaña
+            this.openPdfInNewTab(response.ticketPdfBytes);
           });
           this.getAllEntries(); // Recargar la lista
         },
@@ -143,6 +151,44 @@ export class RegisteredVehiclesIndex implements OnInit {
         }
       });
     }
+  }
+
+  private openPdfInNewTab(base64Pdf: string): void {
+    try {
+      // Convertir base64 a bytes
+      const pdfBytes = this.base64ToArrayBuffer(base64Pdf);
+
+      // Crear blob con tipo MIME de PDF
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+
+      // Crear URL del blob
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Abrir en nueva pestaña
+      window.open(pdfUrl, '_blank');
+
+      // Limpiar la URL del blob después de un tiempo para liberar memoria
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+      }, 10000); // 10 segundos
+    } catch (error) {
+      console.error('Error al abrir el PDF:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo abrir el ticket PDF.',
+        icon: 'warning',
+        confirmButtonColor: '#ff9800'
+      });
+    }
+  }
+
+  private base64ToArrayBuffer(base64: string): ArrayBuffer {
+    const binaryString = window.atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
   }
 
   goToEdit(entry: RegisteredVehicle): void {
