@@ -315,4 +315,16 @@ export class RegisteredVehiclesIndex implements OnInit {
       this.paginator.firstPage();
     }
   }
+
+  getVehicleTypeIcon(typeName: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Carro': 'directions_car',
+      'Moto': 'motorcycle',
+      'Camión': 'local_shipping',
+      'Camion': 'local_shipping',
+      'Bicicleta': 'pedal_bike',
+      'Scooter': 'electric_scooter'
+    };
+    return iconMap[typeName] || 'directions_car';
+  }
 }
