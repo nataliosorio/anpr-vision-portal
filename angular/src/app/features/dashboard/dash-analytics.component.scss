@@ -151,8 +151,8 @@
 }
 
 .pill-btn {
-  background: rgba(255,255,255,0.03);
-  color: #e6eef3;
+  background: rgba(255, 255, 255, 0.922);
+  color: #0a0a0a;
   border: 1px solid rgba(255,255,255,0.04);
   padding: .3rem .7rem;
   border-radius: 999px;
@@ -162,7 +162,7 @@
   transition: transform .08s ease, background .12s ease;
 }
 .pill-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
-.pill-btn.active { background: linear-gradient(90deg,var(--accent-1),var(--accent-2)); color: #031521; border: none; box-shadow: 0 6px 18px rgba(2,6,23,0.6); }
+.pill-btn.active { background: #5addc3; color: #031521; border: none; box-shadow: 0 6px 18px rgba(2,6,23,0.6); }
 
 /* Alerts */
 .titulo-alert {
