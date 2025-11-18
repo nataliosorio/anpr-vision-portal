@@ -1,28 +1,43 @@
 /* edit-user-dialog-component.scss */
 
 /* Variables */
-$primary-gradient-start: #6c63ff;
-$primary-gradient-end: #836fff;
-$modal-bg: #222831;
+$primary-gradient-start: #4099ff;
+$primary-gradient-end: #7759de;
+$secondary-gradient: linear-gradient(135deg, #27d3c8, #1cb5ac);
+$modal-bg: #2c3544;
 $modal-text: #ffffff;
-$input-text: #000000; /* Negro para el texto de los inputs */
-$muted: #9ca3af;
-$shadow: 0 12px 30px rgba(9, 12, 20, 0.45);
+$input-text: #000000;
+$muted: #a0aec0;
+$shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+$border-radius: 12px;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
 .edit-user-modal {
-  width: 100%;
-  max-width: 460px;
-  background: $modal-bg;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: $shadow;
-  color: $modal-text;
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: relative;
-}
+   width: 100%;
+   max-width: 480px;
+   background: $modal-bg;
+   border-radius: $border-radius + 4px;
+   padding: 28px;
+   box-shadow: $shadow;
+   color: $modal-text;
+   font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+   display: flex;
+   flex-direction: column;
+   gap: 20px;
+   position: relative;
+   animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+ }
+
+ @keyframes modalSlideIn {
+   from {
+     opacity: 0;
+     transform: translateY(-20px) scale(0.95);
+   }
+   to {
+     opacity: 1;
+     transform: translateY(0) scale(1);
+   }
+ }
 
 /* Header */
 .modal-head {
@@ -92,12 +107,48 @@ $shadow: 0 12px 30px rgba(9, 12, 20, 0.45);
 .modal-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
   padding: 8px 0;
 }
 
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  width: 100%;
+
+  .form-field {
+    width: 100%;
+    animation: fieldSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+
+    &:nth-child(1) { animation-delay: 0.1s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+  }
+}
+
+@keyframes fieldSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Field Icons */
+.field-icon {
+  color: $primary-gradient-end !important;
+  margin-right: 8px;
+  font-size: 20px;
+  opacity: 0.8;
+}
+
 /* INPUTS / Angular Material (dark mode mejorado) */
-mat-form-field.full {
+mat-form-field {
   width: 100%;
 
   /* wrapper spacing */
@@ -107,37 +158,43 @@ mat-form-field.full {
 
   /* Contenedor del input con fondo oscuro */
   ::ng-deep .mat-form-field-flex {
-    background: rgba(255, 255, 255, 0.05); /* Fondo oscuro sutil */
-    border-radius: 10px;
-    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: $border-radius;
+    padding: 12px 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
+    transition: $transition;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
 
   /* outline en estado normal */
   ::ng-deep .mat-form-field-outline {
-    opacity: 0; /* Ocultamos el outline por defecto */
+    opacity: 0;
   }
 
   /* label (flotante) */
   ::ng-deep .mat-form-field-label {
-    color: rgba(255, 255, 255, 0.7) !important;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 600;
     font-size: 14px;
+    margin-bottom: 4px;
   }
 
   /* texto del input */
   ::ng-deep .mat-input-element {
-    color: #ffffff !important; /* Blanco para mejor contraste con fondo oscuro */
+    color: #ffffff !important;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 15px;
     background: transparent;
+    padding-left: 8px;
   }
 
   /* placeholder */
   ::ng-deep .mat-input-element::placeholder {
     color: rgba(255, 255, 255, 0.5);
     opacity: 1;
+    font-size: 14px;
   }
 
   /* estado focused */
@@ -145,8 +202,9 @@ mat-form-field.full {
     .mat-form-field-flex {
       background: rgba(255, 255, 255, 0.08);
       border-color: $primary-gradient-end;
-      box-shadow: 0 0 0 3px rgba($primary-gradient-end, 0.1),
-                  0 4px 12px rgba($primary-gradient-end, 0.15);
+      box-shadow: 0 0 0 3px rgba($primary-gradient-end, 0.15),
+                  0 8px 24px rgba($primary-gradient-end, 0.2);
+      transform: translateY(-1px);
     }
 
     .mat-form-field-label {
@@ -160,6 +218,7 @@ mat-form-field.full {
     .mat-form-field-flex {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-0.5px);
     }
   }
 
@@ -167,12 +226,17 @@ mat-form-field.full {
   ::ng-deep .mat-form-field-invalid {
     .mat-form-field-flex {
       border-color: #ef4444 !important;
-      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
     }
 
     .mat-form-field-label {
       color: #ef4444 !important;
     }
+  }
+
+  /* Prefix icon spacing */
+  ::ng-deep .mat-form-field-prefix {
+    margin-right: 8px;
   }
 }
 
@@ -210,48 +274,104 @@ mat-form-field.full {
   background: linear-gradient(135deg, $primary-gradient-start, $primary-gradient-end);
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
+  border-radius: $border-radius;
+  padding: 12px 24px;
   font-weight: 700;
-  font-size: 14px;
-  min-width: 100px;
-  box-shadow: 0 4px 14px rgba(108, 99, 255, 0.3);
-  transition: all 0.15s ease;
+  font-size: 15px;
+  min-width: 120px;
+  box-shadow: 0 6px 20px rgba(64, 153, 255, 0.4);
+  transition: $transition;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(108, 99, 255, 0.4);
-    background: linear-gradient(135deg,
-      lighten($primary-gradient-start, 5%),
-      lighten($primary-gradient-end, 5%));
+    box-shadow: 0 8px 28px rgba(64, 153, 255, 0.5);
+
+    &::before {
+      left: 100%;
+    }
   }
 
   &:active {
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(108, 99, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(64, 153, 255, 0.4);
   }
 }
 
 /* Responsive adjustments */
-@media (max-width: 540px) {
+@media (max-width: 768px) {
+  .edit-user-modal {
+    padding: 24px;
+    max-width: 95vw;
+    gap: 18px;
+  }
+
+  .modal-head h2 {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 480px) {
   .edit-user-modal {
     padding: 20px;
     max-width: 92vw;
-    gap: 14px;
+    gap: 16px;
+  }
+
+  .modal-head {
+    padding-bottom: 8px;
   }
 
   .modal-head h2 {
     font-size: 18px;
   }
 
+  .modal-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+
+    i {
+      font-size: 16px;
+    }
+  }
+
   .btn-save, .btn-cancel {
-    min-width: 90px;
-    padding: 9px 16px;
-    font-size: 13px;
+    min-width: 100px;
+    padding: 11px 18px;
+    font-size: 14px;
   }
 
   .modal-body {
-    gap: 16px;
+    gap: 20px;
+  }
+
+  mat-form-field {
+    ::ng-deep .mat-form-field-flex {
+      padding: 10px 14px;
+      min-height: 44px;
+    }
+
+    ::ng-deep .mat-input-element {
+      font-size: 14px;
+    }
+  }
+
+  .field-icon {
+    font-size: 18px;
+    margin-right: 6px;
   }
 }
 
