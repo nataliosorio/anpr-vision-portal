@@ -9,10 +9,8 @@ import { environment } from 'src/environments/environment.prod';
 })
 export class NotificationHubService {
   private hubConnection!: signalR.HubConnection;
-  private notificationsSubject = new BehaviorSubject<any[]>([]);
+  private notificationsSubject = new BehaviorSubject<any>(null);
   notifications$ = this.notificationsSubject.asObservable();
-
-  private currentNotifications: any[] = [];
 
   startConnection(parkingId: number): void {
     const hubUrl = `${environment.apiHub}?parkingId=${parkingId}`;
@@ -34,9 +32,8 @@ export class NotificationHubService {
     this.hubConnection.on('ReceiveNotification', (notification) => {
       console.log('📩 Notificación recibida:', notification);
 
-      // Añadir a la lista local
-      this.currentNotifications.unshift(notification);
-      this.notificationsSubject.next(this.currentNotifications);
+      // Emitir la nueva notificación
+      this.notificationsSubject.next(notification);
     });
   }
 
