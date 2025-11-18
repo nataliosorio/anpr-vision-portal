@@ -30,7 +30,7 @@
       <app-card [hidHeader]="true" cardClass="bg-c-blue chart-card">
         <h6 class="card-heading">Ocupación de Espacios</h6>
 
-        <apx-chart [series]="occupancyDonutOptions.series" [chart]="occupancyDonutOptions.chart"
+        <apx-chart  [colors]="occupancyDonutOptions.colors" [series]="occupancyDonutOptions.series" [chart]="occupancyDonutOptions.chart"
           [labels]="occupancyDonutOptions.labels" [legend]="occupancyDonutOptions.legend"
           [dataLabels]="occupancyDonutOptions.dataLabels" [plotOptions]="occupancyDonutOptions.plotOptions"
           [tooltip]="occupancyDonutOptions.tooltip">
@@ -47,7 +47,7 @@
       <app-card [hidHeader]="true" cardClass="bg-c-yellow chart-card">
         <h6 class="card-heading">Distribución por tipo de vehículo</h6>
 
-        <apx-chart [series]="vehicleTypePieOptions.series" [chart]="vehicleTypePieOptions.chart"
+        <apx-chart  [colors]="vehicleTypePieOptions.colors" [series]="vehicleTypePieOptions.series" [chart]="vehicleTypePieOptions.chart"
           [labels]="vehicleTypePieOptions.labels" [legend]="vehicleTypePieOptions.legend"
           [dataLabels]="vehicleTypePieOptions.dataLabels" [plotOptions]="vehicleTypePieOptions.plotOptions"
           [tooltip]="vehicleTypePieOptions.tooltip">
@@ -73,7 +73,7 @@
           <ng-template #noZones><span class="muted">Cargando zonas…</span></ng-template>
         </div>
 
-        <apx-chart [series]="zoneDonutOptions.series" [chart]="zoneDonutOptions.chart" [labels]="zoneDonutOptions.labels"
+        <apx-chart  [colors]="zoneDonutOptions.colors" [series]="zoneDonutOptions.series" [chart]="zoneDonutOptions.chart" [labels]="zoneDonutOptions.labels"
           [legend]="zoneDonutOptions.legend" [dataLabels]="zoneDonutOptions.dataLabels"
           [plotOptions]="zoneDonutOptions.plotOptions" [tooltip]="zoneDonutOptions.tooltip">
         </apx-chart>
@@ -86,7 +86,7 @@
       </app-card>
     </div>
 
-  </div> 
+  </div>
 
 
 </div>
