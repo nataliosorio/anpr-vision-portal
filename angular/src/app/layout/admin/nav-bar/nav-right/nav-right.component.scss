@@ -228,6 +228,35 @@
   position: relative;
   flex-shrink: 0;
 }
+.notif-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #fff;
+    opacity: 0.7;
+    transition: 0.2s;
+
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+
+  .btn-read {
+    color: #00d084; // verde
+  }
+
+  .btn-delete {
+    color: #ff4d4f; // rojo
+  }
+}
 
 .notif-img {
   width: 40px;
