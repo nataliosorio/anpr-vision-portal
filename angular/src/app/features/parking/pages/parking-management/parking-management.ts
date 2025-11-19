@@ -47,7 +47,6 @@ export class ParkingManagement implements OnInit {
   filteredSlots: Slots[] = [];
 
   selectedSlot: Slots | null = null;
-  showSectorModal = false;
 
   // usar setter para filtrar sin cambiar el HTML
   private _searchTerm = '';
@@ -127,18 +126,18 @@ export class ParkingManagement implements OnInit {
     );
   }
 
-  openSectorModal(sector: Sectors): void {
+  selectSector(sector: Sectors): void {
     this.selectedSector = sector;
     this.filterSlots();
-    this.showSectorModal = true;
     this.selectedSlot = null;
+    this.vehicleData = null;
   }
 
-  closeSectorModal(): void {
-    this.showSectorModal = false;
+  closeSectorDetails(): void {
     this.selectedSector = null;
     this.filteredSlots = [];
     this.selectedSlot = null;
+    this.vehicleData = null;
   }
 
   filterSlots(): void {

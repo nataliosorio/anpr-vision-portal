@@ -50,6 +50,19 @@
         <p class="notif-message" [innerHTML]="n.message"></p>
       </div>
 
+        <!-- Botones -->
+  <div class="notif-actions">
+    <!-- Marcar como leída -->
+    <button *ngIf="!n.isRead" class="btn-read" (click)="markAsRead(n, i)">
+      <i class="feather icon-check"></i>
+    </button>
+
+    <!-- Eliminar -->
+    <button class="btn-delete" (click)="deleteNotification(n, i)">
+      <i class="feather icon-trash-2"></i>
+    </button>
+  </div>
+
       <!-- Indicador de no leído -->
       <div class="notif-indicator" aria-hidden="true"></div>
     </div>

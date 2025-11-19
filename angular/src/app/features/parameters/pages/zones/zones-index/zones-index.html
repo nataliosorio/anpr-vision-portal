@@ -1,21 +1,13 @@
-
-
 <div class="parking-container">
-  <!-- Hero Section -->
+  <!-- Hero Section (informativo, sin botón) -->
   <div class="hero-section">
     <div class="hero-content">
-
+      <div class="hero-text">
+        <!-- Aquí puedes dejar título/estadísticas si las necesitas -->
+        <!-- <h1>Zonas</h1> -->
+      </div>
       <div class="hero-actions">
-        <button
-          mat-fab
-          extended
-          color="primary"
-          class="create-parking-btn"
-          (click)="goToCreate()"
-          matTooltip="Crear nueva zona">
-          <mat-icon class="title-icon">location_on</mat-icon>
-          Nueva Zona
-        </button>
+        <!-- botón movido al toolbar para que quede en la misma fila que el search -->
       </div>
     </div>
   </div>
@@ -24,142 +16,153 @@
   <div class="toolbar-section">
     <mat-card class="toolbar-card">
       <div class="toolbar-content">
-        <div class="search-section">
-          <div class="search-wrapper">
-            <mat-icon class="search-icon">search</mat-icon>
-            <input
-              type="text"
-              placeholder="Buscar zonas por nombre o parqueadero..."
-              class="search-input"
-              (keyup)="applyFilter($event)">
+
+        <!-- ROW: botón + búsqueda en la misma línea -->
+        <div class="controls-row">
+          <!-- Botón (lado izquierdo) -->
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Registrar nueva zona">
+              <mat-icon class="title-icon">location_on</mat-icon>
+              Nueva Zona
+            </button>
           </div>
+
+          <!-- Search (ocupa el espacio restante) -->
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o parqueadero..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+
+
         </div>
+
 
 
       </div>
     </mat-card>
   </div>
 
-  <!-- Parking List -->
-  <div class="parking-list" *ngIf="(dataSource?.data?.length || 0) > 0">
+  <!-- Zone List -->
+  <div class="vehicle-list" *ngIf="dataSource.data.length > 0">
     <div
-      class="parking-item"
-      *ngFor="let zone of dataSource.data"
-      [class.deleted-item]="zone.isDeleted">
+      class="vehicle-card-horizontal"
+      *ngFor="let zone of pagedData"
+      [class.deleted-card]="zone.isDeleted">
 
-      <!-- Parking Card -->
-      <mat-card class="parking-card">
-        <div class="parking-header">
-          <div class="parking-info">
-            <h2 class="parking-name">{{ zone.name }}</h2>
-            <div class="parking-details">
-              <div class="detail-row">
-                <mat-icon class="detail-icon">garage</mat-icon>
-                <span class="detail-text">{{ zone.parking }}</span>
-              </div>
-              <!-- <div class="detail-row">
-                <mat-icon class="detail-icon">tag</mat-icon>
-                <span class="detail-text">ID: {{ zone.id }}</span>
-              </div> -->
-            </div>
-          </div>
-
-          <div class="parking-status-section">
-            <!-- Status Badge -->
-            <div class="status-wrapper">
-              <div
-                class="status-badge"
-                [class.active]="zone.asset && !zone.isDeleted"
-                [class.inactive]="!zone.asset && !zone.isDeleted"
-                [class.deleted]="zone.isDeleted">
-                <mat-icon class="status-icon">
-                  {{ zone.isDeleted ? 'delete' : (zone.asset ? 'check_circle' : 'cancel') }}
-                </mat-icon>
-                <span class="status-text">
-                  {{ zone.isDeleted ? 'Eliminada' : (zone.asset ? 'Activa' : 'Inactiva') }}
-                </span>
-              </div>
-            </div>
+      <!-- Left Section: Nombre y Estado -->
+      <div class="card-left">
+        <div class="plate-section">
+          <h2 class="plate-title">{{ zone.name }}</h2>
+          <div
+            class="status-badge"
+            [class.active]="zone.asset && !zone.isDeleted"
+            [class.inactive]="!zone.asset && !zone.isDeleted"
+            [class.deleted]="zone.isDeleted">
+            <mat-icon>
+              {{ zone.isDeleted ? 'block' : (zone.asset ? 'check_circle' : 'cancel') }}
+            </mat-icon>
+            <span>{{ zone.isDeleted ? 'Eliminado' : (zone.asset ? 'Activo' : 'Inactivo') }}</span>
           </div>
         </div>
+      </div>
 
-        <!-- Deletion Warning -->
-        <div class="deletion-warning" *ngIf="zone.isDeleted">
-          <mat-icon class="warning-icon">warning_amber</mat-icon>
-          <span class="warning-text">Esta zona ha sido eliminada lógicamente del sistema</span>
-        </div>
-
-        <!-- Actions Section -->
-        <div class="actions-section">
-          <div class="actions-wrapper">
-            <!-- Normal State Actions -->
-            <ng-container *ngIf="!zone.isDeleted">
-              <button
-                mat-raised-button
-                color="primary"
-                class="action-btn primary-action"
-                (click)="goToEdit(zone)"
-                matTooltip="Editar zona">
-                <mat-icon>edit_location</mat-icon>
-                <span>Editar</span>
-              </button>
-
-              <button
-                mat-raised-button
-                color="warn"
-                class="action-btn danger-action"
-                (click)="deleteZone(zone.id!)"
-                matTooltip="Eliminar zona">
-                <mat-icon>delete_outline</mat-icon>
-                <span>Eliminar</span>
-              </button>
-            </ng-container>
-
-            <!-- Deleted State Actions -->
-            <ng-container *ngIf="zone.isDeleted">
-              <button
-                mat-raised-button
-                class="action-btn disabled-action"
-                disabled
-                matTooltip="No se puede editar una zona eliminada">
-                <mat-icon>edit_off</mat-icon>
-                <span>Editar</span>
-              </button>
-
-              <button
-                mat-raised-button
-                class="action-btn disabled-action"
-                disabled
-                matTooltip="Zona ya eliminada lógicamente">
-                <mat-icon>delete_outline</mat-icon>
-                <span>Eliminar</span>
-              </button>
-
-              <button
-                mat-raised-button
-                color="accent"
-                class="action-btn permanent-action"
-                (click)="deletePermanentZone(zone.id!)"
-                matTooltip="Eliminar permanentemente del sistema">
-                <mat-icon>delete_forever</mat-icon>
-                <span>Eliminar Permanente</span>
-              </button>
-            </ng-container>
+      <!-- Center Section: Información de la Zona -->
+      <div class="card-center">
+        <div class="info-row">
+          <div class="info-item">
+            <mat-icon>garage</mat-icon>
+            <span class="info-text">
+              {{ zone.parking }}
+            </span>
           </div>
         </div>
-      </mat-card>
+      </div>
+
+      <!-- Right Section: Acciones -->
+      <div class="card-right">
+        <ng-container *ngIf="!zone.isDeleted">
+          <button
+            mat-raised-button
+            color="primary"
+            class="action-btn-horizontal edit-btn"
+            (click)="goToEdit(zone)"
+            matTooltip="Editar zona">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            color="warn"
+            class="action-btn-horizontal delete-btn"
+            (click)="deleteZone(zone.id!)"
+            matTooltip="Eliminar zona">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+
+        <ng-container *ngIf="zone.isDeleted">
+          <button
+            mat-raised-button
+            class="action-btn-horizontal disabled-btn"
+            disabled
+            matTooltip="No se puede editar">
+            <mat-icon>edit_off</mat-icon>
+            <span>Editar</span>
+          </button>
+
+          <button
+            mat-raised-button
+            class="action-btn-horizontal permanent-delete-btn"
+            (click)="deletePermanentZone(zone.id!)"
+            matTooltip="Eliminar permanentemente">
+            <mat-icon>delete_forever</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </ng-container>
+      </div>
+
+      <!-- Overlay para eliminados -->
+      <div class="deletion-warning-overlay" *ngIf="zone.isDeleted">
+        <mat-icon>warning_amber</mat-icon>
+        <span>Esta zona ha sido eliminada lógicamente del sistema</span>
+      </div>
     </div>
   </div>
 
+  <mat-paginator
+  [length]="dataSource.data.length"
+  [pageSizeOptions]="[5, 10, 20]"
+  [pageSize]="5"
+  showFirstLastButtons
+  (page)="onPageChange($event)">
+  </mat-paginator>
+
+
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="(dataSource?.data?.length || 0) === 0">
+  <div class="empty-state" *ngIf="dataSource.data.length === 0">
     <div class="empty-content">
       <div class="empty-illustration">
         <mat-icon class="empty-icon">location_on</mat-icon>
         <div class="empty-cars">
-          <mat-icon class="car-icon">place</mat-icon>
-          <mat-icon class="car-icon">place</mat-icon>
-          <mat-icon class="car-icon">place</mat-icon>
+          <mat-icon class="car-icon">location_on</mat-icon>
+          <mat-icon class="car-icon">location_on</mat-icon>
+          <mat-icon class="car-icon">location_on</mat-icon>
         </div>
       </div>
       <h2 class="empty-title">No hay zonas registradas</h2>
@@ -168,10 +171,9 @@
         color="primary"
         class="empty-action-btn"
         (click)="goToCreate()">
-        <mat-icon>add_location</mat-icon>
-        Crear Primera Zona
+        <mat-icon>add</mat-icon>
+        Registrar Zona
       </button>
     </div>
   </div>
-
 </div>

@@ -13,15 +13,21 @@
   <div class="modal-body" mat-dialog-content>
     <p id="editUserDesc" class="sr-only">Formulario para actualizar nombre de usuario y correo.</p>
 
-    <mat-form-field appearance="outline" class="full">
-      <mat-label>Nombre de usuario</mat-label>
-      <input matInput [(ngModel)]="data.username" cdkFocusInitial (keydown.enter)="onSave()" aria-label="Nombre de usuario" />
-    </mat-form-field>
+    <div class="form-grid">
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Nombre de usuario</mat-label>
+        <input matInput [(ngModel)]="data.username" cdkFocusInitial (keydown.enter)="onSave()"
+               placeholder="Ingrese su nombre de usuario" aria-label="Nombre de usuario" />
+        <mat-icon matPrefix class="field-icon">account_circle</mat-icon>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full">
-      <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="data.email" (keydown.enter)="onSave()" aria-label="Correo electrónico" />
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput [(ngModel)]="data.email" (keydown.enter)="onSave()"
+               placeholder="Ingrese su correo electrónico" type="email" aria-label="Correo electrónico" />
+        <mat-icon matPrefix class="field-icon">email</mat-icon>
+      </mat-form-field>
+    </div>
   </div>
 
   <div mat-dialog-actions class="modal-actions" align="end">

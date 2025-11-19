@@ -277,7 +277,7 @@
         }
       }
 
-      // Left Section - Nombre y Estado
+      // Left Section - Vehículo y Estado
       .card-left {
         display: flex;
         align-items: center;
@@ -828,4 +828,295 @@
 /* Container de range actions (por si acaso) */
 ::ng-deep .mat-mdc-paginator-container {
   color: #ffffff !important;
+}
+
+// Manual Entry Dialog Styles
+.manual-entry-dialog {
+  min-width: 480px;
+  max-width: 520px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+  // Header Section
+  .dialog-header {
+    background: linear-gradient(135deg, #1cb9ba 0%, #075e78 100%);
+    padding: 32px 24px 24px;
+    text-align: center;
+    color: white;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="50" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="50" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .header-icon {
+      margin-bottom: 16px;
+
+      .vehicle-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: rgba(255, 255, 255, 0.9);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+      }
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+
+      .dialog-title {
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        letter-spacing: -0.5px;
+      }
+
+      .dialog-subtitle {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.9;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  // Dialog Content
+  .dialog-content {
+    padding: 32px 24px 24px;
+    background: #ffffff;
+
+    .entry-form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+
+      .form-field-container {
+        position: relative;
+
+        .custom-form-field {
+          width: 100%;
+
+          &.plate-field {
+            .mat-mdc-form-field-outline {
+              color: #e3f2fd;
+            }
+
+            .mat-mdc-form-field-focus-overlay {
+              background-color: rgba(100, 181, 246, 0.04);
+            }
+
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+              border-color: #90caf9 !important;
+              border-width: 2px !important;
+            }
+
+            &.mat-focused {
+              .mdc-notched-outline__leading,
+              .mdc-notched-outline__notch,
+              .mdc-notched-outline__trailing {
+                border-color: #2196f3 !important;
+                border-width: 2px !important;
+              }
+            }
+          }
+
+          &.type-field {
+            .mat-mdc-form-field-outline {
+              color: #e0f2f1;
+            }
+
+            .mat-mdc-form-field-focus-overlay {
+              background-color: rgba(0, 150, 136, 0.04);
+            }
+
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+              border-color: #80cbc4 !important;
+              border-width: 2px !important;
+            }
+
+            &.mat-focused {
+              .mdc-notched-outline__leading,
+              .mdc-notched-outline__notch,
+              .mdc-notched-outline__trailing {
+                border-color: #009688 !important;
+                border-width: 2px !important;
+              }
+            }
+          }
+
+          .mat-mdc-form-field-label {
+            color: #666;
+            font-weight: 500;
+          }
+
+          .mat-mdc-input-element,
+          .mat-mdc-select-value {
+            color: #333 !important;
+            font-weight: 500;
+          }
+
+          // Fix selected text color
+          .mat-mdc-select-value-text {
+            color: #333 !important;
+          }
+
+          .field-icon {
+            color: #666;
+            margin-right: 8px;
+          }
+
+          .mat-mdc-form-field-hint {
+            color: #888;
+            font-size: 12px;
+          }
+
+          .mat-mdc-form-field-error {
+            font-size: 12px;
+            font-weight: 500;
+          }
+
+          // Custom select options
+          .mat-mdc-select-panel {
+            border-radius: 12px;
+            margin-top: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+            .mat-mdc-option {
+              .option-content {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+
+                .option-icon {
+                  color: #666;
+                  font-size: 20px;
+                  width: 20px;
+                  height: 20px;
+                }
+
+                span {
+                  font-weight: 500;
+                }
+              }
+
+              &:hover {
+                background-color: rgba(28, 185, 186, 0.08);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Dialog Actions
+  .dialog-actions {
+    padding: 24px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .cancel-btn {
+      border-color: #dee2e6;
+      color: #6c757d;
+      font-weight: 500;
+      border-radius: 12px;
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+
+      mat-icon {
+        margin-right: 8px;
+        font-size: 18px;
+      }
+
+      &:hover {
+        background-color: #f8f9fa;
+        border-color: #adb5bd;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #1cb9ba 0%, #075e78 100%);
+      color: white;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 12px 24px;
+      min-width: 160px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 16px rgba(28, 185, 186, 0.3);
+
+      mat-icon {
+        margin-right: 8px;
+        font-size: 18px;
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(28, 185, 186, 0.4);
+      }
+
+      &:disabled {
+        background: #e9ecef;
+        color: #adb5bd;
+        box-shadow: none;
+        transform: none;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 600px) {
+  .manual-entry-dialog {
+    min-width: 90vw;
+    max-width: 90vw;
+
+    .dialog-header {
+      padding: 24px 20px 20px;
+
+      .header-icon .vehicle-icon {
+        font-size: 40px;
+        width: 40px;
+        height: 40px;
+      }
+
+      .header-content .dialog-title {
+        font-size: 20px;
+      }
+    }
+
+    .dialog-content {
+      padding: 24px 20px 20px;
+    }
+
+    .dialog-actions {
+      padding: 20px;
+      flex-direction: column;
+
+      .cancel-btn,
+      .submit-btn {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+    }
+  }
 }
