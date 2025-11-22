@@ -13,7 +13,10 @@
       <div ngbDropdownMenu class="notif-modal" id="notif-panel-1" role="menu" aria-label="Notificaciones recientes">
         <!-- Header del modal -->
         <div class="notif-header">
-          <h6 class="notif-title">Notificaciones</h6>
+          <div class="notif-header-content">
+            <h6 class="notif-title">Notificaciones</h6>
+            <button *ngIf="unreadCount > 0" class="btn-mark-all" (click)="markAllRead()">Marcar todas como leídas</button>
+          </div>
         </div>
 
         <!-- Mensaje de éxito -->
@@ -70,11 +73,6 @@
 
       <!-- Indicador de no leído -->
       <div class="notif-indicator" aria-hidden="true"></div>
-    </div>
-
-    <!-- Botón marcar todas como leídas -->
-    <div *ngIf="unreadCount > 0" class="notif-footer">
-      <button class="btn-mark-all" (click)="markAllRead()">Marcar todas como leídas</button>
     </div>
  </div>
 </div>
