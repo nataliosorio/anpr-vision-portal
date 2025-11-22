@@ -42,6 +42,7 @@ export class NavRightComponent implements OnInit, OnDestroy {
   friendId!: number;
   userName: string | null = null;
   parkingId: number | null = null; // ✅ Cambiado a number
+  successMessage: string | null = null;
 
   @ViewChild('notifDropdown') notifDropdown!: NgbDropdown;
 
@@ -108,6 +109,10 @@ export class NavRightComponent implements OnInit, OnDestroy {
     return this.userName ? this.userName.charAt(0).toUpperCase() : '';
   }
 
+  get unreadCount(): number {
+    return this.notifications.filter(n => !n.isRead).length;
+  }
+
   openNotifPanel() {
     if (this.notifDropdown && !this.notifDropdown.isOpen()) {
       this.notifDropdown.open();
@@ -135,7 +140,7 @@ markAsRead(n: any, index: number) {
 }
 
 deleteNotification(n: any, index: number) {
-  this.apiService.delete(n.id).subscribe({
+  this.apiService.permanentDelete(n.id).subscribe({
     next: () => {
       this.notifications.splice(index, 1);
     },
@@ -143,10 +148,21 @@ deleteNotification(n: any, index: number) {
   });
 }
 
-  
+
 
   markAllRead() {
-    this.closeNotifPanel();
+    if (this.parkingId) {
+      this.apiService.markAllAsRead(this.parkingId).subscribe({
+        next: (response) => {
+          // Marcar todas como leídas localmente
+          this.notifications.forEach(n => n.isRead = true);
+          this.successMessage = response.message || 'Todas las notificaciones han sido marcadas como leídas';
+          // Ocultar mensaje después de 3 segundos
+          setTimeout(() => this.successMessage = null, 3000);
+        },
+        error: (err) => console.error('Error al marcar todas como leídas:', err)
+      });
+    }
   }
 
   clearAll() {
