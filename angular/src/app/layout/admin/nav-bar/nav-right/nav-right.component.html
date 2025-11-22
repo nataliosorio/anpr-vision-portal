@@ -6,7 +6,7 @@
   <!-- trigger -->
   <button class="notif-trigger" ngbDropdownToggle type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="notif-panel-1">
     <i class="icon feather icon-bell" title="Notificaciones" aria-hidden="true"></i>
-    <span class="notif-badge"><span class="sr-only">Nuevas notificaciones</span></span>
+    <span class="notif-badge" *ngIf="unreadCount > 0"><span class="sr-only">Nuevas notificaciones</span></span>
   </button>
 
       <!-- panel (menu) -->
@@ -14,6 +14,11 @@
         <!-- Header del modal -->
         <div class="notif-header">
           <h6 class="notif-title">Notificaciones</h6>
+        </div>
+
+        <!-- Mensaje de éxito -->
+        <div *ngIf="successMessage" class="alert alert-success small-alert">
+          {{ successMessage }}
         </div>
 
         <!-- Contenido de notificaciones -->
@@ -66,7 +71,12 @@
       <!-- Indicador de no leído -->
       <div class="notif-indicator" aria-hidden="true"></div>
     </div>
-  </div>
+
+    <!-- Botón marcar todas como leídas -->
+    <div *ngIf="unreadCount > 0" class="notif-footer">
+      <button class="btn-mark-all" (click)="markAllRead()">Marcar todas como leídas</button>
+    </div>
+ </div>
 </div>
 
         <!-- <div class="notif-content">
