@@ -13,6 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { RegisteredVehicle } from 'src/app/shared/Models/Entitys';
 
@@ -50,6 +51,7 @@ export class RegisteredVehiclesIndex implements OnInit {
   @ViewChild('manualEntryDialog') manualEntryDialogTemplate!: TemplateRef<any>;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private dialog = inject(MatDialog);
@@ -63,6 +65,7 @@ export class RegisteredVehiclesIndex implements OnInit {
   }
 
   ngOnInit(): void {
+    this._loaderService.show();
     this.getAllEntries();
     this.loadVehicleTypes();
   }
@@ -74,6 +77,11 @@ export class RegisteredVehiclesIndex implements OnInit {
       },
       error: (err: Error) => {
         console.error('Error loading vehicle types:', err);
+        this._loaderService.hide();
+      },
+      complete: () => {
+        // Las otras llamadas en ngOnInit no tienen complete, así que aquí ocultamos el loader
+        this._loaderService.hide();
       }
     });
   }
@@ -90,6 +98,7 @@ export class RegisteredVehiclesIndex implements OnInit {
         this.originalData = [];
         this.dataSource.data = [];
         this.pagedData = [];
+        this._loaderService.hide();
       }
     });
   }
@@ -126,6 +135,7 @@ export class RegisteredVehiclesIndex implements OnInit {
         typeVehicleId: formValue.typeVehicleId
       };
 
+      this._loaderService.show();
       this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
         next: (response: ManualEntryResponseDto) => {
           Swal.fire({
@@ -148,7 +158,9 @@ export class RegisteredVehiclesIndex implements OnInit {
             icon: 'error',
             confirmButtonColor: '#f44336'
           });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   }
@@ -214,6 +226,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RegisteredVehicles', id).subscribe({
           next: () => {
             Swal.fire({
@@ -231,7 +244,9 @@ export class RegisteredVehiclesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -256,6 +271,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RegisteredVehicles/permanent', id).subscribe({
           next: () => {
             Swal.fire({
@@ -273,7 +289,9 @@ export class RegisteredVehiclesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });

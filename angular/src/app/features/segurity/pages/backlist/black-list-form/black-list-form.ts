@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import { Vehicle } from 'src/app/shared/Models/Entitys';
@@ -51,12 +52,16 @@ export class BlackListForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
+
+    // Mostrar loader para carga inicial
+    this.loaderService.show();
 
     // Cargar vehículos para el select
     this.service.get<Vehicle[]>('Vehicle/select').subscribe({
@@ -71,6 +76,7 @@ export class BlackListForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los vehículos.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -83,8 +89,13 @@ export class BlackListForm implements OnInit {
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el registro.', 'error');
           this.router.navigate(['/blackList-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
+    } else {
+      // Si no es edición, ocultar loader después de cargar vehículos
+      this.loaderService.hide();
     }
   }
 
@@ -99,6 +110,7 @@ export class BlackListForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('BlackList', data).subscribe({
         next: () => {
@@ -113,7 +125,9 @@ export class BlackListForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -133,7 +147,9 @@ export class BlackListForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

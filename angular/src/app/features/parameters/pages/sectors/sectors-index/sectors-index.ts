@@ -11,6 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-sectors-index',
@@ -36,6 +37,7 @@ columns = [
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   constructor() {}
@@ -44,6 +46,7 @@ columns = [
   }
 
 getAllParkings(): void {
+  this._loaderService.show();
   this._generalService.get<Sectors[]>('Sectors/join').subscribe({
     next: (sectors) => {
       this.dataSource.data = sectors;       // <<— ya viene T directo
@@ -55,7 +58,9 @@ getAllParkings(): void {
       this.originalData = [];
       this.dataSource.data = [];
       this.pagedData = [];
-    }
+      this._loaderService.hide();
+    },
+    complete: () => this._loaderService.hide()
   });
 }
 
@@ -81,6 +86,7 @@ deleteSector(id: number): void {
     cancelButtonColor: '#3085d6'
   }).then((result) => {
     if (result.isConfirmed) {
+      this._loaderService.show();
       this._generalService.delete('Sectors', id).subscribe({
         next: () => {
           Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
@@ -92,7 +98,9 @@ deleteSector(id: number): void {
             title: 'No se pudo eliminar',
             text: err.message
           });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   });
@@ -110,6 +118,7 @@ deletePermanentSector(id: number): void {
     cancelButtonColor: '#3085d6'
   }).then((result) => {
     if (result.isConfirmed) {
+      this._loaderService.show();
       this._generalService.delete('Sectors/permanent', id).subscribe({
         next: () => {
           Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
@@ -121,7 +130,9 @@ deletePermanentSector(id: number): void {
             title: 'No se pudo eliminar permanentemente',
             text: err.message
           });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   });

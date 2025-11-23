@@ -9,6 +9,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { Vehicle } from 'src/app/shared/Models/Entitys';
 
 import Swal from 'sweetalert2';
@@ -37,6 +38,7 @@ export class VehicleIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -44,6 +46,7 @@ export class VehicleIndex implements OnInit {
   }
 
   getAllVehicles(): void {
+    this._loaderService.show();
     this._generalService.get<Vehicle[]>('Vehicle/join').subscribe({
       next: (items) => {
         this.originalData = items || [];
@@ -55,7 +58,9 @@ export class VehicleIndex implements OnInit {
         this.originalData = [];
         this.dataSource.data = [];
         this.pagedData = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -86,6 +91,7 @@ export class VehicleIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Vehicle', id).subscribe({
           next: () => {
             Swal.fire({
@@ -103,7 +109,9 @@ export class VehicleIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -128,6 +136,7 @@ export class VehicleIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Vehicle/permanent', id).subscribe({
           next: () => {
             Swal.fire({
@@ -145,7 +154,9 @@ export class VehicleIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
