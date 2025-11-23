@@ -22,29 +22,29 @@ export class NavItemComponent {
   closeOtherMenu(event: MouseEvent) {
     const ele = event.target as HTMLElement;
     if (ele !== null && ele !== undefined) {
-      const parent = ele.parentElement as HTMLElement;
-      const up_parent = ((parent.parentElement as HTMLElement).parentElement as HTMLElement).parentElement as HTMLElement;
-      const last_parent = (up_parent.parentElement as HTMLElement).parentElement as HTMLElement;
-      if (last_parent.classList.contains('pcoded-submenu')) {
-        up_parent.classList.remove('pcoded-trigger');
-        up_parent.classList.remove('active');
-      } else {
-        const sections = document.querySelectorAll('.pcoded-hasmenu');
-        for (let i = 0; i < sections.length; i++) {
+      // Encontrar el menú padre más cercano que contiene este item
+      let parentMenu: HTMLElement | null = null;
+      let current: HTMLElement | null = ele;
+      while (current && !parentMenu) {
+        if (current.classList.contains('pcoded-hasmenu')) {
+          parentMenu = current;
+        }
+        current = current.parentElement;
+      }
+
+      // Cerrar otros submenús al hacer clic en items, pero mantener abierto el menú padre
+      const sections = document.querySelectorAll('.pcoded-hasmenu');
+      for (let i = 0; i < sections.length; i++) {
+        if (sections[i] !== parentMenu) {
           sections[i].classList.remove('active');
           sections[i].classList.remove('pcoded-trigger');
         }
       }
 
-      if (parent.classList.contains('pcoded-hasmenu')) {
-        parent.classList.add('pcoded-trigger');
-        parent.classList.add('active');
-      } else if (up_parent.classList.contains('pcoded-hasmenu')) {
-        up_parent.classList.add('pcoded-trigger');
-        up_parent.classList.add('active');
-      } else if (last_parent.classList.contains('pcoded-hasmenu')) {
-        last_parent.classList.add('pcoded-trigger');
-        last_parent.classList.add('active');
+      // Activar el menú correspondiente si es necesario
+      if (parentMenu) {
+        parentMenu.classList.add('pcoded-trigger');
+        parentMenu.classList.add('active');
       }
     }
     if (document.querySelector('app-navigation.pcoded-navbar')?.classList.contains('mob-open')) {
