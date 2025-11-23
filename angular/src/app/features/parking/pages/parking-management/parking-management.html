@@ -36,11 +36,12 @@
             <div class="sector-info">
               <h4>{{ sector.name }}</h4>
               <p>{{ sector.typeVehicle }}</p>
+              <p *ngIf="isGlobalSearch" class="zone-info">Zona: {{ getZoneName(sector.zonesId) }}</p>
             </div>
-            <div class="sector-mini-stats">
+            <!-- <div class="sector-mini-stats">
               <span class="mini-stat green">{{ getAvailableSlots(sector) }}</span>
               <span class="mini-stat red">{{ getSectorStatusCount('ocupado', sector) }}</span>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -66,7 +67,19 @@
               </div>
             </div>
 
-            <p class="panel-subtitle">Espacios disponibles - Haz clic para ver detalles</p>
+            <p class="panel-subtitle">
+              Espacios disponibles - Haz clic para ver detalles
+              <span class="legend">
+                <span class="legend-item">
+                  <span class="legend-color libre"></span>
+                  Disponibles
+                </span>
+                <span class="legend-item">
+                  <span class="legend-color ocupado"></span>
+                  Ocupados
+                </span>
+              </span>
+            </p>
 
             <div class="slots-container">
               <button

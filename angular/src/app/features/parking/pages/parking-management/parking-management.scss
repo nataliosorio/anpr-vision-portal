@@ -1,7 +1,7 @@
 // Modern color palette matching configuration style
 $primary-gradient: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-$secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-$success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+$secondary-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+$success-gradient: linear-gradient(135deg, #00d4aa 0%, #00f2fe 100%);
 $warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
 $dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
 $accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -331,7 +331,7 @@ $border-radius-small: 12px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: $success-gradient;
+    // background: $success-gradient;
     opacity: 0.03;
     z-index: -1;
   }
@@ -429,6 +429,40 @@ $border-radius-small: 12px;
   font-size: 0.9rem;
   margin-bottom: 1rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #CBD5E1;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.libre {
+     background: linear-gradient(135deg, #3496c6 0%, #21a1a5 100%);
+  }
+
+  &.ocupado {
+    background: linear-gradient(135deg, #94888e 0%, #8c8486 100%);
+  }
 }
 
 .welcome-message {
@@ -686,8 +720,7 @@ $border-radius-small: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
   &.libre {
-    background: $success-gradient;
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    background: linear-gradient(135deg, #3496c6 0%, #21a1a5 100%);
 
     &:hover {
       transform: translateY(-2px) scale(1.05);
@@ -696,12 +729,12 @@ $border-radius-small: 12px;
   }
 
   &.ocupado {
-    background: $secondary-gradient;
-    box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+    background: linear-gradient(135deg, #94888e 0%, #8c8486 100%);
+
 
     &:hover {
       transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 4px 16px rgba(245, 87, 108, 0.4);
+      box-shadow: 0 4px 16px rgba(73, 72, 72, 0.4);
     }
   }
 
@@ -722,7 +755,7 @@ $border-radius-small: 12px;
 }
 
 .slot-details {
-  background: #334155;
+  background: #333946;
   border-radius: 12px;
   padding: 1.5rem;
   margin-top: 1.5rem;
@@ -735,7 +768,7 @@ $border-radius-small: 12px;
   margin-bottom: 1rem;
 }
 
-.slot-header h3 {
+.slot-header h4 {
   margin: 0;
   color: white;
   font-size: 1.3rem;
@@ -790,6 +823,7 @@ $border-radius-small: 12px;
   font-family: 'Courier New', monospace;
   font-weight: bold;
   border: 2px solid #475569;
+  letter-spacing: 0.1em;
 }
 
 .vehicle-info {
