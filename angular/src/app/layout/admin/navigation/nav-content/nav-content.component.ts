@@ -87,11 +87,12 @@ export class NavContentComponent implements OnInit, OnDestroy {
   }
 
   fireLeave() {
-    const sections = document.querySelectorAll('.pcoded-hasmenu');
-    for (let i = 0; i < sections.length; i++) {
-      sections[i].classList.remove('active');
-      sections[i].classList.remove('pcoded-trigger');
-    }
+    // Comentado para permitir múltiples submenús abiertos
+    // const sections = document.querySelectorAll('.pcoded-hasmenu');
+    // for (let i = 0; i < sections.length; i++) {
+    //   sections[i].classList.remove('active');
+    //   sections[i].classList.remove('pcoded-trigger');
+    // }
 
     let current_url = this.location.path();
     const baseHref = this.locationStrategy.getBaseHref();
