@@ -48,6 +48,7 @@ export class ParkingManagement implements OnInit {
   filteredSlots: Slots[] = [];
 
   selectedSlot: Slots | null = null;
+  isGlobalSearch: boolean = false;
 
   // usar setter para filtrar sin cambiar el HTML
   private _searchTerm = '';
@@ -130,19 +131,35 @@ export class ParkingManagement implements OnInit {
   }
 
   filterSectors(): void {
-    if (!this.selectedZone) { this.filteredSectors = []; return; }
+    if (!this.selectedZone && !this._searchTerm.trim()) { this.filteredSectors = []; return; }
 
     const t = this._searchTerm.toLowerCase().trim();
-    const base = this.sectors.filter(s => s.zonesId === this.selectedZone!.id);
+    this.isGlobalSearch = !!t;
 
-    this.filteredSectors = !t ? base : base.filter(s =>
-      (s.name ?? '').toLowerCase().includes(t) ||
-      String(s.capacity ?? '').toLowerCase().includes(t) ||
-      (s.typeVehicle ?? '').toLowerCase().includes(t)
-    );
+    let base: Sectors[];
+    if (t) {
+      // Si hay término de búsqueda, buscar en todos los sectores
+      base = this.sectors.filter(s =>
+        (s.name ?? '').toLowerCase().includes(t) ||
+        String(s.capacity ?? '').toLowerCase().includes(t) ||
+        (s.typeVehicle ?? '').toLowerCase().includes(t)
+      );
+    } else {
+      // Si no hay búsqueda, filtrar por zona seleccionada
+      base = this.sectors.filter(s => s.zonesId === this.selectedZone!.id);
+    }
+
+    this.filteredSectors = base;
   }
 
   selectSector(sector: Sectors): void {
+    // Si el sector pertenece a otra zona, cambiar la zona seleccionada
+    const zoneOfSector = this.zones.find(z => z.id === sector.zonesId);
+    if (zoneOfSector && zoneOfSector.id !== this.selectedZone?.id) {
+      this.selectedZone = zoneOfSector;
+      // No llamar selectZone() porque resetea selectedSector, solo cambiar selectedZone
+    }
+
     this.selectedSector = sector;
     this.filterSlots();
     this.selectedSlot = null;
@@ -262,5 +279,10 @@ export class ParkingManagement implements OnInit {
       mantenimiento: 'En Mantenimiento'
     };
     return map[status] ?? status;
+  }
+
+  getZoneName(zonesId: number): string {
+    const zone = this.zones.find(z => z.id === zonesId);
+    return zone ? zone.name : 'Zona desconocida';
   }
 }
