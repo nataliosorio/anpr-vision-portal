@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Slots } from '../slots';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-slots-index',
@@ -35,6 +36,7 @@ columns = [
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   constructor() {}
@@ -43,6 +45,7 @@ columns = [
   }
 
 getAllSlots(): void {
+  this._loaderService.show();
   this._generalService.get<Slots[]>('Slots/join').subscribe({
     next: (data) => {
       this.dataSource.data = data ?? [];
@@ -58,7 +61,9 @@ getAllSlots(): void {
       this.dataSource.data = [];
       this.originalData = [];
       this.pagedData = [];
-    }
+      this._loaderService.hide();
+    },
+    complete: () => this._loaderService.hide()
   });
 }
 
@@ -83,6 +88,7 @@ deleteSlot(id: number): void {
     cancelButtonColor: '#3085d6'
   }).then((result) => {
     if (result.isConfirmed) {
+      this._loaderService.show();
       this._generalService.delete('Slots', id).subscribe({
         next: () => {
           Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
@@ -90,7 +96,9 @@ deleteSlot(id: number): void {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   });
@@ -108,6 +116,7 @@ deletePermanentSlot(id: number): void {
     cancelButtonColor: '#3085d6'
   }).then((result) => {
     if (result.isConfirmed) {
+      this._loaderService.show();
       this._generalService.delete('Slots/permanent', id).subscribe({
         next: () => {
           Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
@@ -115,7 +124,9 @@ deletePermanentSlot(id: number): void {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   });

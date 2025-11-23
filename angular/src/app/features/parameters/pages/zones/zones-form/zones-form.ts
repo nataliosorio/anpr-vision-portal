@@ -7,6 +7,7 @@ import { Parking } from '../../parking/parking';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 
@@ -53,6 +54,7 @@ export class ZonesForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -80,13 +82,16 @@ export class ZonesForm implements OnInit {
 
     // Si es edición, cargar datos de la zona
     if (this.isEdit && id) {
+      this.loaderService.show();
       this.service.getById<any>('Zones', id).subscribe({
         next: (zone) => {
           this.initialData = this.normalizeZone(zone);
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar la zona.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }
@@ -101,6 +106,7 @@ export class ZonesForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Zones', data).subscribe({
         next: () => {
@@ -115,7 +121,9 @@ export class ZonesForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -134,7 +142,9 @@ export class ZonesForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

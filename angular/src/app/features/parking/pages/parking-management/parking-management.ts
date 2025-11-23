@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 
 import Swal from 'sweetalert2';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { Sectors } from 'src/app/features/parameters/pages/sectors/sectors';
 import { Slots } from 'src/app/features/parameters/pages/slots/slots';
 import { Zones } from 'src/app/features/parameters/pages/zones/zones';
@@ -57,9 +58,10 @@ export class ParkingManagement implements OnInit {
     if (this.selectedSector) this.filterSlots();
   }
 
-  constructor(private _generalService: General) {}
+  constructor(private _generalService: General, private _loaderService: LoaderService) {}
 
   ngOnInit() {
+    this._loaderService.show();
     this.getAllZones();
     this.getAllSectors();
     this.getAllSlots();
@@ -71,6 +73,7 @@ export class ParkingManagement implements OnInit {
     if (!parkingId) {
       Swal.fire('Error', 'No se encontró el ParkingId en localStorage.', 'error');
       this.zones = [];
+      this._loaderService.hide();
       return;
     }
 
@@ -79,7 +82,14 @@ export class ParkingManagement implements OnInit {
         this.zones = zones ?? [];
         if (this.zones.length > 0) this.selectZone(this.zones[0]);
       },
-      error: (err) => console.error('Error al obtener zonas:', err)
+      error: (err) => {
+        console.error('Error al obtener zonas:', err);
+        this._loaderService.hide();
+      },
+      complete: () => {
+        // Las otras llamadas en ngOnInit no tienen complete, así que aquí ocultamos el loader
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -90,7 +100,10 @@ export class ParkingManagement implements OnInit {
         this.sectors = sectors ?? [];
         this.filterSectors();
       },
-      error: (err) => console.error('Error al obtener sectores:', err)
+      error: (err) => {
+        console.error('Error al obtener sectores:', err);
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -101,7 +114,10 @@ export class ParkingManagement implements OnInit {
         this.slots = slots ?? [];
         this.filterSlots();
       },
-      error: (err) => console.error('Error al obtener slots:', err)
+      error: (err) => {
+        console.error('Error al obtener slots:', err);
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -163,34 +179,51 @@ export class ParkingManagement implements OnInit {
 
   // Consulta al backend para traer la info del vehículo en el slot
   loadVehicleData(slotId: number): void {
-  this._generalService.get<any>(`Vehicle/slot/${slotId}`).subscribe({
-    next: (response) => {
-      this.vehicleData = response;
+    this._loaderService.show();
+    this._generalService.get<any>(`Vehicle/slot/${slotId}`).subscribe({
+      next: (response) => {
+        this.vehicleData = response;
 
-      if (this.vehicleData?.vehicleId) {
-        // Primero traigo el vehículo
-        this._generalService.get<any>(`Vehicle/${this.vehicleData.vehicleId}`).subscribe({
-          next: (vehicle) => {
-            this.vehicleData.vehicle = vehicle;
+        if (this.vehicleData?.vehicleId) {
+          // Primero traigo el vehículo
+          this._generalService.get<any>(`Vehicle/${this.vehicleData.vehicleId}`).subscribe({
+            next: (vehicle) => {
+              this.vehicleData.vehicle = vehicle;
 
-            // Ahora si existe clientId, hago la consulta del cliente
-            if (vehicle?.clientId) {
-              this._generalService.get<any>(`Client/${vehicle.clientId}`).subscribe({
-                next: (client) => {
-                  this.vehicleData.vehicle.client = client;
-                  console.log("Cliente cargado:", client);
-                },
-                error: (err) => console.error('Error cargando datos del cliente', err)
-              });
+              // Ahora si existe clientId, hago la consulta del cliente
+              if (vehicle?.clientId) {
+                this._generalService.get<any>(`Client/${vehicle.clientId}`).subscribe({
+                  next: (client) => {
+                    this.vehicleData.vehicle.client = client;
+                    console.log("Cliente cargado:", client);
+                  },
+                  error: (err) => {
+                    console.error('Error cargando datos del cliente', err);
+                    this._loaderService.hide();
+                  },
+                  complete: () => this._loaderService.hide()
+                });
+              } else {
+                // No hay clientId, terminamos aquí
+                this._loaderService.hide();
+              }
+            },
+            error: (err) => {
+              console.error('Error cargando datos del vehículo', err);
+              this._loaderService.hide();
             }
-          },
-          error: (err) => console.error('Error cargando datos del vehículo', err)
-        });
+          });
+        } else {
+          // No hay vehicleId, terminamos aquí
+          this._loaderService.hide();
+        }
+      },
+      error: (err) => {
+        console.error('Error cargando info de slot', err);
+        this._loaderService.hide();
       }
-    },
-    error: (err) => console.error('Error cargando info de slot', err)
-  });
-}
+    });
+  }
 
 
   // --- UTILIDADES ---

@@ -11,6 +11,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-rate-type-index',
@@ -35,6 +36,7 @@ export class RateTypeIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -42,6 +44,7 @@ export class RateTypeIndex implements OnInit {
   }
 
   getAllTypeRates(): void {
+    this._loaderService.show();
     this._generalService.get<RateType[]>('RatesType/select').subscribe({
       next: (items) => {
         this.originalData = items || [];
@@ -53,7 +56,9 @@ export class RateTypeIndex implements OnInit {
         this.originalData = [];
         this.dataSource.data = [];
         this.pagedData = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -77,6 +82,7 @@ export class RateTypeIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RatesType', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El tipo de tarifa ha sido eliminado.', 'success');
@@ -84,7 +90,9 @@ export class RateTypeIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -102,6 +110,7 @@ export class RateTypeIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RatesType/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El tipo de tarifa ha sido eliminado permanentemente.', 'success');
@@ -109,7 +118,9 @@ export class RateTypeIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });

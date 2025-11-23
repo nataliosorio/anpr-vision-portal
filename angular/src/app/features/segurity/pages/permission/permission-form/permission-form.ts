@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import { Permission } from 'src/app/shared/Models/Entitys';
@@ -52,6 +53,7 @@ export class PermissionForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -60,6 +62,7 @@ export class PermissionForm implements OnInit {
 
     if (id) {
       this.isEdit = true;
+      this.loaderService.show();
       this.service.getById<Permission>('Permission', id).subscribe({
         next: (perm) => {
           this.initialData = this.normalize(perm);
@@ -67,7 +70,9 @@ export class PermissionForm implements OnInit {
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el permiso.', 'error');
           this.route.navigate(['/permission-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }
@@ -82,6 +87,7 @@ export class PermissionForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Permission', data).subscribe({
         next: () => {
@@ -96,7 +102,9 @@ export class PermissionForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -115,7 +123,9 @@ export class PermissionForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

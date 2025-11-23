@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { Parking } from 'src/app/features/parameters/pages/parking/parking';
 import { RateType } from 'src/app/features/parameters/pages/ratesType/rate-type';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
@@ -121,11 +122,15 @@ export class RatesForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
+
+    // Mostrar loader para carga inicial
+    this.loaderService.show();
 
     // Vehículos
     this.service.get<VehicleType[]>('TypeVehicle/select').subscribe({
@@ -141,6 +146,7 @@ export class RatesForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los tipos de vehículo.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -158,6 +164,7 @@ export class RatesForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los tipos de tarifa.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -175,6 +182,7 @@ export class RatesForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los parqueaderos.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -188,8 +196,13 @@ export class RatesForm implements OnInit {
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar la tarifa.', 'error');
           this.route.navigate(['/rates-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
+    } else {
+      // Si no es edición, ocultar loader después de cargar los selects
+      this.loaderService.hide();
     }
   }
 
@@ -205,6 +218,7 @@ save(data: any) {
     payload.endHour = this.toIsoDateTime(data.endHour);
   }
 
+  this.loaderService.show();
   if (this.isEdit) {
     this.service.put('Rates', payload).subscribe({
       next: () => {
@@ -219,7 +233,9 @@ save(data: any) {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-      }
+        this.loaderService.hide();
+      },
+      complete: () => this.loaderService.hide()
     });
   } else {
     this.service.post('Rates', payload).subscribe({
@@ -235,7 +251,9 @@ save(data: any) {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-      }
+        this.loaderService.hide();
+      },
+      complete: () => this.loaderService.hide()
     });
   }
 }
