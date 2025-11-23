@@ -17,6 +17,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Observable, forkJoin, map, startWith } from 'rxjs';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { Client } from 'src/app/shared/Models/Entitys';
 
@@ -50,6 +51,7 @@ export class VehicleForm implements OnInit {
   filteredTypeVehicles!: Observable<any[]>;
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -129,71 +131,80 @@ export class VehicleForm implements OnInit {
   // }
 
   // mostrar nombres en inputs
-ngOnInit(): void {
-  const id = this.activatedRoute.snapshot.paramMap.get('id');
-  this.isEdit = !!id;
+ ngOnInit(): void {
+   const id = this.activatedRoute.snapshot.paramMap.get('id');
+   this.isEdit = !!id;
 
-  // construir formulario con validaciones de placa corregidas
-  this.form = this.fb.group({
-    id: [null],
-    plate: [
-      '',
-      [
-        Validators.required,
-        Validators.pattern(/^[A-Z]{3}\d{3}$|^[A-Z]{3}\d{2}[A-Z]$/)
-      ]
-    ],
-    color: ['', Validators.required],
-    typeVehicleId: [null, Validators.required],
-    clientId: [null, Validators.required],
-    asset: [true]
-  });
+   // construir formulario con validaciones de placa corregidas
+   this.form = this.fb.group({
+     id: [null],
+     plate: [
+       '',
+       [
+         Validators.required,
+         Validators.pattern(/^[A-Z]{3}\d{3}$|^[A-Z]{3}\d{2}[A-Z]$/)
+       ]
+     ],
+     color: ['', Validators.required],
+     typeVehicleId: [null, Validators.required],
+     clientId: [null, Validators.required],
+     asset: [true]
+   });
 
-  // Cargar tipos de vehículo y clientes en paralelo
-  const typeVehicles$ = this.service.get<VehicleType[]>('TypeVehicle/select');
-  const clients$ = this.service.get<Client[]>('Client/join');
+   // Mostrar loader para carga inicial
+   this.loaderService.show();
 
-  forkJoin([typeVehicles$, clients$]).subscribe({
-    next: ([typeVehicles, clients]) => {
-      // Procesar tipos de vehículo
-      this.typeVehicles = (typeVehicles || []).map(it => ({ value: it.id, label: it.name }));
-      this.filteredTypeVehicles = this.form.get('typeVehicleId')!.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value?.label || '')),
-        map(name => (name ? this._filterTypeVehicles(name) : this.typeVehicles.slice()))
-      );
+   // Cargar tipos de vehículo y clientes en paralelo
+   const typeVehicles$ = this.service.get<VehicleType[]>('TypeVehicle/select');
+   const clients$ = this.service.get<Client[]>('Client/join');
 
-      // Procesar clientes
-      this.clients = (clients || []).map(it => ({ value: it.id, label: it.name }));
-      this.filteredClients = this.form.get('clientId')!.valueChanges.pipe(
-        startWith(''),
-        map(value => (typeof value === 'string' ? value : value?.label || '')),
-        map(name => (name ? this._filterClients(name) : this.clients.slice()))
-      );
+   forkJoin([typeVehicles$, clients$]).subscribe({
+     next: ([typeVehicles, clients]) => {
+       // Procesar tipos de vehículo
+       this.typeVehicles = (typeVehicles || []).map(it => ({ value: it.id, label: it.name }));
+       this.filteredTypeVehicles = this.form.get('typeVehicleId')!.valueChanges.pipe(
+         startWith(''),
+         map(value => (typeof value === 'string' ? value : value?.label || '')),
+         map(name => (name ? this._filterTypeVehicles(name) : this.typeVehicles.slice()))
+       );
 
-      // Si es edición, cargar el vehículo después de tener los arrays listos
-      if (this.isEdit && id) {
-        this.service.getById<any>('Vehicle', id).subscribe({
-          next: (item) => {
-            this.form.patchValue(item);
+       // Procesar clientes
+       this.clients = (clients || []).map(it => ({ value: it.id, label: it.name }));
+       this.filteredClients = this.form.get('clientId')!.valueChanges.pipe(
+         startWith(''),
+         map(value => (typeof value === 'string' ? value : value?.label || '')),
+         map(name => (name ? this._filterClients(name) : this.clients.slice()))
+       );
 
-            const type = this.typeVehicles.find(t => t.value === item.typeVehicleId);
-            if (type) this.form.get('typeVehicleId')?.setValue(type);
+       // Si es edición, cargar el vehículo después de tener los arrays listos
+       if (this.isEdit && id) {
+         this.service.getById<any>('Vehicle', id).subscribe({
+           next: (item) => {
+             this.form.patchValue(item);
 
-            const client = this.clients.find(c => c.value === item.clientId);
-            if (client) this.form.get('clientId')?.setValue(client);
-          },
-          error: (err: Error) => {
-            Swal.fire('Error', err.message || 'No se pudo cargar el vehículo.', 'error');
-          }
-        });
-      }
-    },
-    error: (err: Error) => {
-      Swal.fire('Error', err.message || 'No se pudieron cargar los datos iniciales.', 'error');
-    }
-  });
-}
+             const type = this.typeVehicles.find(t => t.value === item.typeVehicleId);
+             if (type) this.form.get('typeVehicleId')?.setValue(type);
+
+             const client = this.clients.find(c => c.value === item.clientId);
+             if (client) this.form.get('clientId')?.setValue(client);
+           },
+           error: (err: Error) => {
+             Swal.fire('Error', err.message || 'No se pudo cargar el vehículo.', 'error');
+             this.loaderService.hide();
+           },
+           complete: () => this.loaderService.hide()
+         });
+       } else {
+         // Si no es edición, ocultar loader después de cargar tipos y clientes
+         this.loaderService.hide();
+       }
+     },
+     error: (err: Error) => {
+       Swal.fire('Error', err.message || 'No se pudieron cargar los datos iniciales.', 'error');
+       this.loaderService.hide();
+     }
+   });
+ }
 
   displayClient = (client: any): string => client && client.label ? client.label : '';
   displayTypeVehicle = (type: any): string => type && type.label ? type.label : '';
@@ -277,6 +288,7 @@ ngOnInit(): void {
 
 
   private saveVehicle(data: any) {
+    this.loaderService.show();
     if (!this.isEdit) {
       delete data.id;
       this.service.post('Vehicle', data).subscribe({
@@ -291,7 +303,9 @@ ngOnInit(): void {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el vehículo.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       this.service.put('Vehicle', data).subscribe({
@@ -306,7 +320,9 @@ ngOnInit(): void {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el vehículo.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import { Role } from 'src/app/shared/Models/Entitys';
@@ -52,6 +53,7 @@ export class RoleForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -59,6 +61,7 @@ export class RoleForm implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit = true;
+      this.loaderService.show();
       this.service.getById<Role>('Rol', id).subscribe({
         next: (role) => {
           this.initialData = this.normalize(role);
@@ -66,7 +69,9 @@ export class RoleForm implements OnInit {
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el rol.', 'error');
           this.route.navigate(['/role-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }
@@ -81,6 +86,7 @@ export class RoleForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Rol', data).subscribe({
         next: () => {
@@ -95,7 +101,9 @@ export class RoleForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -114,7 +122,9 @@ export class RoleForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

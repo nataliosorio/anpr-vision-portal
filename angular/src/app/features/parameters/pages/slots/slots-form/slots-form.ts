@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Sectors } from '../../sectors/sectors';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 
@@ -51,6 +52,7 @@ export class SlotsForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -86,17 +88,21 @@ export class SlotsForm implements OnInit {
     // Si es edición, cargar datos iniciales
     if (id) {
       this.isEdit = true;
+      this.loaderService.show();
       this.service.getById<any>('Slots', id)
         .subscribe({
           next: (data) => { this.initialData = data; },
           error: (err) => {
             Swal.fire({ icon: 'error', title: 'Error al cargar slot', text: err.message });
-          }
+            this.loaderService.hide();
+          },
+          complete: () => this.loaderService.hide()
         });
     }
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Slots', data).subscribe({
         next: () => {
@@ -115,7 +121,9 @@ export class SlotsForm implements OnInit {
             title: 'No se pudo actualizar',
             text: err.message ?? 'Error desconocido'
           });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       delete data.id;
@@ -137,7 +145,9 @@ export class SlotsForm implements OnInit {
             title: 'No se pudo crear el Slot',
             text: err.message ?? 'Error desconocido'
           });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

@@ -8,6 +8,7 @@ import { VehicleType } from '../../vehicleType/vehicle-type';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 
@@ -77,6 +78,7 @@ export class SectorsForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -121,23 +123,31 @@ export class SectorsForm implements OnInit {
     );
 
     if (this.isEdit && id) {
+      this.loaderService.show();
       selects$.pipe(
         switchMap(() =>
           this.service.getById<any>('Sectors', id).pipe(
             catchError((err: Error) => {
               Swal.fire('Error', err.message || 'No se pudo cargar el sector.', 'error');
+              this.loaderService.hide();
               return of(null);
             })
           )
         )
-      ).subscribe((sector) => {
-        if (sector) {
-          this.initialData = this.normalizeSector(sector);
-        }
+      ).subscribe({
+        next: (sector) => {
+          if (sector) {
+            this.initialData = this.normalizeSector(sector);
+          }
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       // Solo selects (crear)
-      selects$.subscribe();
+      this.loaderService.show();
+      selects$.subscribe({
+        complete: () => this.loaderService.hide()
+      });
     }
   }
 
@@ -154,6 +164,7 @@ export class SectorsForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Sectors', data).subscribe({
         next: () => {
@@ -168,7 +179,9 @@ export class SectorsForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -187,7 +200,9 @@ export class SectorsForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }
