@@ -7,16 +7,17 @@
   color: #adb7be;
 
   .header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 32px;
 
     .title {
       display: flex;
       align-items: center;
-      justify-content: center;
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 0;
       color: #ffffff;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 
@@ -24,6 +25,28 @@
         margin-right: 16px;
         font-size: 3rem;
         color: #4099ff;
+      }
+    }
+
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #4099ff;
+        color: #4099ff;
+      }
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
       }
     }
 
