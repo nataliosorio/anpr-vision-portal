@@ -26,7 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 
 import Swal from 'sweetalert2';
-import { Subject, switchMap, takeUntil, timer, forkJoin, of } from 'rxjs';
+import { Subject, switchMap, takeUntil, forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
 import { DashboardCard, Client, TotalEnvelope, OccupancyEnvelope } from 'src/app/shared/Models/Entitys';
@@ -379,13 +379,13 @@ private piePalette = [
     // zonas
     this.loadZones();
 
-    // polling (global + tipos + zona actual)
-    this.startDashboardPolling();
+    // carga inicial (global + tipos + zona actual)
+    this.loadDashboardData();
   }
 
-  // =================== POLLING ===================
-  private startDashboardPolling() {
-    timer(0, 10000)
+  // =================== CARGA INICIAL ===================
+  private loadDashboardData() {
+    of(null)
       .pipe(
         switchMap(() =>
           forkJoin({
