@@ -1,7 +1,6 @@
 <div class="parking-entry-container">
   <div class="header">
     <h1 class="title">
-      <mat-icon class="title-icon">directions_car</mat-icon>
       Pantalla de Entrada - Parqueadero
     </h1>
   </div>
@@ -9,7 +8,7 @@
   <div class="content">
     <!-- Notificaciones en tiempo real -->
     <div class="notifications-section">
-      
+
 
       <div class="notifications-grid" *ngIf="realtimeNotifications.length > 0; else noNotifications">
         <mat-card class="notification-card"
@@ -66,9 +65,8 @@
 
       <ng-template #noNotifications>
         <div class="no-notifications">
-          <mat-icon class="no-notifications-icon">notifications_off</mat-icon>
-          <h3>No hay notificaciones activas</h3>
-          <p>Las notificaciones aparecerán aquí en tiempo real cuando haya actividad en el parqueadero.</p>
+            <h3>Sin entradas por ahora</h3>
+         <p>En cuanto ingrese un vehículo, aquí aparecerá su placa y el slot asignado.</p>
         </div>
       </ng-template>
     </div>
