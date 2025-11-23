@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import Swal from 'sweetalert2';
@@ -96,6 +97,7 @@ export class CameraForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -112,6 +114,7 @@ export class CameraForm implements OnInit {
     // en edición
     if (id) {
       this.isEdit = true;
+      this.loaderService.show();
       this.service.getById<any>('Cameras', id).subscribe({
         next: (camera) => {
           const normalized: any = { ...camera };
@@ -125,7 +128,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar la cámara.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       // si es nuevo, inicializamos con el parkingId
@@ -137,6 +142,7 @@ export class CameraForm implements OnInit {
     // asegura que siempre use el parkingId del localStorage
     data.parkingId = localStorage.getItem('parkingId');
 
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Cameras', data).subscribe({
         next: () => {
@@ -151,7 +157,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo actualizar', text: err.message });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       delete data.id;
@@ -168,7 +176,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo crear', text: err.message });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 import { Permission } from 'src/app/shared/Models/Entitys';
 
@@ -25,6 +26,7 @@ export class PermissionIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -32,6 +34,7 @@ export class PermissionIndex implements OnInit {
   }
 
   getAllPermissions(): void {
+    this._loaderService.show();
     this._generalService.get<Permission[]>('Permission/select').subscribe({
       next: (items) => {
         this.dataSource.data = items || [];
@@ -40,7 +43,9 @@ export class PermissionIndex implements OnInit {
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los permisos.', 'error');
         this.dataSource.data = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -64,6 +69,7 @@ export class PermissionIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Permission', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El permiso ha sido eliminado.', 'success');
@@ -71,7 +77,9 @@ export class PermissionIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -89,6 +97,7 @@ export class PermissionIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Permission/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El permiso ha sido eliminado permanentemente.', 'success');
@@ -96,7 +105,9 @@ export class PermissionIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });

@@ -11,6 +11,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-zones-index',
@@ -34,6 +35,7 @@ export class ZonesIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -49,6 +51,7 @@ export class ZonesIndex implements OnInit {
     this.dataSource.data = [];
     return;
   }
+    this._loaderService.show();
     this._generalService.get<Zones[]>('Zones/join').subscribe({
       next: (zones) => {
         this.originalData = zones || [];
@@ -60,7 +63,9 @@ export class ZonesIndex implements OnInit {
         this.originalData = [];
         this.dataSource.data = [];
         this.pagedData = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -91,6 +96,7 @@ export class ZonesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Zones', id).subscribe({
           next: () => {
             Swal.fire({
@@ -108,7 +114,9 @@ export class ZonesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -133,6 +141,7 @@ export class ZonesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Zones/permanent', id).subscribe({
           next: () => {
             Swal.fire({
@@ -150,7 +159,9 @@ export class ZonesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
