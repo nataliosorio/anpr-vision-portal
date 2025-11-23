@@ -43,7 +43,13 @@ export class CameraForm implements OnInit {
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La resolución es obligatoria.' },
         { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'Debe tener al menos 3 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'No puede superar los 50 caracteres.' }
+        {
+          name: ValidatorNames.Pattern,
+          validator: ValidatorNames.Pattern,
+          value: '^[0-9]{3,5}x[0-9]{3,5}$',
+          message: 'Use formato válido: ej. 1920x1080'
+        },
+        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'No puede superar los 20 caracteres.' }
       ]
     },
     {
@@ -62,8 +68,8 @@ export class CameraForm implements OnInit {
         {
           name: ValidatorNames.Pattern,
           validator: ValidatorNames.Pattern,
-          value: '^(https?|rtsp):\\/\\/[^\\s/$.?#].[^\\s]*$',
-          message: 'Debe ser una URL válida con protocolo (http, https o rtsp).'
+          value: '^(rtsp|https?)://(([\\w.-]+(:[\\w.-]+)?@)?[\\w.-]+)(:[0-9]+)?(/.*)?$',
+          message: 'Debe ser una URL válida de cámara (rtsp, http o https).'
         }
       ]
     },
