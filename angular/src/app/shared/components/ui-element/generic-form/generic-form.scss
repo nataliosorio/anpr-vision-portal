@@ -1,304 +1,149 @@
-/* ===== ESTILOS PARA FORMULARIO ANGULAR MATERIAL - TEMA OSCURO ===== */
+/* ================================
+   FORMULARIO DARK MODE ANPR
+   ================================ */
 
-/* Contenedor principal del formulario */
 form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 32px;
-  background: rgba(30, 30, 30, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  gap: 28px;
+  padding: 28px;
+  background: #1f242c;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.3s ease;
 }
 
-/* Estilos para mat-form-field */
-::ng-deep mat-form-field {
-  width: 100%;
+/* Título */
+.form-title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #e8f1ff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  letter-spacing: -0.5px;
+  margin-bottom: 10px;
 }
 
-::ng-deep mat-form-field .mat-mdc-form-field-outline {
-  border-radius: 16px !important;
+/* FORM FIELDS DARK */
+.dark-field ::ng-deep .mat-mdc-text-field-wrapper {
+  background: #2b323d !important;
+  border-radius: 8px !important;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
-::ng-deep mat-form-field .mat-mdc-form-field-outline-thick {
-  border-width: 2px !important;
-  border-color: #667eea !important;
+/* Hover */
+.dark-field ::ng-deep .mat-mdc-text-field-wrapper:hover {
+  background: #323a46 !important;
 }
 
-::ng-deep mat-form-field .mat-mdc-form-field-outline-start,
-::ng-deep mat-form-field .mat-mdc-form-field-outline-end {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  border-radius: 16px !important;
+/* Focus */
+.dark-field ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  background: #323a46 !important;
+  box-shadow: 0 0 0 2px rgba(0, 196, 255, 0.4) !important;
+  border-color: #00c4ff !important;
 }
 
-::ng-deep mat-form-field .mat-mdc-form-field-outline-gap {
-  border-color: rgba(255, 255, 255, 0.3) !important;
+/* Label */
+.dark-field ::ng-deep .mdc-floating-label {
+  color: #b8c7e0 !important;
 }
 
-/* Labels en tema oscuro */
-::ng-deep mat-form-field .mat-mdc-floating-label {
-  color: #b0b7c3 !important;
-  font-weight: 500 !important;
+.dark-field ::ng-deep .mdc-floating-label--float-above {
+  color: #22d3ee !important;
 }
 
-::ng-deep mat-form-field .mdc-floating-label--float-above {
-  color: #667eea !important;
-  font-weight: 600 !important;
+/* Input text */
+.dark-field ::ng-deep .mat-mdc-input-element {
+  color: #f1f5f9 !important;
 }
 
-/* Inputs en tema oscuro */
-::ng-deep mat-form-field input {
-  color: #ffffff !important;
-  font-weight: 500 !important;
+/* Date Toggle Icon */
+.dark-field ::ng-deep .mat-mdc-form-field-icon-suffix {
+  color: #9fb5cc !important;
 }
 
-::ng-deep mat-form-field input::placeholder {
-  color: #6b7280 !important;
-}
-
-/* Select en tema oscuro */
-::ng-deep mat-form-field mat-select {
-  color: #ffffff !important;
-  font-weight: 500 !important;
-}
-
-::ng-deep mat-form-field .mat-mdc-select-arrow {
-  color: #b0b7c3 !important;
-}
-
-/* Panel del select */
+/* Select panel */
 ::ng-deep .mat-mdc-select-panel {
-  background: #2d2d2d !important;
-  border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+  background: #28313d !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
 }
 
 ::ng-deep .mat-mdc-option {
-  color: #ffffff !important;
-  padding: 12px 16px !important;
-  font-weight: 500 !important;
+  color: #e5ecf5 !important;
 }
 
 ::ng-deep .mat-mdc-option:hover {
-  background: rgba(102, 126, 234, 0.1) !important;
+  background: rgba(0, 196, 255, 0.15) !important;
 }
 
-::ng-deep .mat-mdc-option.mat-mdc-option-active {
-  background: rgba(102, 126, 234, 0.2) !important;
-  color: #667eea !important;
+::ng-deep .mat-mdc-option.mdc-list-item--selected {
+  background: rgba(0, 196, 255, 0.25) !important;
+  color: #22d3ee !important;
 }
 
+/* Errors */
+.dark-field ::ng-deep .mat-mdc-form-field-error {
+  color: #ff6b6b !important;
+}
 
-/* Botón principal */
+/* Botones */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
 button[mat-raised-button] {
-  background: linear-gradient(135deg, #667eea, #764ba2) !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: 16px 32px !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  border-radius: 16px !important;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4) !important;
-  transition: all 0.3s ease !important;
-  margin-top: 8px !important;
+  background: linear-gradient(135deg, #158eb3, #178994) !important;
+  box-shadow: 0 4px 12px rgba(0, 196, 255, 0.2);
+  border-radius: 6px !important;
+  color: #000000 !important;
 }
 
 button[mat-raised-button]:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 196, 255, 0.3);
 }
 
-button[mat-raised-button]:active {
-  transform: translateY(0) !important;
+button[mat-button] {
+   background: linear-gradient(135deg, #158eb3, #178994) !important;
+  box-shadow: 0 4px 12px rgba(0, 196, 255, 0.2);
+  border-radius: 6px !important;
+  color: #000000 !important;
 }
 
-/* Divider personalizado */
-::ng-deep mat-divider {
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  margin: 32px 0 24px 0 !important;
+button[mat-button]:hover {
+ transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 196, 255, 0.3);
 }
 
-/* Títulos y texto */
-h4, h5 {
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  margin: 24px 0 16px 0 !important;
-  font-size: 1.25rem !important;
+/* Animación */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-h5 {
-  font-size: 1.1rem !important;
+
+/* TOGGLE DARK STYLE */
+.dark-toggle ::ng-deep .mdc-switch__track {
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
-/* Contenedor de secciones */
-.mt-4 {
-  margin-top: 32px !important;
-  padding: 24px !important;
-  background: rgba(20, 20, 20, 0.6) !important;
-  border-radius: 16px !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+.dark-toggle.mdc-switch--selected ::ng-deep .mdc-switch__track {
+  background: rgba(0, 196, 255, 0.35) !important;
 }
 
-/* Clase full-width */
-.full-width {
-  width: 100% !important;
+.dark-toggle ::ng-deep .mdc-switch__handle {
+  background: #e2f1ff !important;
 }
 
-/* Tabla personalizada para tema oscuro */
-.table {
-  background: transparent !important;
-  color: #ffffff !important;
-  border-radius: 12px !important;
-  overflow: hidden !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+.dark-toggle.mdc-switch--selected ::ng-deep .mdc-switch__handle {
+  background: #22d3ee !important;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.8);
 }
 
-.table thead th {
-  background: linear-gradient(135deg, #374151, #4b5563) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  padding: 16px !important;
-  border: none !important;
+.dark-toggle ::ng-deep .mdc-label {
+  color: #e5ecf5 !important;
   font-size: 14px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-}
-
-.table tbody td {
-  background: rgba(30, 30, 30, 0.8) !important;
-  color: #ffffff !important;
-  padding: 16px !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  font-weight: 500 !important;
-  vertical-align: middle !important;
-}
-
-.table tbody tr:hover td {
-  background: rgba(102, 126, 234, 0.1) !important;
-  transition: background 0.2s ease !important;
-}
-
-/* Input dentro de la tabla */
-.table .form-control {
-  background: rgba(40, 40, 40, 0.8) !important;
-  color: #ffffff !important;
-  border: 2px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  font-weight: 500 !important;
-}
-
-.table .form-control:focus {
-  border-color: #667eea !important;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
-  outline: none !important;
-}
-
-/* Botón de eliminar */
-.btn-danger {
-  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: 8px 16px !important;
-  border-radius: 10px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-}
-
-.btn-danger:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
-  background: linear-gradient(135deg, #f87171, #ef4444) !important;
-}
-
-.btn-danger:active {
-  transform: translateY(0) !important;
-}
-
-/* Iconos de Material */
-::ng-deep mat-icon {
-  font-size: 20px !important;
-  width: 20px !important;
-  height: 20px !important;
-}
-
-/* Iconos de Bootstrap dentro del botón */
-.bi-trash {
-  font-size: 14px !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  form {
-    padding: 20px !important;
-    gap: 16px !important;
-  }
-
-  .mt-4 {
-    padding: 16px !important;
-  }
-
-  .table {
-    font-size: 14px !important;
-  }
-
-  .table thead th,
-  .table tbody td {
-    padding: 12px 8px !important;
-  }
-
-  h4, h5 {
-    font-size: 1.1rem !important;
-  }
-}
-
-/* Animaciones suaves */
-* {
-  transition: all 0.2s ease !important;
-}
-
-/* Scrollbar personalizada para elementos con scroll */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.6);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(102, 126, 234, 0.8);
-}
-.error-message{
-   font-size: 0.85rem;          /* Un poco más pequeño que el input */
-  color: #f44336;              /* Rojo Material Design */
-  margin-top: 4px;             /* Espacio pequeño debajo del campo */
-  display: block;              /* Ocupa su propia línea */
-  position: absolute;          /* Para que no se monte */
-  background:  rgba(30, 30, 30, 0.95);
-}
-
-
-.form-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #ffffffff; // Azul Material
-  text-transform: capitalize;
 }
