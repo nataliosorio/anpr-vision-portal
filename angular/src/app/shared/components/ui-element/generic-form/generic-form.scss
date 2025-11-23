@@ -85,6 +85,13 @@ form {
 /* Errors */
 .dark-field ::ng-deep .mat-mdc-form-field-error {
   color: #ff6b6b !important;
+  margin-top: -6px;
+  line-height: 1.4;
+}
+
+/* Espacio extra cuando hay error para evitar que se tape */
+.dark-field ::ng-deep .mat-mdc-form-field.mat-form-field-invalid {
+  margin-bottom: 16px !important;
 }
 
 /* Botones */
