@@ -1,6 +1,6 @@
 // Angular Import
-import { Component, HostListener, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule, Location, LocationStrategy } from '@angular/common';
 
 // Project Import
@@ -15,19 +15,27 @@ import { Footer } from './footer/footer';
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']
 })
-export class AdminComponent {
+export class AdminComponent implements OnInit {
   private location = inject(Location);
   private locationStrategy = inject(LocationStrategy);
+  private route = inject(ActivatedRoute);
 
   // public props
   navCollapsed!: boolean;
   navCollapsedMob: boolean;
   windowWidth: number;
+  isFullscreen: boolean = false;
 
   // constructor
   constructor() {
     this.windowWidth = window.innerWidth;
     this.navCollapsedMob = false;
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.isFullscreen = params['fullscreen'] === 'true';
+    });
   }
 
   @HostListener('window:resize', ['$event'])

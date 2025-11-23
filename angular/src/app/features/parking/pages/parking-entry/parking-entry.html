@@ -3,6 +3,9 @@
     <h1 class="title">
       Pantalla de Entrada - Parqueadero
     </h1>
+    <button mat-icon-button (click)="toggleFullscreen()" class="fullscreen-btn" title="{{ isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa' }}">
+      <mat-icon>{{ isFullscreen ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+    </button>
   </div>
 
   <div class="content">
