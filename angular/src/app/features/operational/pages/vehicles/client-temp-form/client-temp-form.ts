@@ -51,7 +51,7 @@ export class ClientTempForm implements OnInit {
       clientName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       // usuario
       userName: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)], [this.usernameExistsValidator()]],
-      email: ['', [Validators.required, Validators.email], [this.emailExistsValidator()]],
+      email: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)], [this.emailExistsValidator()]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20), Validators.pattern(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)]],
       // rol
       rolId: ['', Validators.required]
