@@ -90,8 +90,8 @@
     <mat-error *ngIf="form.get('email')?.hasError('required')">
       El correo electrónico es obligatorio
     </mat-error>
-    <mat-error *ngIf="form.get('email')?.hasError('email')">
-      El formato del correo electrónico no es válido
+    <mat-error *ngIf="form.get('email')?.hasError('pattern')">
+      El correo electrónico debe tener un formato válido (ej: usuario&#64;dominio.com)
     </mat-error>
     <mat-error *ngIf="form.get('email')?.hasError('emailExists')">
       Este correo electrónico ya está registrado
