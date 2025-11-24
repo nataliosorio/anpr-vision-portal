@@ -252,14 +252,20 @@
         <div class="form-field-container">
           <mat-form-field appearance="outline" class="custom-form-field plate-field">
             <mat-label>Placa del Vehículo</mat-label>
-            <input matInput formControlName="plate" placeholder="ABC-123" required autocomplete="off">
+            <input matInput
+                   formControlName="plate"
+                   placeholder="ABC123"
+                   required
+                   autocomplete="off"
+                   maxlength="6"
+                   (input)="manualEntryForm.get('plate')?.setValue(manualEntryForm.get('plate')?.value?.toUpperCase())">
             <mat-icon matSuffix class="field-icon">credit_card</mat-icon>
-            <mat-hint>Ingrese la placa en formato estándar</mat-hint>
+            <mat-hint>Ingrese la placa en formato estándar (máx. 6 caracteres)</mat-hint>
             <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('required')">
               La placa es requerida
             </mat-error>
             <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('pattern')">
-              Formato de placa inválido (ej: ABC-123)
+              Formato de placa inválido (ej: ABC123)
             </mat-error>
           </mat-form-field>
         </div>
