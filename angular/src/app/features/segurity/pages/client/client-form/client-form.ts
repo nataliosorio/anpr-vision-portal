@@ -36,6 +36,8 @@ export class ClientForm implements OnInit {
   people: Person[] = [];
   roles: any[] = [];
   createNewPerson = false;
+  selectedPersonName = '';
+  originalPersonId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -67,6 +69,22 @@ export class ClientForm implements OnInit {
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
+
+    // Si es edición, remover campos que no se usan
+    if (this.isEdit) {
+      this.form.removeControl('username');
+      this.form.removeControl('email');
+      this.form.removeControl('password');
+      this.form.removeControl('rolId');
+      this.form.removeControl('firstName');
+      this.form.removeControl('lastName');
+      this.form.removeControl('phoneNumber');
+      this.form.removeControl('personId');
+      this.form.removeControl('createNewPerson');
+    }
+
+    // Inicializar validadores según el estado inicial del toggle
+    this.toggleCreateNewPerson();
 
     // Cargar personas
     this.service.get<Person[]>('Person/select').subscribe({
@@ -122,11 +140,19 @@ export class ClientForm implements OnInit {
   }
 
   private loadClientData(client: any): void {
-    // Para edición, cargar datos del cliente existente
-    // Nota: En edición solo se permite cambiar el nombre del cliente, no recrear persona/usuario
+    this.originalPersonId = client.personId;
     this.form.patchValue({
-      clientName: client.name,
-      personId: client.personId
+      clientName: client.name
+    });
+
+    // Buscar la persona para mostrar el nombre
+    this.service.getById<Person>('Person', client.personId).subscribe({
+      next: (person) => {
+        this.selectedPersonName = `${person.firstName} ${person.lastName}`;
+      },
+      error: () => {
+        this.selectedPersonName = 'Persona no encontrada';
+      }
     });
   }
 
@@ -136,11 +162,11 @@ export class ClientForm implements OnInit {
     const formData = this.form.value;
 
     if (this.isEdit) {
-      // En edición solo actualizar el cliente
+      // En edición, solo actualizar el nombre del cliente
       const clientData = {
         id: this.activatedRoute.snapshot.paramMap.get('id'),
         name: formData.clientName,
-        personId: formData.personId,
+        personId: this.originalPersonId,
         asset: true
       };
 
