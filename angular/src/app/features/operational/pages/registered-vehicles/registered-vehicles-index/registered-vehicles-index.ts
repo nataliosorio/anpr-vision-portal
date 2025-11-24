@@ -437,15 +437,16 @@ export class RegisteredVehiclesIndex implements OnInit {
 
   viewTicket(entry: RegisteredVehicle): void {
     this._loaderService.show();
-    this._generalService.get<{ ticketPdfBytes: string }>(`RegisteredVehicles/ticket/${entry.id}`).subscribe({
-      next: (response) => {
-        this.openPdfInNewTab(response.ticketPdfBytes);
+    this._generalService.getBlob(`tickets/${entry.id}/pdf`).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this._loaderService.hide();
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo obtener el ticket', 'error');
         this._loaderService.hide();
-      },
-      complete: () => this._loaderService.hide()
+      }
     });
   }
 

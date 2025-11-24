@@ -440,17 +440,13 @@
             transform: translateY(-2px);
           }
 
-          &.ticket-btn {
-            color: #9c27b0;
+          // &.ticket-btn {
+          //   color: #2196f3;
 
-            &:hover {
-              background-color: rgba(156, 39, 176, 0.1);
-            }
-
-            mat-icon{
-              color:white !important;
-            }
-          }
+          //   &:hover {
+          //     background-color: rgba(33, 150, 243, 0.1);
+          //   }
+          // }
 
           &.exit-btn {
             background: linear-gradient(135deg, #ff9800, #f57c00);
@@ -518,6 +514,34 @@
       }
     }
   }
+
+  .ticket-btn mat-icon {
+  color: #1cb9ba !important;
+}
+// .ticket-btn:hover {
+//   background-color: rgba(28, 185, 186, 0.15) !important;
+// }
+
+.ticket-btn {
+  animation: pulseAnim 1.8s infinite ease-in-out;
+  transition: all 0.25s ease;
+}
+
+/* Pulse Animation */
+@keyframes pulseAnim {
+  0% {
+    transform: scale(1);
+    // box-shadow: 0 0 0 0 rgba(28, 185, 186, 0.4);
+  }
+  70% {
+    transform: scale(1.12);
+    // box-shadow: 0 0 15px 8px rgba(28, 185, 186, 0);
+  }
+  100% {
+    transform: scale(1);
+    // box-shadow: 0 0 0 0 rgba(28, 185, 186, 0);
+  }
+}
 
   // Empty State
   .empty-state {
