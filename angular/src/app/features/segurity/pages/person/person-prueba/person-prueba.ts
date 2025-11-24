@@ -41,11 +41,44 @@ export class PersonPrueba implements OnInit {
       ]
     },
     {
-      name: 'phoneNumber',
+      name: 'phone',
       label: 'Teléfono',
       type: 'tel',
       validations: [
+        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El teléfono es obligatorio.' },
         { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[0-9]{7,15}$', message: 'El teléfono debe tener entre 7 y 15 dígitos.' }
+      ]
+    },
+    {
+      name: 'document',
+      label: 'Documento',
+      type: 'text',
+      validations: [
+        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El documento es obligatorio.' },
+         {
+      name: ValidatorNames.MinLength,
+      validator: ValidatorNames.MinLength,
+      value: 6,
+      message: 'El documento debe tener al menos 6 dígitos.'
+    },
+        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 15, message: 'El documento no puede exceder los 15 caracteres.' },
+        {
+      name: ValidatorNames.Pattern,
+      validator: ValidatorNames.Pattern,
+      value: '^[0-9]+$',
+      message: 'El documento solo puede contener números.'
+    }
+
+      ]
+    },
+    {
+      name: 'age',
+      label: 'Edad',
+      type: 'number',
+      validations: [
+        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La edad es obligatoria.' },
+        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 0, message: 'La edad debe ser mayor o igual a 0.' },
+        { name: ValidatorNames.Max, validator: ValidatorNames.Max, value: 100, message: 'La edad no puede ser mayor a 100.' }
       ]
     },
     {
@@ -68,6 +101,11 @@ export class PersonPrueba implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
 
+    // Configurar visibilidad del toggle según el modo
+    this.formConfig = this.formConfig.map(f =>
+      f.name === 'asset' ? { ...f, hidden: !this.isEdit } : f
+    );
+
     if (this.isEdit && id) {
       this.service.getById<Person>('Person', id).subscribe({
         next: (person) => {
@@ -86,7 +124,9 @@ export class PersonPrueba implements OnInit {
       id: p.id,
       firstName: p.firstName,
       lastName: p.lastName,
-      phoneNumber: p.phoneNumber ?? '',
+      phone: p.phone ?? '',
+      document: p.document ?? '',
+      age: p.age ?? 0,
       asset: p.asset ?? true
     };
   }

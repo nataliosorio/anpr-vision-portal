@@ -36,7 +36,7 @@ export class BlackListForm implements OnInit {
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La razón es obligatoria.' },
         { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'La razón debe tener al menos 3 caracteres.' },
         { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 100, message: 'La razón no puede exceder los 100 caracteres.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La razón solo puede contener letras y espacios.' }
+        // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La razón solo puede contener letras y espacios.' }
       ]
     },
     {
@@ -60,11 +60,16 @@ export class BlackListForm implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
 
+    // Configurar visibilidad del toggle según el modo
+    this.formConfig = this.formConfig.map(f =>
+      f.name === 'asset' ? { ...f, hidden: !this.isEdit } : f
+    );
+
     // Mostrar loader para carga inicial
     this.loaderService.show();
 
     // Cargar vehículos para el select
-    this.service.get<Vehicle[]>('Vehicle/select').subscribe({
+    this.service.get<Vehicle[]>('Vehicle/join').subscribe({
       next: (vehicles) => {
         const options = (vehicles || []).map(v => ({
           value: v.id,

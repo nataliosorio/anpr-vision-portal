@@ -1,82 +1,90 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute, Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
-import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
-import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
-import { Person } from 'src/app/shared/Models/Entitys';
+import { Person, Client, User, RolParkingUser } from 'src/app/shared/Models/Entitys';
 
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-client-form',
-  imports: [GenericForm],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatSlideToggleModule
+  ],
   templateUrl: './client-form.html',
   styleUrl: './client-form.scss'
 })
 export class ClientForm implements OnInit {
-  formConfig: FieldConfig[] = [
-    {
-      name: 'name',
-      label: 'Nombre del cliente',
-      type: 'text',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre del cliente es obligatorio.' },
-        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 2, message: 'El nombre debe tener al menos 2 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'El nombre solo puede contener letras y espacios.' }
-      ]
-    },
-    {
-      name: 'personId',
-      label: 'Persona Asociada',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar una persona.' }
-      ]
-    },
-    {
-      name: 'asset',
-      label: 'Activo',
-      type: 'toggle',
-      value: true,
-      hidden: true
-    }
-  ];
-
+  form: FormGroup;
   isEdit = false;
-  initialData: any = {};
+  people: Person[] = [];
+  roles: any[] = [];
+  createNewPerson = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.form = this.fb.group({
+      // Control del toggle
+      createNewPerson: [false],
+      // Persona (condicional)
+      firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]],
+      lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]],
+      phoneNumber: ['', [Validators.pattern('^[0-9]{7,15}$')]],
+      // Persona existente
+      personId: [null],
+      // Cliente
+      clientName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      // Usuario
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(20), Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)]],
+      rolId: [null, [Validators.required]]
+    });
+  }
 
   private service = inject(General);
   private loaderService = inject(LoaderService);
-  private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
 
-    // Mostrar loader para carga inicial
-    this.loaderService.show();
-
-    // Cargar personas para el select
+    // Cargar personas
     this.service.get<Person[]>('Person/select').subscribe({
       next: (people) => {
-        const opts = (people || []).map(p => ({
-          value: p.id,
-          label: `${p.firstName ?? ''} ${p.lastName ?? ''}`.trim()
-        }));
-        this.formConfig = this.formConfig.map(f =>
-          f.name === 'personId' ? { ...f, options: opts } : f
-        );
+        this.people = people || [];
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar las personas.', 'error');
-        this.loaderService.hide();
+      }
+    });
+
+    // Cargar roles
+    this.service.get<any[]>('Rol/select').subscribe({
+      next: (roles) => {
+        this.roles = roles || [];
+      },
+      error: (err: Error) => {
+        Swal.fire('Error', err.message || 'No se pudieron cargar los roles.', 'error');
       }
     });
 
@@ -84,63 +92,158 @@ export class ClientForm implements OnInit {
     if (this.isEdit && id) {
       this.service.getById<any>('Client', id).subscribe({
         next: (client) => {
-          this.initialData = this.normalizeClient(client);
+          this.loadClientData(client);
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el cliente.', 'error');
           this.router.navigate(['/client-index']);
-          this.loaderService.hide();
-        },
-        complete: () => this.loaderService.hide()
+        }
       });
-    } else {
-      // Si no es edición, ocultar loader después de cargar personas
-      this.loaderService.hide();
     }
   }
 
-  private normalizeClient(c: any) {
-    return {
-      id: c.id,
-      name: c.name,
-      personId: c.personId ?? c.person?.id ?? null,
-      asset: c.asset ?? true
-    };
+  toggleCreateNewPerson(): void {
+    this.createNewPerson = this.form.get('createNewPerson')?.value || false;
+    if (this.createNewPerson) {
+      this.form.get('personId')?.setValue(null);
+      this.form.get('firstName')?.setValidators([Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]);
+      this.form.get('lastName')?.setValidators([Validators.required, Validators.minLength(2), Validators.maxLength(50), Validators.pattern('^[a-zA-ZÀ-ÿ\\s]+$')]);
+    } else {
+      this.form.get('firstName')?.clearValidators();
+      this.form.get('lastName')?.clearValidators();
+      this.form.get('firstName')?.setValue('');
+      this.form.get('lastName')?.setValue('');
+      this.form.get('phoneNumber')?.setValue('');
+    }
+    this.form.get('personId')?.setValidators(this.createNewPerson ? null : [Validators.required]);
+    this.form.get('personId')?.updateValueAndValidity();
+    this.form.get('firstName')?.updateValueAndValidity();
+    this.form.get('lastName')?.updateValueAndValidity();
   }
 
-  save(data: any) {
-    this.loaderService.show();
+  private loadClientData(client: any): void {
+    // Para edición, cargar datos del cliente existente
+    // Nota: En edición solo se permite cambiar el nombre del cliente, no recrear persona/usuario
+    this.form.patchValue({
+      clientName: client.name,
+      personId: client.personId
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid) return;
+
+    const formData = this.form.value;
+
     if (this.isEdit) {
-      this.service.put('Client', data).subscribe({
+      // En edición solo actualizar el cliente
+      const clientData = {
+        id: this.activatedRoute.snapshot.paramMap.get('id'),
+        name: formData.clientName,
+        personId: formData.personId,
+        asset: true
+      };
+
+      this.service.put('Client', clientData).subscribe({
         next: () => {
-          Swal.fire({ icon: 'success', title: 'Registro actualizado exitosamente', showConfirmButton: false, timer: 2000, timerProgressBar: true });
+          Swal.fire({
+            icon: 'success',
+            title: 'Cliente actualizado exitosamente',
+            timer: 2000,
+            showConfirmButton: false
+          });
           this.router.navigate(['/client-index']);
         },
         error: (err: Error) => {
-          Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-          this.loaderService.hide();
-        },
-        complete: () => this.loaderService.hide()
+          Swal.fire('Error', err.message || 'No se pudo actualizar el cliente', 'error');
+        }
       });
     } else {
-      const payload = { ...data };
-      delete payload.id;
-
-      this.service.post('Client', payload).subscribe({
-        next: () => {
-          Swal.fire({ icon: 'success', title: 'Registro creado exitosamente', showConfirmButton: false, timer: 2000, timerProgressBar: true });
-          this.router.navigate(['/client-index']);
-        },
-        error: (err: Error) => {
-          Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-          this.loaderService.hide();
-        },
-        complete: () => this.loaderService.hide()
-      });
+      // Flujo de creación completo
+      this.createCompleteFlow(formData);
     }
   }
 
-  cancel() {
+  private createCompleteFlow(formData: any): void {
+    const personId = formData.personId;
+
+    const createClientAndUser = (personId: number) => {
+      // 2. Crear Cliente
+      const clientPayload: Partial<Client> = {
+        name: formData.clientName,
+        personId: personId,
+        asset: true
+      };
+
+      this.service.post<Client>('Client', clientPayload).subscribe({
+        next: () => {
+          // 3. Crear Usuario
+          const userPayload: Partial<User> = {
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            personId: personId
+          };
+
+          this.service.post<User>('User', userPayload).subscribe({
+            next: (createdUser) => {
+              // 4. Crear RolParkingUser
+              const rolParkingUserPayload: Partial<RolParkingUser> = {
+                userId: createdUser.id,
+                rolId: formData.rolId,
+                parkingId: parseInt(this.service.getParkingId() || '0')
+              };
+
+              this.service.post<RolParkingUser>('RolParkingUser', rolParkingUserPayload).subscribe({
+                next: () => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Cliente creado exitosamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                  });
+                  this.router.navigate(['/client-index']);
+                },
+                error: (err: Error) => {
+                  Swal.fire('Error', err.message || 'No se pudo crear la relación rol-parqueadero', 'error');
+                }
+              });
+            },
+            error: (err: Error) => {
+              Swal.fire('Error', err.message || 'No se pudo crear el usuario', 'error');
+            }
+          });
+        },
+        error: (err: Error) => {
+          Swal.fire('Error', err.message || 'No se pudo crear el cliente', 'error');
+        }
+      });
+    };
+
+    if (this.createNewPerson) {
+      // 1. Crear nueva persona
+      const personPayload: Partial<Person> = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phoneNumber,
+        asset: true
+      };
+
+      this.service.post<Person>('Person', personPayload).subscribe({
+        next: (createdPerson) => {
+          createClientAndUser(createdPerson.id);
+        },
+        error: (err: Error) => {
+          Swal.fire('Error', err.message || 'No se pudo crear la persona', 'error');
+        }
+      });
+    } else {
+      // Usar persona existente
+      createClientAndUser(personId);
+    }
+  }
+
+  cancel(): void {
     this.router.navigate(['/client-index']);
   }
 }
