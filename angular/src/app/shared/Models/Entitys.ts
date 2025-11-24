@@ -13,7 +13,7 @@ export type Permission = IEntity;
 export interface Person extends IBaseEntity {
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  // phoneNumber: string;
   document: string;
   phone: string;
   age: number;

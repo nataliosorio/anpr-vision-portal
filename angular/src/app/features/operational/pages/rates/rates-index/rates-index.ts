@@ -21,7 +21,7 @@ export class RatesIndex implements OnInit {
   columns = [
     { key: 'name', label: 'Nombre' },
     { key: 'type', label: 'Tipo' },
-    { key: 'amount', label: 'Cantidad' },
+    { key: 'amount', label: 'Monto' },
     { key: 'starHour', label: 'Hora de Inicio' }, // ← si realmente es startHour en tu back, cámbialo aquí
     { key: 'endHour', label: 'Hora de Fin' },
     { key: 'year', label: 'Año' },
@@ -29,7 +29,6 @@ export class RatesIndex implements OnInit {
     { key: 'typeVehicle', label: 'Tipo de Vehículo' },
     { key: 'parking', label: 'Parqueadero' },
     { key: 'asset', label: 'Estado' },
-    { key: 'isDeleted', label: 'Eliminado Lógicamente' }
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;

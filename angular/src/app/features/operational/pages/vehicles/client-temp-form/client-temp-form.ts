@@ -119,10 +119,10 @@ export class ClientTempForm implements OnInit {
       return;
     }
 
-    const { firstName, lastName, phoneNumber, clientName, userName, email, password, rolId } = this.form.value;
+    const { firstName, lastName, phone, clientName, userName, email, password, rolId } = this.form.value;
 
     // 🔹 Paso 1: Crear Persona
-    const personPayload: Partial<Person> = { firstName, lastName, phoneNumber };
+    const personPayload: Partial<Person> = { firstName, lastName, phone };
 
     this.service.post<Person>('Person', personPayload).subscribe({
       next: (createdPerson) => {
