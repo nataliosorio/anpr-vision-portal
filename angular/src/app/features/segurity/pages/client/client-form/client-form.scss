@@ -1,0 +1,396 @@
+/* =============================================== */
+/* TITULO PRINCIPAL                                */
+/* =============================================== */
+h2 {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================== */
+/* CONTENEDOR PRINCIPAL DEL FORMULARIO             */
+/* =============================================== */
+.client-form {
+  max-width: 1000px;
+  max-height: 75vh;
+  margin: 0 auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Estilo del scrollbar */
+.client-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.client-form::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 10px;
+}
+
+.client-form::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.client-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* =============================================== */
+/* SECCION TOGGLE                                  */
+/* =============================================== */
+.toggle-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(71, 85, 105, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  transition: all 0.3s ease;
+}
+
+.toggle-section:hover {
+  background: rgba(71, 85, 105, 0.25);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+/* =============================================== */
+/* SECCIONES DEL FORMULARIO                        */
+/* =============================================== */
+.form-section {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.form-section h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid rgba(59, 130, 246, 0.3);
+  letter-spacing: 0.3px;
+}
+
+/* =============================================== */
+/* CAMPOS DE FORMULARIO - ANCHO COMPLETO           */
+/* =============================================== */
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* =============================================== */
+/* ANGULAR MATERIAL INPUTS - ESTILO MODERNO        */
+/* =============================================== */
+
+/* Contenedor principal del form-field */
+::ng-deep .mat-mdc-form-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+/* ELIMINAR bordes del outline predeterminado */
+::ng-deep .mdc-notched-outline__leading,
+::ng-deep .mdc-notched-outline__notch,
+::ng-deep .mdc-notched-outline__trailing {
+  border: none !important;
+}
+
+/* Wrapper principal del input */
+::ng-deep .mat-mdc-text-field-wrapper {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  border: 1.5px solid rgba(148, 163, 184, 0.25) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Hover state */
+::ng-deep .mat-mdc-text-field-wrapper:hover {
+  background: rgba(15, 23, 42, 0.8) !important;
+  border-color: rgba(148, 163, 184, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Focus state */
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 
+    0 4px 16px rgba(59, 130, 246, 0.2),
+    0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Contenedor del input */
+::ng-deep .mdc-text-field {
+  background: transparent !important;
+  padding: 14px 16px !important;
+  border-radius: 12px !important;
+}
+
+/* Texto del input */
+::ng-deep .mat-mdc-input-element {
+  color: #f1f5f9 !important;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* Placeholder */
+::ng-deep .mat-mdc-input-element::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+/* Label flotante */
+::ng-deep mat-label,
+::ng-deep .mdc-floating-label {
+  color: #94a3b8 !important;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+/* Label en estado focused o con valor */
+::ng-deep .mat-mdc-form-field.mat-focused mat-label,
+::ng-deep .mdc-floating-label--float-above {
+  color: #cbd5e1 !important;
+  font-size: 13px;
+}
+
+/* =============================================== */
+/* SELECT DROPDOWN                                 */
+/* =============================================== */
+::ng-deep .mat-mdc-select-value {
+  color: #f1f5f9 !important;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+::ng-deep .mat-mdc-select-arrow {
+  color: #94a3b8 !important;
+}
+
+::ng-deep .mat-mdc-select-trigger {
+  padding: 2px 0;
+}
+
+/* Panel del select */
+::ng-deep .mat-mdc-select-panel {
+  background: rgba(30, 41, 59, 0.98) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+::ng-deep .mat-mdc-option {
+  color: #e2e8f0 !important;
+  font-size: 15px;
+}
+
+::ng-deep .mat-mdc-option:hover {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+::ng-deep .mat-mdc-option.mat-mdc-option-active {
+  background: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* =============================================== */
+/* ESTADO DE ERROR                                 */
+/* =============================================== */
+::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
+  background: rgba(15, 23, 42, 0.7) !important;
+  border-color: #ef4444 !important;
+  box-shadow: 
+    0 4px 16px rgba(239, 68, 68, 0.15),
+    0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+::ng-deep .mat-mdc-form-field-error {
+  color: #fca5a5 !important;
+  font-size: 13px;
+  margin-top: 6px;
+  margin-left: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* =============================================== */
+/* ESTADO DISABLED                                 */
+/* =============================================== */
+::ng-deep .mat-mdc-form-field.mat-form-field-disabled .mat-mdc-text-field-wrapper {
+  background: rgba(51, 65, 85, 0.3) !important;
+  border-color: rgba(100, 116, 139, 0.2) !important;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+::ng-deep .mat-mdc-form-field.mat-form-field-disabled .mat-mdc-input-element {
+  color: #64748b !important;
+}
+
+/* =============================================== */
+/* BOTONES DE ACCIÓN                               */
+/* =============================================== */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Botón primario */
+::ng-deep button[mat-flat-button] {
+  padding: 0.875rem 2.5rem !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+}
+
+::ng-deep button[mat-flat-button]:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 20px rgba(59, 130, 246, 0.4),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+::ng-deep button[mat-flat-button]:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Botón secundario */
+::ng-deep button[mat-stroked-button] {
+  padding: 0.875rem 2.5rem !important;
+  border-radius: 12px !important;
+  color: #cbd5e1 !important;
+  border: 1.5px solid rgba(203, 213, 225, 0.3) !important;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent !important;
+}
+
+::ng-deep button[mat-stroked-button]:hover:not(:disabled) {
+  background: rgba(203, 213, 225, 0.1) !important;
+  border-color: rgba(203, 213, 225, 0.5) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+::ng-deep button[mat-stroked-button]:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Botón deshabilitado */
+::ng-deep button:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* =============================================== */
+/* TOGGLE SWITCH                                   */
+/* =============================================== */
+::ng-deep .mat-mdc-slide-toggle {
+  .mdc-switch__track {
+    background: rgba(71, 85, 105, 0.4) !important;
+    border-radius: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+  
+  .mdc-switch__handle-track {
+    background: #64748b !important;
+  }
+  
+  .mdc-switch__shadow {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  &.mat-mdc-slide-toggle-checked {
+    .mdc-switch__track {
+      background: rgba(59, 130, 246, 0.4) !important;
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+    
+    .mdc-switch__handle-track {
+      background: #3b82f6 !important;
+    }
+  }
+  
+  .mdc-label {
+    color: #e2e8f0 !important;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.2px;
+  }
+}
+
+/* =============================================== */
+/* ANIMACIONES Y TRANSICIONES                      */
+/* =============================================== */
+::ng-deep .mat-mdc-form-field,
+::ng-deep .mat-mdc-text-field-wrapper,
+::ng-deep button {
+  will-change: transform, box-shadow;
+}
+
+/* =============================================== */
+/* RESPONSIVE DESIGN                               */
+/* =============================================== */
+@media (max-width: 768px) {
+  .client-form {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-section {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  ::ng-deep button {
+    width: 100%;
+  }
+}
