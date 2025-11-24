@@ -1,4 +1,4 @@
-<h2 class="modal-title">Nuevo Cliente</h2>
+<h2 class="modal-title">Nuevo Cliente y Usuario</h2>
 
 <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
 
@@ -11,6 +11,15 @@
     <mat-error *ngIf="form.get('firstName')?.hasError('required')">
       El nombre es obligatorio
     </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('minlength')">
+      El nombre debe tener al menos 2 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('maxlength')">
+      El nombre no puede tener más de 50 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('firstName')?.hasError('pattern')">
+      El nombre solo puede contener letras y espacios
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field appearance="outline" class="full-width">
@@ -18,6 +27,15 @@
     <input matInput formControlName="lastName" required />
     <mat-error *ngIf="form.get('lastName')?.hasError('required')">
       El apellido es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('minlength')">
+      El apellido debe tener al menos 2 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('maxlength')">
+      El apellido no puede tener más de 50 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('lastName')?.hasError('pattern')">
+      El apellido solo puede contener letras y espacios
     </mat-error>
   </mat-form-field>
 
@@ -37,6 +55,78 @@
     <input matInput formControlName="clientName" required />
     <mat-error *ngIf="form.get('clientName')?.hasError('required')">
       El nombre del cliente es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('clientName')?.hasError('minlength')">
+      El nombre del cliente debe tener al menos 2 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('clientName')?.hasError('maxlength')">
+      El nombre del cliente no puede tener más de 50 caracteres
+    </mat-error>
+  </mat-form-field>
+
+  <!-- 🔹 Sección Usuario -->
+  <h3>Datos del Usuario</h3>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nombre de Usuario</mat-label>
+    <input matInput formControlName="userName" required />
+    <mat-error *ngIf="form.get('userName')?.hasError('required')">
+      El nombre de usuario es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('userName')?.hasError('minlength')">
+      El nombre de usuario debe tener al menos 3 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('userName')?.hasError('maxlength')">
+      El nombre de usuario no puede tener más de 30 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('userName')?.hasError('usernameExists')">
+      Este nombre de usuario ya está en uso
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Correo Electrónico</mat-label>
+    <input matInput type="email" formControlName="email" required />
+    <mat-error *ngIf="form.get('email')?.hasError('required')">
+      El correo electrónico es obligatorio
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.hasError('email')">
+      El formato del correo electrónico no es válido
+    </mat-error>
+    <mat-error *ngIf="form.get('email')?.hasError('emailExists')">
+      Este correo electrónico ya está registrado
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Contraseña</mat-label>
+    <input matInput type="password" formControlName="password" required />
+    <mat-error *ngIf="form.get('password')?.hasError('required')">
+      La contraseña es obligatoria
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('minlength')">
+      La contraseña debe tener al menos 8 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('maxlength')">
+      La contraseña no puede tener más de 20 caracteres
+    </mat-error>
+    <mat-error *ngIf="form.get('password')?.hasError('pattern')">
+      La contraseña debe contener al menos una mayúscula, un número y un carácter especial
+    </mat-error>
+  </mat-form-field>
+
+  <!-- 🔹 Sección Rol -->
+  <h3>Rol del Usuario</h3>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Rol</mat-label>
+    <mat-select formControlName="rolId" required>
+      <mat-option *ngFor="let role of roles" [value]="role.id">
+        {{ role.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('rolId')?.hasError('required')">
+      El rol es obligatorio
     </mat-error>
   </mat-form-field>
 

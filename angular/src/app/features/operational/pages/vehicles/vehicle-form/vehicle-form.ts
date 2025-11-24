@@ -142,10 +142,18 @@ export class VehicleForm implements OnInit {
        '',
        [
          Validators.required,
-         Validators.pattern(/^[A-Z]{3}\d{3}$|^[A-Z]{3}\d{2}[A-Z]$/)
+         Validators.pattern(/^[A-Z]{3}[0-9]{3}$|^[A-Z]{3}[0-9]{2}[A-Z]$/)
        ]
      ],
-     color: ['', Validators.required],
+     color: [
+    '',
+    [
+      Validators.required,
+      Validators.minLength(3),
+      Validators.maxLength(20),
+      Validators.pattern(/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,20}$/)
+    ]
+  ],
      typeVehicleId: [null, Validators.required],
      clientId: [null, Validators.required],
      asset: [true]

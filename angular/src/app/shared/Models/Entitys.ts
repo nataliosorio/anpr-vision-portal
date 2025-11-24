@@ -142,3 +142,12 @@ export interface Notification {
   createdAt?: string;       // si en el backend añadimos fecha
 }
 
+export interface RolParkingUser extends IBaseEntity {
+  userId: number;
+  userName: string;
+  rolId: number;
+  rolName: string;
+  parkingId: number;
+  parkingName: string;
+}
+
