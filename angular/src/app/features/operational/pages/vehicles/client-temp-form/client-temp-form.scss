@@ -31,6 +31,8 @@ h3:first-of-type {
   display: flex;
   flex-direction: column;
   padding: 4px;
+  max-height: calc(80vh - 120px); /* Espacio para título y botones */
+  overflow-y: auto;
 }
 
 /* ===== MAT-FORM-FIELD BASE ===== */
@@ -284,6 +286,8 @@ button:focus-visible {
   border-radius: 8px !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
   padding: 24px !important;
+  max-height: 80vh !important;
+  overflow: hidden !important;
 }
 
 ::ng-deep .mat-mdc-dialog-surface {
