@@ -1,38 +1,25 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Zones } from '../zones';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { General } from 'src/app/core/services/general.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 
 @Component({
   selector: 'app-zones-index',
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule, MatPaginator],
+  imports: [GenericTable],
   templateUrl: './zones-index.html',
   styleUrl: './zones-index.scss'
 })
 export class ZonesIndex implements OnInit {
-  dataSource = new MatTableDataSource<Zones>();
-  originalData: Zones[] = [];
-  selectedFilter: string = 'all';
-  pagedData: Zones[] = [];
+  data: Zones[] = [];
 
   columns = [
     { key: 'name', label: 'Nombre' },
     { key: 'parking', label: 'Nombre del Parqueadero' },
-    { key: 'asset', label: 'Estado' },
-    { key: 'isDeleted', label: 'Eliminado Lógicamente' }
+    { key: 'asset', label: 'Estado' }
   ];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
   private _loaderService = inject(LoaderService);
@@ -45,24 +32,19 @@ export class ZonesIndex implements OnInit {
   getAllZones(): void {
     const parkingId = this._generalService.getParkingId();
 
-     if (!parkingId) {
-    Swal.fire('Error', 'No se encontró el ParkingId en localStorage.', 'error');
-    this.originalData = [];
-    this.dataSource.data = [];
-    return;
-  }
+    if (!parkingId) {
+      Swal.fire('Error', 'No se encontró el ParkingId en localStorage.', 'error');
+      this.data = [];
+      return;
+    }
     this._loaderService.show();
     this._generalService.get<Zones[]>('Zones/join').subscribe({
       next: (zones) => {
-        this.originalData = zones || [];
-        this.dataSource.data = zones || [];
-        this.applyPagination(); // ✅ inicializar con la primera página
+        this.data = zones || [];
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar las zonas.', 'error');
-        this.originalData = [];
-        this.dataSource.data = [];
-        this.pagedData = [];
+        this.data = [];
         this._loaderService.hide();
       },
       complete: () => this._loaderService.hide()
@@ -167,84 +149,4 @@ export class ZonesIndex implements OnInit {
     });
   }
 
-  // Stats
-  getTotalZones(): number {
-    return this.originalData.length;
-  }
-
-  getActiveZones(): number {
-    return this.originalData.filter(zone => zone.asset && !zone.isDeleted).length;
-  }
-
-  getDeletedZones(): number {
-    return this.originalData.filter(zone => zone.isDeleted).length;
-  }
-
-  // Búsqueda + estado
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-
-    let filteredData = this.originalData;
-
-    if (filterValue) {
-      filteredData = filteredData.filter(zone =>
-        zone.name?.toLowerCase().includes(filterValue) ||
-        zone.parking?.toLowerCase().includes(filterValue)
-      );
-    }
-
-    filteredData = this.applyStatusFilter(filteredData);
-
-    this.dataSource.data = filteredData;
-    this.applyPagination(); // ✅ aplicar paginación después del filtro
-  }
-
-  filterByStatus(status: string): void {
-    this.selectedFilter = status;
-
-    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
-    const searchValue = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
-    let filteredData = this.originalData;
-
-    if (searchValue) {
-      filteredData = filteredData.filter(zone =>
-        zone.name?.toLowerCase().includes(searchValue) ||
-        zone.parking?.toLowerCase().includes(searchValue)
-      );
-    }
-
-    filteredData = this.applyStatusFilter(filteredData);
-
-    this.dataSource.data = filteredData;
-    this.applyPagination(); // ✅ aplicar paginación después del filtro
-  }
-
-  private applyStatusFilter(data: Zones[]): Zones[] {
-    switch (this.selectedFilter) {
-      case 'active':
-        return data.filter(zone => zone.asset && !zone.isDeleted);
-      case 'inactive':
-        return data.filter(zone => !zone.asset && !zone.isDeleted);
-      case 'deleted':
-        return data.filter(zone => zone.isDeleted);
-      case 'all':
-      default:
-        return data;
-    }
-  }
-
-  onPageChange(event: PageEvent) {
-    const startIndex = event.pageIndex * event.pageSize;
-    const endIndex = startIndex + event.pageSize;
-    this.pagedData = this.dataSource.data.slice(startIndex, endIndex);
-  }
-
-  private applyPagination() {
-    // siempre resetear a la primera página con tamaño 5
-    this.pagedData = this.dataSource.data.slice(0, 5);
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-  }
 }
