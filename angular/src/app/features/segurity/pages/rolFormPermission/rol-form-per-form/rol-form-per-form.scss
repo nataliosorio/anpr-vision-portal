@@ -20,21 +20,39 @@
 }
 
 /* ===========================
-   LAYOUT PRINCIPAL
-   =========================== */
-.main-layout {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 1.5rem;
-  align-items: start;
+    STEPPER
+    =========================== */
+mat-stepper {
+  background: transparent;
 }
 
-/* ===========================
-   SIDEBAR: Selector de rol
-   =========================== */
-.sidebar-rol {
-  position: sticky;
-  top: 1.5rem;
+.mat-stepper-horizontal {
+  margin-top: 1rem;
+}
+.mat-mdc-select{
+  // background-color: #c0c3c7 !important;
+  // border-radius: 6px !important;
+  color: #c2c3cc !important;
+}
+.mat-step-header {
+  pointer-events: none;
+}
+
+.mdc-text-field--outlined .mdc-text-field__input{
+  color: #c2c3cc !important
+}
+
+.step-content {
+  padding: 1.5rem 0;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
 }
 
 /* ===========================
@@ -50,6 +68,78 @@
 /* ===========================
    SECCIONES
    =========================== */
+
+   /* ===========================
+   CARD PASO 1: ESCOGER ROL
+   =========================== */
+.role-select-card {
+  position: relative;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+    #020617;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+  padding: 1.75rem 1.75rem 1.5rem;
+}
+
+.role-select-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border-top: 2px solid rgba(56, 189, 248, 0.5);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Header de la card */
+.role-select-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.role-select-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  font-size: 0.75rem;
+  color: #e5e7eb;
+  white-space: nowrap;
+}
+
+.role-select-badge .badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.4);
+}
+
+.role-select-badge .badge-text {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Cuerpo (form-field) */
+.role-select-body {
+  margin-top: 0.25rem;
+}
+
+/* Alineación del botón en esta card */
+.role-select-actions {
+  margin-top: 1.75rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  padding-top: 1.25rem;
+}
+
 .section {
   padding: 1.5rem;
   border-radius: 12px;
@@ -210,6 +300,12 @@ table.mat-mdc-table {
 /* ===========================
    GRID DE PERMISOS
    =========================== */
+
+   /* Card específica de permisos (paso 4) */
+.permissions-card {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+}
 .permissions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -217,8 +313,27 @@ table.mat-mdc-table {
   margin-bottom: 1.5rem;
 }
 
-.permissions-grid .mat-mdc-checkbox {
-  --mdc-theme-text-primary-on-background: #e5e7eb;
+/* 🔥 SOLUCIÓN AQUÍ: Usar ::ng-deep para forzar el color dentro del componente */
+.permissions-grid ::ng-deep .mat-mdc-checkbox {
+  /* Asegura que el contenedor tome el color */
+  color: #e5e7eb !important;
+}
+
+.permissions-grid ::ng-deep .mat-mdc-checkbox .mdc-label {
+  /* Fuerza el color blanco/claro en el texto */
+  color: #e5e7eb !important;
+  font-weight: 500; /* Opcional: un poco más de grosor para legibilidad */
+}
+
+/* Para los checkboxes deshabilitados (si quieres que también se vean claros) */
+.permissions-grid ::ng-deep .mat-mdc-checkbox.mat-mdc-checkbox-disabled .mdc-label {
+  color: #9ca3af !important; /* Un gris más claro que el defecto */
+  opacity: 1 !important;
+}
+
+/* Color del cuadrado (frame) del checkbox para que resalte más */
+.permissions-grid ::ng-deep .mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+  border-color: #94a3b8 !important; /* Borde gris azulado claro */
 }
 
 /* ===========================
@@ -366,4 +481,29 @@ button[mat-raised-button]:not(:disabled):hover {
 
 .table-wrapper::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
+}
+
+.mdc-text-field--outlined .mdc-text-field__input {
+  color: #c2c3cc !important;
+}
+/* Color de texto SOLO para el buscador */
+.search-field .mdc-text-field__input {
+  color: #f9fafb !important;        /* texto que se escribe */
+}
+
+.search-field .mdc-text-field__input::placeholder {
+  color: #6b7280 !important;        /* placeholder, por si quieres que sea más suave */
+}
+/* Texto de los permisos (Ver, Editar, Eliminar) */
+.permissions-grid .mat-mdc-checkbox .mdc-label {
+  color: #e5e7eb !important;   /* color del texto */
+  font-size: 0.9rem;
+}
+
+/* Opcional: color cuando el checkbox está deshabilitado */
+.permissions-grid .mat-mdc-checkbox.mat-mdc-checkbox-disabled .mdc-label {
+  color: #6b7280 !important;   /* gris pero aún legible */
+}
+.mat-mdc-checkbox .mat-internal-form-field{
+  color: #e5e7eb !important;
 }
