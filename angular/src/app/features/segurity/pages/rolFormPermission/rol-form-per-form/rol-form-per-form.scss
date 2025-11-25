@@ -18,6 +18,60 @@
   margin-bottom: 1.5rem;
   color: #f9fafb;
 }
+/* ===========================
+   MODO EDICIÓN
+   =========================== */
+.permissions-card {
+  margin-top: 1rem;
+}
+
+.forms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.form-item {
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.form-name {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f9fafb;
+}
+
+.form-module {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.permissions-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+}
+
+/* Texto de los permisos en modo edición */
+.permissions-edit .mat-mdc-checkbox .mdc-label {
+  color: #e5e7eb !important;
+  font-size: 0.9rem;
+}
+
+/* Que los deshabilitados sigan siendo visibles */
+.permissions-edit .mat-mdc-checkbox.mat-mdc-checkbox-disabled {
+  opacity: 1 !important;
+}
+
+.permissions-edit .mat-mdc-checkbox.mat-mdc-checkbox-disabled .mdc-label {
+  color: #9ca3af !important;
+}
 
 /* ===========================
     STEPPER
@@ -462,8 +516,85 @@ button[mat-raised-button]:not(:disabled):hover {
 }
 
 /* ===========================
-   SCROLLBAR PERSONALIZADO
-   =========================== */
+    MODO EDICIÓN
+    =========================== */
+.edit-mode {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.forms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-item {
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  background: #111827;
+}
+
+.form-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0 0 0.25rem;
+}
+
+.form-module {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  margin: 0 0 1rem;
+}
+
+.permissions-edit {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem 1.5rem;
+}
+
+.permissions-edit .mat-mdc-checkbox {
+  --mdc-theme-text-primary-on-background: #e5e7eb;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* ===========================
+    GESTIÓN BULK DE PERMISOS
+    =========================== */
+.forms-permissions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-permissions-item {
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  background: #111827;
+}
+
+.form-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin: 0 0 1rem;
+}
+
+/* ===========================
+    SCROLLBAR PERSONALIZADO
+    =========================== */
 .table-wrapper::-webkit-scrollbar {
   width: 8px;
   height: 8px;
