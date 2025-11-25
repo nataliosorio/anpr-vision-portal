@@ -187,7 +187,7 @@ export class UserForm implements OnInit {
   }
 
   getAllPersons(): void {
-    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/unlinked').subscribe({
+    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/no-user').subscribe({
       next: (people) => {
         this.persons = people || [];
       },
