@@ -2,18 +2,18 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import Swal from 'sweetalert2';
 
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ApiResponse } from 'src/app/shared/Models/ApiResponse';
 import { LoginDto } from '../../models/loginDto';
 import { AuthService } from '../../services/auth.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
-  imports: [SharedModule, RouterModule, FormsModule, MatProgressSpinnerModule],
+  imports: [SharedModule, RouterModule, FormsModule],
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.scss'],
 })
@@ -24,11 +24,11 @@ export class SignInComponent {
   };
 
   showPassword = false;
-  loading = false;
   tempUserId: number | null = null;
 
   private service = inject(AuthService);
   private router = inject(Router);
+  private loaderService = inject(LoaderService);
 
   /**
    * Paso 1: Valida credenciales y solicita código OTP
@@ -43,7 +43,7 @@ export class SignInComponent {
       return;
     }
 
-    this.loading = true;
+    this.loaderService.show();
 
     this.service.login(this.LoginDto).subscribe({
       next: (resp: ApiResponse<{ userId: number }>) => {
@@ -91,6 +91,7 @@ export class SignInComponent {
       },
       error: (err: Error) => {
         console.error('❌ Error en login:', err);
+        this.loaderService.hide();
         Swal.fire({
           icon: 'error',
           title: 'Error de autenticación',
@@ -98,7 +99,7 @@ export class SignInComponent {
         });
       },
       complete: () => {
-        this.loading = false;
+        this.loaderService.hide();
       },
     });
   }
