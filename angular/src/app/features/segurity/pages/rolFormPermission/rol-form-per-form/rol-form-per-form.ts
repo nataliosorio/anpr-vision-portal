@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild } from '@angular/core';
+import { MatStepper } from '@angular/material/stepper';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { General } from 'src/app/core/services/general.service';
 import { MatInputModule } from '@angular/material/input';
+import { MatStepperModule } from '@angular/material/stepper';
 
 import Swal from 'sweetalert2';
 import { forkJoin } from 'rxjs';
@@ -53,14 +55,19 @@ interface RolFormPermissionResponse {
     MatButtonModule,
     MatCheckboxModule,
     MatTableModule,
-    MatInputModule          
+    MatInputModule,
+    MatStepperModule
   ],
   templateUrl: './rol-form-per-form.html',
   styleUrl: './rol-form-per-form.scss'
 })
 export class RolFormPerForm implements OnInit {
 
+  @ViewChild('stepper') stepper!: MatStepper;
+
   form: FormGroup;
+
+  isLinear = true;
 
   // Catálogos
   roles: Role[] = [];
@@ -106,8 +113,18 @@ existingPermissionIdsForSelectedForm: number[] = [];
         this.loadPermissionsForRole(rolId);
       } else {
         this.clearRoleData();
+        // Resetear stepper si es necesario
+        setTimeout(() => this.stepper.reset(), 100);
       }
     });
+  }
+
+  nextStep(): void {
+    this.stepper.next();
+  }
+
+  prevStep(): void {
+    this.stepper.previous();
   }
 
   // -----------------------
@@ -220,6 +237,9 @@ applyFilter(event: Event): void {
 
     this.loadForms();
     this.loadPermissionsCatalog();
+
+    // Avanzar al siguiente paso
+    this.nextStep();
   }
 
  onFormSelected(formId: number): void {
@@ -339,6 +359,9 @@ onSave(): void {
       // Recargar la info del rol para reflejar cambios en la tabla
       this.loadPermissionsForRole(rolId);
       this.resetAddFormFlow();
+      // Volver al paso anterior
+      setTimeout(() => this.stepper.previous(), 100);
+      
     },
     error: (err: any) => {
       this.isSaving = false;
@@ -360,6 +383,8 @@ onSave(): void {
 
   onCancelAddForm(): void {
     this.resetAddFormFlow();
+    // Volver al paso anterior
+    this.prevStep();
   }
 
   private resetAddFormFlow(): void {
