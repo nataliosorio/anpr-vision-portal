@@ -16,37 +16,7 @@ import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/g
   styleUrl: './slots-form.scss'
 })
 export class SlotsForm implements OnInit {
-  formConfig: FieldConfig[] = [
-    {
-      name: 'name',
-      label: 'Nombre',
-      type: 'text',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
-        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
-        // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-Z0-9 ]+$', message: 'El nombre solo puede contener letras y números.' }
-      ]
-    },
-    {
-      name: 'sectorsId',
-      label: 'Sector al que pertenece',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un sector.' }
-      ]
-    },
-    {
-      name: 'asset',
-      label: 'Activo',
-      type: 'toggle',
-      value: true,
-      hidden: true // oculto por defecto
-    }
-  ];
+  formConfig!: FieldConfig[];
 
   isEdit = false;
   initialData: any = {};
@@ -60,9 +30,42 @@ export class SlotsForm implements OnInit {
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.isEdit = !!id;
+
+    this.formConfig = [
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
+          { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
+          { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
+          // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-Z0-9 ]+$', message: 'El nombre solo puede contener letras y números.' }
+        ]
+      },
+      {
+        name: 'sectorsId',
+        label: 'Sector al que pertenece',
+        type: 'select',
+        required: true,
+        options: [],
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un sector.' }
+        ]
+      },
+      {
+        name: 'asset',
+        label: 'Activo',
+        type: 'toggle',
+        value: true,
+        hidden: !this.isEdit
+      }
+    ];
 
     // Cargar sectores dinámicamente
-    this.service.get<Sectors[]>('Sectors/select')
+    this.service.get<Sectors[]>('Sectors/join')
       .subscribe({
         next: (data) => {
           if (data) {
@@ -86,10 +89,9 @@ export class SlotsForm implements OnInit {
       });
 
     // Si es edición, cargar datos iniciales
-    if (id) {
-      this.isEdit = true;
+    if (this.isEdit) {
       this.loaderService.show();
-      this.service.getById<any>('Slots', id)
+      this.service.getById<any>('Slots', id!)
         .subscribe({
           next: (data) => { this.initialData = data; },
           error: (err) => {
@@ -126,8 +128,9 @@ export class SlotsForm implements OnInit {
         complete: () => this.loaderService.hide()
       });
     } else {
-      delete data.id;
-      this.service.post('Slots', data).subscribe({
+      const payload = { ...data, asset: true };
+      delete payload.id;
+      this.service.post('Slots', payload).subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',
