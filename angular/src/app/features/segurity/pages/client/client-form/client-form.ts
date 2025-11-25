@@ -87,7 +87,7 @@ export class ClientForm implements OnInit {
     this.toggleCreateNewPerson();
 
     // Cargar personas
-    this.service.get<Person[]>('Person/select').subscribe({
+    this.service.get<Person[]>('Person/unlinked').subscribe({
       next: (people) => {
         this.people = people || [];
       },
