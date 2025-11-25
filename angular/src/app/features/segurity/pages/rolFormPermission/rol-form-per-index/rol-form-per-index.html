@@ -1,9 +1,28 @@
-<app-generic-table
-  [columns]="columns"
-  [data]="dataSource.data"
-  [showActions]="true"
-  (create)="goToCreate()"
-  (edit)="goToEdit($event)"
-  (delete)="deleteModule($event)"
-  (deletePermanent)="deletePermanentModule($event)">
-</app-generic-table>
+<div class="container mt-4 rol-form-permission-index">
+  <div class="header-section">
+    <h2 class="page-title">Gestión de Roles y Permisos</h2>
+    <button mat-raised-button color="primary" (click)="goToCreate()">
+      Crear Nuevo Rol con Permisos
+    </button>
+  </div>
+
+  <div class="roles-grid">
+    <div class="role-card" *ngFor="let role of roles">
+      <div class="role-header">
+        <h3 class="role-name">{{ role.name }}</h3>
+        <span class="permission-status" [class.has-permissions]="role.hasPermissions">
+          {{ role.hasPermissions ? 'Con permisos' : 'Sin permisos' }}
+        </span>
+      </div>
+
+      <div class="role-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="goToEdit(role.id)">
+          Editar formularios y permisos asociados
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

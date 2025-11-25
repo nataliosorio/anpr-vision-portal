@@ -37,7 +37,7 @@ export class FaqComponent {
 
     // 🔹 Soporte y configuración
     { question: '¿Cómo contacto con soporte?', answer: 'Puedes ir a la sección de "Contactar Soporte" dentro de este módulo.', icon: 'support_agent', expanded: false },
-    { question: '¿Dónde puedo ver la documentación?', answer: 'Ve a la sección "Documentación" en el menú principal.', icon: 'library_books', expanded: false },
+    { question: '¿Dónde puedo ver la documentación?', answer: 'Ve a la sección "Documentación" en este msimo módulo.', icon: 'library_books', expanded: false },
 
 
     // 🔹 Instalación y actualizaciones

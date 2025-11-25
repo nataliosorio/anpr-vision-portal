@@ -22,7 +22,7 @@ import { User } from 'src/app/shared/Models/Entitys';
 //     if (!control.value?.trim()) return of(null);
 
 //     return of(control.value).pipe(
-      
+
 //       debounceTime(300),
 //       switchMap(username => {
 //         const params = new HttpParams().set('username', username);
@@ -187,7 +187,7 @@ export class UserForm implements OnInit {
   }
 
   getAllPersons(): void {
-    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/select').subscribe({
+    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/unlinked').subscribe({
       next: (people) => {
         this.persons = people || [];
       },
