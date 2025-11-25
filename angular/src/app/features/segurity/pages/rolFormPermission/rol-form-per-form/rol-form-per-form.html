@@ -1,8 +1,150 @@
-<app-generic-form
-   [title]="'Permisos por Roles y Formularios'"
-  [config]="formConfig"
-  [isEdit]="isEdit"
-  [initialData]="initialData"
-  (saveForm)="save($event)"
-  (cancelForm)="cancel()">
-</app-generic-form>
+<div class="container mt-4 rol-form-permission">
+  <h2 class="page-title">Gestión de Permisos por Roles y Formularios</h2>
+
+  <form [formGroup]="form" class="rol-form-form">
+    <!-- Layout principal: rol a la izquierda, todo lo demás a la derecha -->
+    <div class="main-layout">
+      <!-- COLUMNA IZQUIERDA: Selector de rol (siempre visible) -->
+      <aside class="sidebar-rol">
+        <section class="section role-select">
+          <h3 class="section-title">1. Escoge un rol</h3>
+          <p class="section-help">
+            Selecciona el rol para administrar sus permisos.
+          </p>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Rol</mat-label>
+            <mat-select formControlName="rolId">
+              <mat-option *ngFor="let role of roles" [value]="role.id">
+                {{ role.name }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('rolId')?.hasError('required')">
+              Debes seleccionar un rol.
+            </mat-error>
+          </mat-form-field>
+        </section>
+      </aside>
+
+      <!-- COLUMNA DERECHA: Todo el contenido dinámico -->
+      <main class="content-area">
+        <!-- 2. Tabla de formularios del rol -->
+        <section class="section role-forms" *ngIf="showPermissionsSection">
+          <div class="section-header">
+            <div class="header-text">
+              <h3 class="section-title">
+                2. Formularios del rol
+                <span class="role-name">{{ permissionsData?.rolName }}</span>
+              </h3>
+              <p class="section-help">
+                Formularios asociados y sus permisos actuales.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              mat-raised-button
+              color="primary"
+              (click)="onClickAddForm()">
+              Agregar formulario
+            </button>
+          </div>
+
+          <!-- Buscador -->
+          <div class="forms-toolbar">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Buscar</mat-label>
+              <input
+                matInput
+                (keyup)="applyFilter($event)"
+                placeholder="Formulario, módulo o permiso..." />
+            </mat-form-field>
+          </div>
+
+          <!-- Tabla -->
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+              <ng-container matColumnDef="formName">
+                <th mat-header-cell *matHeaderCellDef>Formulario</th>
+                <td mat-cell *matCellDef="let row">{{ row.formName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="module">
+                <th mat-header-cell *matHeaderCellDef>Módulo</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.modules?.[0]?.name || '-' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="permissions">
+                <th mat-header-cell *matHeaderCellDef>Permisos</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.permissions?.join(', ') || '-' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>
+
+          <div *ngIf="!dataSource.data?.length" class="empty-state">
+            Este rol aún no tiene formularios asociados.
+          </div>
+        </section>
+
+        <!-- 3 y 4. Formulario en flujo vertical dentro de cards compactos -->
+        <div class="add-form-flow" *ngIf="isAddingForm">
+          <!-- 3. Selector de formulario -->
+          <section class="section compact-section">
+            <h3 class="section-title">3. Selecciona un formulario</h3>
+            <p class="section-help">Escoge el formulario para asignar permisos.</p>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Formulario</mat-label>
+              <mat-select (selectionChange)="onFormSelected($event.value)">
+                <mat-option *ngFor="let formOption of forms" [value]="formOption.id">
+                  {{ formOption.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </section>
+
+          <!-- 4. Checklist de permisos -->
+          <section class="section compact-section" *ngIf="selectedFormId">
+            <h3 class="section-title">
+              4. Permisos para
+              <span class="form-name">{{ selectedFormName }}</span>
+            </h3>
+            <p class="section-help">Selecciona los permisos a asignar.</p>
+
+            <div class="permissions-grid">
+              <mat-checkbox
+                *ngFor="let permission of permissions"
+                [checked]="selectedPermissionIds.includes(permission.id)"
+                (change)="onPermissionChange(permission.id, $event.checked)">
+                {{ permission.name }}
+              </mat-checkbox>
+            </div>
+
+            <!-- Botones de acción dentro del mismo card -->
+            <div class="actions-inline" *ngIf="canShowSave">
+              <button
+                mat-raised-button
+                color="accent"
+                type="button"
+                [disabled]="!canSave || isSaving"
+                (click)="onSave()">
+                Guardar permisos
+              </button>
+
+              <button mat-stroked-button type="button" (click)="onCancelAddForm()">
+                Cancelar
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </form>
+</div>
