@@ -14,40 +14,7 @@ import Swal from 'sweetalert2';
   styleUrl: './rate-type-form.scss'
 })
 export class RateTypeForm implements OnInit {
-  formConfig: FieldConfig[] = [
-    {
-      name: 'name',
-      label: 'Nombre',
-      type: 'text',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
-        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'El nombre solo puede contener letras y espacios.' }
-      ]
-    },
-    {
-      name: 'description',
-      label: 'Descripción',
-      type: 'text',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La descripción es obligatoria.' },
-        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 5, message: 'La descripción debe tener al menos 5 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 200, message: 'La descripción no puede exceder los 200 caracteres.' },
-        // Ojo: este patrón es MUY restrictivo para descripciones (sin números ni puntuación)
-        // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La descripción solo puede contener letras y espacios.' }
-      ]
-    },
-    {
-      name: 'asset',
-      label: 'Activo',
-      type: 'toggle',
-      value: true,
-      hidden: true
-    }
-  ];
+  formConfig!: FieldConfig[];
 
   isEdit = false;
   initialData: any = {};
@@ -60,6 +27,41 @@ export class RateTypeForm implements OnInit {
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
+
+    this.formConfig = [
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
+          { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
+          { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
+          { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'El nombre solo puede contener letras y espacios.' }
+        ]
+      },
+      {
+        name: 'description',
+        label: 'Descripción',
+        type: 'text',
+        required: true,
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La descripción es obligatoria.' },
+          { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 5, message: 'La descripción debe tener al menos 5 caracteres.' },
+          { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 200, message: 'La descripción no puede exceder los 200 caracteres.' },
+          // Ojo: este patrón es MUY restrictivo para descripciones (sin números ni puntuación)
+          // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La descripción solo puede contener letras y espacios.' }
+        ]
+      },
+      {
+        name: 'asset',
+        label: 'Activo',
+        type: 'toggle',
+        value: true,
+        hidden: !this.isEdit
+      }
+    ];
 
     if (this.isEdit && id) {
       this.loaderService.show();
@@ -107,7 +109,7 @@ export class RateTypeForm implements OnInit {
         complete: () => this.loaderService.hide()
       });
     } else {
-      const payload = { ...data };
+      const payload = { ...data, asset: true };
       delete payload.id;
 
       this.service.post('RatesType', payload).subscribe({

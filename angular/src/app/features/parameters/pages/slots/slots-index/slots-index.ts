@@ -1,39 +1,26 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Slots } from '../slots';
 import { General } from 'src/app/core/services/general.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
+import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 
 @Component({
   selector: 'app-slots-index',
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatTooltipModule, CommonModule, FormsModule, MatPaginator],
+  imports: [GenericTable],
   templateUrl: './slots-index.html',
   styleUrl: './slots-index.scss'
 })
 export class SlotsIndex implements OnInit {
- dataSource = new MatTableDataSource<Slots>();
-  originalData: Slots[] = [];
-  selectedFilter: string = 'all';
-  pagedData: Slots[] = [];
-columns = [
-  { key: 'name', label: 'Nombre' },
-  { key: 'sectors', label: 'Sector' },
-  { key: 'isAvailable', label: 'Disponibilidad' },
-  { key: 'asset', label: 'Estado' },
-  { key: 'isDeleted', label: 'Eliminado Lógicamente' }
-];
+  data: Slots[] = [];
 
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  columns = [
+    { key: 'name', label: 'Nombre' },
+    { key: 'sectors', label: 'Sector' },
+    { key: 'isAvailable', label: 'Disponibilidad' },
+    { key: 'asset', label: 'Estado' }
+  ];
 
   private _generalService = inject(General);
   private _loaderService = inject(LoaderService);
@@ -48,9 +35,7 @@ getAllSlots(): void {
   this._loaderService.show();
   this._generalService.get<Slots[]>('Slots/join').subscribe({
     next: (data) => {
-      this.dataSource.data = data ?? [];
-      this.originalData = data ?? [];
-      this.applyPagination(); // ✅ inicializar con la primera página
+      this.data = data ?? [];
     },
     error: (err: Error) => {
       Swal.fire({
@@ -58,9 +43,7 @@ getAllSlots(): void {
         title: 'Error al cargar Slots',
         text: err.message ?? 'No fue posible obtener la lista de slots.'
       });
-      this.dataSource.data = [];
-      this.originalData = [];
-      this.pagedData = [];
+      this.data = [];
       this._loaderService.hide();
     },
     complete: () => this._loaderService.hide()
@@ -132,117 +115,4 @@ deletePermanentSlot(id: number): void {
   });
 }
 
-// Funciones para las estadísticas del header
-  getTotalSlots(): number {
-    return this.originalData.length;
-  }
-
-  getActiveSlots(): number {
-    return this.originalData.filter(slot => slot.asset && !slot.isDeleted).length;
-  }
-
-  getAvailableSlots(): number {
-    return this.originalData.filter(slot => slot.isAvailable && slot.asset && !slot.isDeleted).length;
-  }
-
-  getOccupiedSlots(): number {
-    return this.originalData.filter(slot => !slot.isAvailable && slot.asset && !slot.isDeleted).length;
-  }
-
-  getDeletedSlots(): number {
-    return this.originalData.filter(slot => slot.isDeleted).length;
-  }
-
-  // Función para obtener el ícono según el estado del slot
-  getSlotIcon(slot: Slots): string {
-    if (slot.isDeleted) {
-      return 'block';
-    } else if (!slot.asset) {
-      return 'pause_circle_outline';
-    } else if (slot.isAvailable) {
-      return 'radio_button_unchecked';
-    } else {
-      return 'radio_button_checked';
-    }
-  }
-
-   // Función para aplicar filtro de búsqueda
-  // Función para aplicar filtro de búsqueda
- applyFilter(event: Event): void {
-   const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-
-   let filteredData = this.originalData;
-
-   // Aplicar filtro de búsqueda
-   if (filterValue) {
-     filteredData = filteredData.filter(slot =>
-       slot.name?.toLowerCase().includes(filterValue) ||
-       slot.sectors?.toLowerCase().includes(filterValue) ||
-       slot.id?.toString().includes(filterValue)
-     );
-   }
-
-   // Aplicar filtro de estado si hay uno activo
-   filteredData = this.applyStatusFilter(filteredData);
-
-   this.dataSource.data = filteredData;
-   this.applyPagination(); // ✅ aplicar paginación después del filtro
- }
-  // Función para filtrar por estado
-  filterByStatus(status: string): void {
-    this.selectedFilter = status;
-
-    // Obtener el valor actual del input de búsqueda
-    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
-    const searchValue = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
-    let filteredData = this.originalData;
-
-    // Aplicar filtro de búsqueda primero si existe
-    if (searchValue) {
-      filteredData = filteredData.filter(slot =>
-        slot.name?.toLowerCase().includes(searchValue) ||
-        slot.sectors?.toLowerCase().includes(searchValue) ||
-        slot.id?.toString().includes(searchValue)
-      );
-    }
-
-    // Aplicar filtro de estado
-    filteredData = this.applyStatusFilter(filteredData);
-
-    this.dataSource.data = filteredData;
-    this.applyPagination(); // ✅ aplicar paginación después del filtro
-  }
-// Función auxiliar para aplicar filtro de estado
-  private applyStatusFilter(data: Slots[]): Slots[] {
-    switch (this.selectedFilter) {
-      case 'active':
-        return data.filter(slot => slot.asset && !slot.isDeleted);
-      case 'inactive':
-        return data.filter(slot => !slot.asset && !slot.isDeleted);
-      case 'available':
-        return data.filter(slot => slot.isAvailable && slot.asset && !slot.isDeleted);
-      case 'occupied':
-        return data.filter(slot => !slot.isAvailable && slot.asset && !slot.isDeleted);
-      case 'deleted':
-        return data.filter(slot => slot.isDeleted);
-      case 'all':
-      default:
-        return data;
-    }
-  }
-
-  onPageChange(event: PageEvent) {
-    const startIndex = event.pageIndex * event.pageSize;
-    const endIndex = startIndex + event.pageSize;
-    this.pagedData = this.dataSource.data.slice(startIndex, endIndex);
-  }
-
-  private applyPagination() {
-    // siempre resetear a la primera página con tamaño 5
-    this.pagedData = this.dataSource.data.slice(0, 5);
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-  }
 }
