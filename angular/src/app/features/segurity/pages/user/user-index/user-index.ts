@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import Swal from 'sweetalert2';
 import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
@@ -28,9 +28,15 @@ export class UserIndex implements OnInit {
 
   private _generalService = inject(General);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     this.getAllUsers();
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params['refresh']) {
+        this.getAllUsers();
+      }
+    });
   }
 
 getAllUsers(): void {
