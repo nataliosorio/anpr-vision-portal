@@ -640,6 +640,8 @@
 
 @media (max-width: 768px) {
   .parking-container {
+    padding: 16px;
+
     .hero-section {
       padding: 24px 16px;
 
@@ -662,28 +664,99 @@
       }
     }
 
+    .toolbar-section {
+      padding: 0 16px 16px;
+
+      .toolbar-card .toolbar-content {
+        padding: 20px;
+
+        .filter-chips {
+          gap: 8px;
+
+          .filter-chip {
+            padding: 6px 16px;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
     .parking-list {
       padding: 0 16px;
       grid-template-columns: repeat(2, 1fr); /* 2 columnas iguales */
 
       .parking-item .parking-card {
-        padding: 24px;
+        padding: 20px;
+        height: auto;
+        min-height: 300px;
 
         .parking-header {
           flex-direction: column;
           text-align: center;
-          gap: 20px;
+          gap: 16px;
 
-          .parking-info .parking-name {
-            font-size: 24px;
+          .parking-info {
+            .parking-name {
+              font-size: 20px;
+              margin-bottom: 12px;
+            }
+
+            .parking-details {
+              .detail-row {
+                justify-content: center;
+                font-size: 14px;
+
+                .detail-icon {
+                  font-size: 16px;
+                }
+              }
+            }
+          }
+
+          .parking-status-section {
+            .status-wrapper .status-badge {
+              font-size: 12px;
+              padding: 8px 16px;
+            }
           }
         }
 
         .actions-section .actions-wrapper {
           flex-direction: column;
+          gap: 12px;
 
           .action-btn {
             min-width: auto;
+            padding: 12px 16px;
+            font-size: 14px;
+
+            span {
+              font-size: 14px;
+            }
+          }
+        }
+      }
+    }
+
+    .empty-state .empty-content {
+      padding: 40px 20px;
+
+      .empty-title {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .parking-container {
+    .parking-list {
+      grid-template-columns: 1fr; /* 1 columna en móviles pequeños */
+
+      .parking-item .parking-card {
+        .parking-header {
+          .parking-info .parking-name {
+            font-size: 20px;
           }
         }
       }
