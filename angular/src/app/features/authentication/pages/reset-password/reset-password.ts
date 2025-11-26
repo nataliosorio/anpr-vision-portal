@@ -62,8 +62,8 @@ export class ResetPasswordComponent {
           '',
           [
             Validators.required,
-            Validators.minLength(15),
-            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
+            Validators.minLength(8),
+            Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).+$/)
           ]
         ],
         confirmPassword: ['', [Validators.required]]
@@ -215,9 +215,9 @@ export class ResetPasswordComponent {
     const c = this.resetForm.get('newPassword');
     if (c?.errors && c?.touched) {
       if (c.errors['required']) return 'La contraseña es requerida';
-      if (c.errors['minlength']) return 'Mínimo 15 caracteres';
+      if (c.errors['minlength']) return 'Mínimo 8 caracteres';
       if (c.errors['pattern'])
-        return 'Debe contener al menos: 1 mayúscula, 1 minúscula y 1 número';
+        return 'Debe contener al menos: 1 mayúscula, 1 minúscula y 1 caracter especial';
     }
     return null;
   }
