@@ -199,7 +199,7 @@ html,body{
   box-shadow: none !important;
 }
 
-/* ====== “Un poquito” más grande la letra en los inputs ====== */
+/* ====== "Un poquito" más grande la letra en los inputs ====== */
 .input-registro {
   font-size: 18px;     /* antes tenías 16px */
   line-height: 1.35;   /* mejora la lectura */
@@ -235,7 +235,7 @@ html,body{
   font-weight: 700;
 }
 
-/* “Restablecer” estilo enlace – solo aumentar tamaño */
+/* "Restablecer" estilo enlace – solo aumentar tamaño */
 .olvidasteContraseña {
   font-size: 1rem;             /* un poquito más grande */
 }
@@ -302,3 +302,98 @@ input[type="password"]::-webkit-reveal-password-button {
   display: none;
 }
 
+/* Media queries para responsive */
+@media (max-width: 768px) {
+  .lado-derecho {
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* Oscurecer el fondo directamente */
+    background-color: rgba(4, 17, 48, 0.95) !important;
+    background-blend-mode: darken;
+  }
+
+  /* Capa oscura adicional sobre el fondo */
+  .lado-derecho::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+  }
+
+  .mini-contener {
+    width: 90%;
+    max-width: 420px;
+    padding: 2rem 1.5rem;
+    clip-path: none;
+    border-radius: 20px;
+    background: rgba(4, 17, 48, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 2px solid #30CFD0;
+    box-shadow: 0 8px 32px rgba(48, 207, 208, 0.3);
+    position: relative;
+    z-index: 1;
+    animation: none; /* Quitar animación en móvil */
+  }
+
+  .Formulario-login {
+    font-size: 16px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .Formulario-login h4 {
+    font-size: 1.5rem;
+    color: #30CFD0 !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .input-registro {
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.05) !important;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(48, 207, 208, 0.3) !important;
+  }
+
+  .input-registro:focus {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #30CFD0 !important;
+    box-shadow: 0 0 15px rgba(48, 207, 208, 0.4) !important;
+  }
+
+  .fondo-icono {
+    background: #30CFD0 !important;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .bttn-inicio-sesion button {
+    font-size: 1rem;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: rgba(48, 207, 208, 0.2) !important;
+    border: 2px solid #30CFD0 !important;
+    color: #30CFD0 !important;
+    font-weight: 700;
+  }
+
+  .bttn-inicio-sesion button:active {
+    background: rgba(48, 207, 208, 0.4) !important;
+  }
+
+  .olvidasteContraseña {
+    font-size: 0.95rem;
+  }
+
+  .color-p {
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mini-contener {
+    width: 60%;
+  }
+}
