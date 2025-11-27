@@ -1,26 +1,114 @@
-<div class="container mt-4 rol-form-permission-index">
-  <div class="header-section">
-    <h2 class="page-title">Gestión de Roles y Permisos</h2>
-    <button mat-raised-button color="primary" (click)="goToCreate()">
-      Crear Nuevo Rol con Permisos
-    </button>
+<div class="parking-container">
+  <!-- Toolbar Section -->
+  <div class="toolbar-section">
+    <mat-card class="toolbar-card">
+      <div class="toolbar-content">
+
+        <!-- ROW: botón + búsqueda en la misma línea -->
+        <div class="controls-row">
+          <!-- Botón (lado izquierdo) -->
+          <div class="controls-left">
+            <button
+              mat-fab
+              extended
+              color="primary"
+              class="create-parking-btn"
+              (click)="goToCreate()"
+              matTooltip="Crear nuevo rol con permisos">
+              <mat-icon class="title-icon">admin_panel_settings</mat-icon>
+              Nuevo Rol con Permisos
+            </button>
+          </div>
+
+          <!-- Search (ocupa el espacio restante) -->
+          <div class="controls-center">
+            <div class="search-section">
+              <div class="search-wrapper">
+                <mat-icon class="search-icon">search</mat-icon>
+                <input
+                  type="text"
+                  placeholder="Buscar roles por nombre..."
+                  class="search-input"
+                  (keyup)="applyFilter($event)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card>
   </div>
 
-  <div class="roles-grid">
-    <div class="role-card" *ngFor="let role of roles">
-      <div class="role-header">
-        <h3 class="role-name">{{ role.name }}</h3>
-        <span class="permission-status" [class.has-permissions]="role.hasPermissions">
-          {{ role.hasPermissions ? 'Con permisos' : 'Sin permisos' }}
-        </span>
+  <!-- Vehicle List -->
+  <div class="vehicle-list" *ngIf="filteredRoles.length > 0">
+    <div
+      class="vehicle-card-horizontal"
+      *ngFor="let role of filteredRoles">
+
+      <!-- Left Section: Placa y Estado -->
+      <div class="card-left">
+        <div class="plate-section">
+          <h2 class="plate-title">{{ role.name }}</h2>
+          <div
+            class="status-badge"
+            [class.active]="role.hasPermissions"
+            [class.inactive]="!role.hasPermissions">
+            <span>{{ role.hasPermissions ? 'Con permisos' : 'Sin permisos' }}</span>
+          </div>
+        </div>
       </div>
 
-      <div class="role-actions">
+      <!-- Center Section: Información del Vehículo -->
+      <div class="card-center">
+        <div class="info-row">
+          <div class="info-item">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span class="info-text">
+              Rol de sistema
+            </span>
+          </div>
+
+          <div class="info-item">
+            <mat-icon>security</mat-icon>
+            <span class="info-text">
+              Gestión de permisos
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Acciones -->
+      <div class="card-right">
         <button
           mat-raised-button
           color="primary"
-          (click)="goToEdit(role.id)">
-          Editar formularios y permisos asociados
+          class="action-btn-horizontal edit-btn"
+          (click)="goToEdit(role.id)"
+          matTooltip="Editar formularios y permisos asociados">
+          <mat-icon>edit</mat-icon>
+          <span>Editar</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredRoles.length === 0">
+    <div class="empty-content">
+      <div class="empty-illustration">
+        <mat-icon class="empty-icon">admin_panel_settings</mat-icon>
+        <div class="empty-cars">
+          <mat-icon class="car-icon">security</mat-icon>
+          <mat-icon class="car-icon">security</mat-icon>
+          <mat-icon class="car-icon">security</mat-icon>
+        </div>
+      </div>
+      <h3>No hay roles registrados</h3>
+      <p>Comienza creando roles con sus respectivos permisos</p>
+      <div class="empty-actions">
+        <button mat-raised-button color="primary" (click)="goToCreate()">
+          <mat-icon>add</mat-icon>
+          Crear Primer Rol
         </button>
       </div>
     </div>
