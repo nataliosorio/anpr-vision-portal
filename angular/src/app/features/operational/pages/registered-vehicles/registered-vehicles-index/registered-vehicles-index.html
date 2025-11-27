@@ -28,8 +28,7 @@
               class="create-parking-btn"
               (click)="goToCreate()"
               matTooltip="Validar placa de vehículo">
-              <mat-icon class="title-icon">search</mat-icon>
-              Validar Placa
+              Registrar Entrada
             </button>
           </div>
 
@@ -290,6 +289,39 @@
             <div class="result-content">
               <h3 class="result-title">{{ canProceed ? 'Vehículo válido' : 'No se puede proceder' }}</h3>
               <p class="result-message">{{ validationResult.message }}</p>
+
+              <!-- Action Buttons -->
+              <div class="result-actions">
+                <!-- Exit Button for vehicles with active entry -->
+                <button mat-raised-button
+                        color="warn"
+                        class="exit-btn"
+                        *ngIf="showExitButton"
+                        (click)="registerExitFromValidation()">
+                  <mat-icon>exit_to_app</mat-icon>
+                  Registrar Salida
+                </button>
+
+                <!-- New Entry Button for registered vehicles without active entry -->
+                <button mat-raised-button
+                        color="primary"
+                        class="new-entry-btn"
+                        *ngIf="showNewEntryButton"
+                        (click)="createNewEntryFromValidation()">
+                  <mat-icon>add_circle</mat-icon>
+                  Crear Entrada Nueva
+                </button>
+
+                <!-- Register Entry Button for new vehicles -->
+                <button mat-raised-button
+                        color="primary"
+                        class="register-entry-btn"
+                        *ngIf="showRegisterEntryButton"
+                        (click)="registerNewEntryFromValidation()">
+                  <mat-icon>add_circle</mat-icon>
+                  Registrar Entrada
+                </button>
+              </div>
             </div>
           </div>
         </div>
