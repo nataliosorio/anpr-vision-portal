@@ -1,118 +1,83 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { RolFormPermission } from '../rol-form-permission';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
 import Swal from 'sweetalert2';
-import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 import { General } from 'src/app/core/services/general.service';
 
 @Component({
   selector: 'app-rol-form-per-index',
-  imports: [GenericTable],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule, MatCardModule],
   templateUrl: './rol-form-per-index.html',
   styleUrl: './rol-form-per-index.scss'
 })
 export class RolFormPerIndex implements OnInit {
-  dataSource = new MatTableDataSource<RolFormPermission>();
-  columns = [
-    { key: 'rolName', label: 'Rol' },
-    { key: 'permissionName', label: 'Permiso' },
-    { key: 'formName', label: 'Formulario' },
-    { key: 'asset', label: 'Estado' },
-    // { key: 'isDeleted', label: 'Eliminado Lógicamente' }
-  ];
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  roles: Array<{ id: number; name: string; hasPermissions?: boolean }> = [];
+  filteredRoles: Array<{ id: number; name: string; hasPermissions?: boolean }> = [];
 
   private _generalService = inject(General);
   private router = inject(Router);
 
   ngOnInit(): void {
-    this.getAllRolFormPermission();
+    this.getRolesWithPermissions();
   }
 
-  getAllRolFormPermission(): void {
-    this._generalService.get<RolFormPermission[]>('RolFormPermission/join').subscribe({
-      next: (items) => {
-        const rows = (items ?? []).map(it => {
-          const rol = (it as any)?.rol;
-          const perm = (it as any)?.permission;
-          const form = (it as any)?.form;
-          return {
-            ...it,
-            rolName: it.rolName ?? rol?.name ?? '',
-            permissionName: it.permissionName ?? perm?.name ?? '',
-            formName: it.formName ?? form?.name ?? ''
-          } as RolFormPermission;
-        });
+  getRolesWithPermissions(): void {
+    // Obtener todos los roles
+    this._generalService.get<Array<{ id: number; name: string }>>('Rol/select').subscribe({
+      next: (roles) => {
+        this.roles = roles || [];
+        this.filteredRoles = [...this.roles];
 
-        this.dataSource.data = rows;
-        if (this.paginator) this.dataSource.paginator = this.paginator;
+        // Para cada rol, verificar si tiene permisos asociados
+        const permissionChecks = this.roles.map(role =>
+          this._generalService.get(`RolFormPermission/byRol/${role.id}`).subscribe({
+            next: (res: any) => {
+              role.hasPermissions = (res?.data?.forms?.length || res?.forms?.length) > 0;
+              this.updateFilteredRoles();
+            },
+            error: () => {
+              role.hasPermissions = false;
+              this.updateFilteredRoles();
+            }
+          })
+        );
+
+        // Ejecutar todas las verificaciones
+        if (permissionChecks.length > 0) {
+          import('rxjs').then(rxjs => {
+            rxjs.forkJoin(permissionChecks).subscribe();
+          });
+        }
       },
       error: (err: Error) => {
-        Swal.fire('Error', err.message || 'No se pudieron cargar los registros.', 'error');
-        this.dataSource.data = [];
+        Swal.fire('Error', err.message || 'No se pudieron cargar los roles.', 'error');
+        this.roles = [];
+        this.filteredRoles = [];
       }
     });
+  }
+
+  private updateFilteredRoles(): void {
+    this.filteredRoles = [...this.roles];
   }
 
   goToCreate(): void {
     this.router.navigate(['/rolFormPermission-form']);
   }
 
-  goToEdit(form: RolFormPermission): void {
-    this.router.navigate(['/rolFormPermission-form', form.id]);
+  goToEdit(rolId: number): void {
+    this.router.navigate(['/rolFormPermission-form', rolId]);
   }
 
-  deleteModule(id: number): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el registro.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this._generalService.delete('RolFormPermission', id).subscribe({
-          next: () => {
-            Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
-            this.getAllRolFormPermission();
-          },
-          error: (err: Error) => {
-            Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
-        });
-      }
-    });
-  }
-
-  deletePermanentModule(id: number): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el registro permanentemente.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this._generalService.delete('RolFormPermission/permanent', id).subscribe({
-          next: () => {
-            Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
-            this.getAllRolFormPermission();
-          },
-          error: (err: Error) => {
-            Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
-        });
-      }
-    });
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+    this.filteredRoles = this.roles.filter(role =>
+      role.name.toLowerCase().includes(filterValue)
+    );
   }
 }

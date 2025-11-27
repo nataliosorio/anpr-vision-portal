@@ -5,7 +5,7 @@
   <!-- Nombre de Usuario -->
   <mat-form-field appearance="outline">
     <mat-label>Nombre de Usuario</mat-label>
-    <input matInput formControlName="userName">
+    <input matInput formControlName="username">
     <mat-error *ngIf="form.get('userName')?.hasError('required')">
       El nombre de usuario es obligatorio
     </mat-error>
@@ -42,8 +42,8 @@
 
   </mat-form-field>
 
-  <!-- Contraseña -->
-  <mat-form-field appearance="outline">
+  <!-- Contraseña (solo en creación) -->
+  <mat-form-field appearance="outline" *ngIf="!isEdit">
     <mat-label>Contraseña</mat-label>
     <input matInput formControlName="password" [type]="form.get('hidePassword')?.value ? 'password' : 'text'">
     <mat-error *ngIf="form.get('password')?.hasError('required')">
@@ -61,7 +61,7 @@
   </mat-form-field>
 
   <!-- Persona -->
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" *ngIf="!isEdit">
     <mat-label>Persona</mat-label>
     <mat-select formControlName="personId">
       <mat-option *ngFor="let person of persons" [value]="person.id">
@@ -73,7 +73,29 @@
     </mat-error>
   </mat-form-field>
 
+  <!-- Persona en edición (solo lectura) -->
+  <mat-form-field appearance="outline" *ngIf="isEdit">
+    <mat-label>Persona</mat-label>
+    <input matInput [value]="selectedPersonName" readonly>
+  </mat-form-field>
 
+  <!-- Activo (solo en edición) -->
+  <mat-slide-toggle *ngIf="isEdit" formControlName="asset" color="primary">
+    Activo
+  </mat-slide-toggle>
+
+  <!-- Rol (solo en creación) -->
+  <mat-form-field appearance="outline" *ngIf="!isEdit">
+    <mat-label>Rol</mat-label>
+    <mat-select formControlName="roleId">
+      <mat-option *ngFor="let role of roles" [value]="role.id">
+        {{ role.name }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="form.get('roleId')?.hasError('required')">
+      Debe seleccionar un rol
+    </mat-error>
+  </mat-form-field>
 
   <!-- <mat-slide-toggle formControlName="asset" color="white">
   Activo
@@ -81,14 +103,13 @@
 
   <!-- <mat-slide-toggle formControlName="asset" color="primary" aria-label="Usuario activo">
   <span style="color: #ffffff;">Activo</span>
-</mat-slide-toggle> -->
-
+  </mat-slide-toggle> -->
 
 
   <button mat-raised-button color="primary" type="submit">
     {{ isEdit ? 'Actualizar' : 'Crear' }}
   </button>
- <button mat-button type="button" (click)="onCancelar()">Cancelar</button>
+  <button mat-raised-button color="warn" type="button" (click)="onCancelar()">Cancelar</button>
 </form>
 
 <div *ngIf="isEdit" class="mt-4">
@@ -104,9 +125,9 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-slide-toggle [(ngModel)]="rolUserAsset" color="primary">
+  <!-- <mat-slide-toggle [(ngModel)]="rolUserAsset" color="primary">
   <span style="color: #ffffff;">Relacion Activa</span>
-  </mat-slide-toggle>
+  </mat-slide-toggle> -->
 
 
 </div>
@@ -118,34 +139,34 @@
     <thead>
       <tr>
         <th>Rol</th>
-        <th>Asset</th>
+        <th>Estado</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let role of userRoles; let i = index">
-  <td *ngIf="editIndex !== i">{{ role.roleName }}</td>
-  <td *ngIf="editIndex === i">
-    <input [(ngModel)]="role.roleName" class="form-control" />
-  </td>
+   <td *ngIf="editIndex !== i">{{ role.rolName }}</td>
+   <td *ngIf="editIndex === i">
+     <input [(ngModel)]="role.rolName" class="form-control" />
+   </td>
 
-  <td *ngIf="editIndex !== i">
-    <mat-icon color="{{ role.asset ? 'primary' : 'warn' }}">
-      {{ role.asset ? 'check_circle' : 'cancel' }}
-    </mat-icon>
-  </td>
-  <td *ngIf="editIndex === i">
-    <mat-slide-toggle [(ngModel)]="role.asset" color="primary">
-      Activo
-    </mat-slide-toggle>
-  </td>
+   <td *ngIf="editIndex !== i">
+     <mat-icon color="{{ role.asset ? 'primary' : 'warn' }}">
+       {{ role.asset ? 'check_circle' : 'cancel' }}
+     </mat-icon>
+   </td>
+   <td *ngIf="editIndex === i">
+     <mat-slide-toggle [(ngModel)]="role.asset" color="primary">
+       Activo
+     </mat-slide-toggle>
+   </td>
 
-  <td>
+   <td>
 
-    <button class="btn btn-danger btn-sm" (click)="onDeleteRole(role.rolUserId)">
-      <i class="bi bi-trash">Eliminar</i>
-    </button>
-  </td>
+     <button class="btn btn-danger btn-sm" (click)="onDeleteRole(role.rolUserId)">
+       <i class="bi bi-trash">Eliminar</i>
+     </button>
+   </td>
 </tr>
 
     </tbody>

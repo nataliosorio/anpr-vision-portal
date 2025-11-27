@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import { Vehicle } from 'src/app/shared/Models/Entitys';
@@ -35,7 +36,7 @@ export class BlackListForm implements OnInit {
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La razón es obligatoria.' },
         { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'La razón debe tener al menos 3 caracteres.' },
         { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 100, message: 'La razón no puede exceder los 100 caracteres.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La razón solo puede contener letras y espacios.' }
+        // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'La razón solo puede contener letras y espacios.' }
       ]
     },
     {
@@ -51,6 +52,7 @@ export class BlackListForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -58,8 +60,16 @@ export class BlackListForm implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
 
+    // Configurar visibilidad del toggle según el modo
+    this.formConfig = this.formConfig.map(f =>
+      f.name === 'asset' ? { ...f, hidden: !this.isEdit } : f
+    );
+
+    // Mostrar loader para carga inicial
+    this.loaderService.show();
+
     // Cargar vehículos para el select
-    this.service.get<Vehicle[]>('Vehicle/select').subscribe({
+    this.service.get<Vehicle[]>('Vehicle/join').subscribe({
       next: (vehicles) => {
         const options = (vehicles || []).map(v => ({
           value: v.id,
@@ -71,6 +81,7 @@ export class BlackListForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los vehículos.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -83,8 +94,13 @@ export class BlackListForm implements OnInit {
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el registro.', 'error');
           this.router.navigate(['/blackList-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
+    } else {
+      // Si no es edición, ocultar loader después de cargar vehículos
+      this.loaderService.hide();
     }
   }
 
@@ -99,6 +115,7 @@ export class BlackListForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('BlackList', data).subscribe({
         next: () => {
@@ -113,7 +130,9 @@ export class BlackListForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       const payload = { ...data };
@@ -133,7 +152,9 @@ export class BlackListForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

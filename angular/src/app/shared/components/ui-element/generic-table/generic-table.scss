@@ -13,7 +13,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin: 16px 0;
   position: relative;
-  overflow: hidden;
+  overflow-x: auto; /* Permitir scroll horizontal solo si es necesario */
+  overflow-y: hidden;
 }
 
 /* Cambiar color del valor seleccionado en el selector de "Items per page" */
@@ -98,6 +99,7 @@
   border-spacing: 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   border: 1px solid #3a3a3a;
+  table-layout: fixed; /* Fijar el layout de la tabla */
 }
 
 /* Headers de la tabla */
@@ -113,6 +115,10 @@
   letter-spacing: 1px;
   position: relative;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  max-width: 200px; /* Limitar ancho máximo */
+  word-wrap: break-word; /* Permitir quiebre de palabras */
+  white-space: normal; /* Permitir múltiples líneas */
+  overflow-wrap: break-word; /* Compatibilidad adicional */
 }
 
 .mat-mdc-header-cell::before,
@@ -182,6 +188,10 @@
   font-weight: 500 !important;
   border-bottom: none !important;
   transition: all 0.3s ease;
+  max-width: 200px; /* Limitar ancho máximo */
+  word-wrap: break-word; /* Permitir quiebre de palabras */
+  white-space: normal; /* Permitir múltiples líneas */
+  overflow-wrap: break-word; /* Compatibilidad adicional */
 }
 
 /* Efecto de shimmer para carga */
@@ -525,6 +535,7 @@
   .action-buttons {
     flex-direction: column;
     gap: 4px;
+    min-width: 100px; /* Ancho mínimo para acciones */
   }
 
   .edit-btn,
@@ -533,10 +544,13 @@
     padding: 6px 10px;
   }
 
+  .mat-mdc-header-cell,
+  .mat-mdc-cell,
   .mat-header-cell,
   .mat-cell {
     padding: 12px 8px !important;
     font-size: 12px;
+    max-width: 120px; /* Ancho menor en móviles */
   }
 
   .new-user-btn {

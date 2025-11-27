@@ -2,7 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
-import { Parking } from 'src/app/features/parameters/pages/parking/parking';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { RateType } from 'src/app/features/parameters/pages/ratesType/rate-type';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
@@ -27,7 +27,8 @@ export class RatesForm implements OnInit {
       required: true,
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El tipo es obligatorio.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El tipo no puede superar los 50 caracteres.' }
+        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El tipo no puede superar los 50 caracteres.' },
+        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El tipo debe tener al menos 3 caracteres.' }
       ]
     },
     {
@@ -37,7 +38,8 @@ export class RatesForm implements OnInit {
       required: true,
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 70, message: 'El nombre no puede superar los 70 caracteres.' }
+        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 70, message: 'El nombre no puede superar los 50 caracteres.' },
+        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' }
       ]
     },
     {
@@ -47,7 +49,9 @@ export class RatesForm implements OnInit {
       required: true,
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El monto es obligatorio.' },
-        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 1, message: 'El monto debe ser mayor a 0.' }
+        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 1, message: 'El monto debe ser mayor a 0.' },
+        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[0-9]+(\\.[0-9]{1,2})?$', message: 'El monto debe ser un número válido.' }
+
       ]
     },
     {
@@ -75,17 +79,14 @@ export class RatesForm implements OnInit {
       required: true,
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El año es obligatorio.' },
-        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 2000, message: 'El año no puede ser menor a 2000.' }
-      ]
-    },
-    {
-      name: 'parkingId',
-      label: 'Parqueadero',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un parqueadero.' }
+        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 2000, message: 'El año no puede ser menor a 2000.' },
+        {
+  name: ValidatorNames.Max,
+  validator: ValidatorNames.Max,
+  value: new Date().getFullYear() + 1,
+  message: 'El año no puede ser mayor al próximo año.'
+}
+
       ]
     },
     {
@@ -121,11 +122,21 @@ export class RatesForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.isEdit = !!id;
+
+    // Configurar visibilidad del toggle según el modo
+    this.formConfig = this.formConfig.map(f =>
+      f.name === 'asset' ? { ...f, hidden: !this.isEdit } : f
+    );
+
+    // Mostrar loader para carga inicial
+    this.loaderService.show();
 
     // Vehículos
     this.service.get<VehicleType[]>('TypeVehicle/select').subscribe({
@@ -141,6 +152,7 @@ export class RatesForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los tipos de vehículo.', 'error');
+        this.loaderService.hide();
       }
     });
 
@@ -158,44 +170,43 @@ export class RatesForm implements OnInit {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los tipos de tarifa.', 'error');
+        this.loaderService.hide();
       }
     });
 
-    // Parqueaderos
-    this.service.get<Parking[]>('Parking/select').subscribe({
-      next: (items) => {
-        this.formConfig = this.formConfig.map(field =>
-          field.name === 'parkingId'
-            ? {
-                ...field,
-                options: (items || []).map(item => ({ value: item.id, label: item.name }))
-              }
-            : field
-        );
-      },
-      error: (err: Error) => {
-        Swal.fire('Error', err.message || 'No se pudieron cargar los parqueaderos.', 'error');
-      }
-    });
 
     // Edición
-    if (id) {
-      this.isEdit = true;
+    if (this.isEdit && id) {
       this.service.getById<Rates>('Rates', id).subscribe({
         next: (item) => {
-          this.initialData = item;
+          this.initialData = this.normalizeRateData(item);
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar la tarifa.', 'error');
           this.route.navigate(['/rates-index']);
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
+    } else {
+      // Si no es edición, ocultar loader después de cargar los selects
+      this.loaderService.hide();
     }
   }
 
 save(data: any) {
   const payload = { ...data };
-  delete payload.id;
+
+  // Agregar parkingId automáticamente desde localStorage
+  const parkingId = this.service.getParkingId();
+  if (parkingId) {
+    payload.parkingId = parseInt(parkingId);
+  }
+
+  // Solo eliminar ID en creación, mantenerlo en edición
+  if (!this.isEdit) {
+    delete payload.id;
+  }
 
   // convertir horas a ISO
   if (data.starHour) {
@@ -205,6 +216,7 @@ save(data: any) {
     payload.endHour = this.toIsoDateTime(data.endHour);
   }
 
+  this.loaderService.show();
   if (this.isEdit) {
     this.service.put('Rates', payload).subscribe({
       next: () => {
@@ -219,7 +231,9 @@ save(data: any) {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-      }
+        this.loaderService.hide();
+      },
+      complete: () => this.loaderService.hide()
     });
   } else {
     this.service.post('Rates', payload).subscribe({
@@ -235,7 +249,9 @@ save(data: any) {
       },
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-      }
+        this.loaderService.hide();
+      },
+      complete: () => this.loaderService.hide()
     });
   }
 }
@@ -245,16 +261,57 @@ save(data: any) {
     this.route.navigate(['/rates-index']);
   }
 
+  private normalizeRateData(item: any): any {
+    const normalized = { ...item };
+
+    // Convertir horas ISO a formato HH:mm para inputs de tipo time
+    if (item.starHour) {
+      normalized.starHour = this.isoToTimeString(item.starHour);
+    }
+    if (item.endHour) {
+      normalized.endHour = this.isoToTimeString(item.endHour);
+    }
+
+    return normalized;
+  }
+
+  private isoToTimeString(isoString: string): string {
+    if (!isoString) return '';
+
+    try {
+      const date = new Date(isoString);
+      if (isNaN(date.getTime())) return '';
+
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    } catch {
+      return '';
+    }
+  }
+
   private toIsoDateTime(time: string): string | null {
-  if (!time) return null;
+    if (!time) return null;
 
-  // Usamos la fecha de hoy como base
-  const today = new Date();
-  const [hours, minutes] = time.split(':').map(Number);
+    try {
+      // Si ya viene en formato ISO, devolverlo tal cual
+      if (time.includes('T') && time.includes('Z')) {
+        return time;
+      }
 
-  today.setHours(hours, minutes, 0, 0);
+      // Si viene como HH:mm o HH:mm:ss, convertir a ISO
+      const [hours, minutes] = time.split(':').map(Number);
+      if (isNaN(hours) || isNaN(minutes)) return null;
 
-  return today.toISOString(); // "2025-10-01T11:02:00.000Z"
-}
+      // Usamos la fecha de hoy como base
+      const today = new Date();
+      today.setHours(hours, minutes, 0, 0);
+
+      return today.toISOString(); // "2025-10-01T11:02:00.000Z"
+    } catch (error) {
+      console.error('Error converting time to ISO:', error);
+      return null;
+    }
+  }
 
 }

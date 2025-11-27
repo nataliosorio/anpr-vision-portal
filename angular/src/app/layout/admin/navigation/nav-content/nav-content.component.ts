@@ -4,6 +4,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { Location, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 // project import
 import { NavigationItem, NavigationItems } from '../navigation';
@@ -12,6 +13,7 @@ import { NavigationService } from '../navigation.service';
 import { OpenCommand, SharedMenuService } from '../shared-menu.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { MenuApiService } from 'src/app/layout/services/menu-api.service';
+import { SupportModalComponent } from './support-modal.component';
 
 
 @Component({
@@ -29,6 +31,7 @@ export class NavContentComponent implements OnInit, OnDestroy {
   private sharedMenu = inject(SharedMenuService);
   private router = inject(Router);
   private menuApi = inject(MenuApiService);
+  private modalService = inject(NgbModal);
 
   private cmdSub?: Subscription;
 
@@ -87,11 +90,12 @@ export class NavContentComponent implements OnInit, OnDestroy {
   }
 
   fireLeave() {
-    const sections = document.querySelectorAll('.pcoded-hasmenu');
-    for (let i = 0; i < sections.length; i++) {
-      sections[i].classList.remove('active');
-      sections[i].classList.remove('pcoded-trigger');
-    }
+    // Comentado para permitir múltiples submenús abiertos
+    // const sections = document.querySelectorAll('.pcoded-hasmenu');
+    // for (let i = 0; i < sections.length; i++) {
+    //   sections[i].classList.remove('active');
+    //   sections[i].classList.remove('pcoded-trigger');
+    // }
 
     let current_url = this.location.path();
     const baseHref = this.locationStrategy.getBaseHref();
@@ -202,5 +206,13 @@ export class NavContentComponent implements OnInit, OnDestroy {
 
     el.classList.add('menu-highlight');
     setTimeout(() => el.classList.remove('menu-highlight'), 1500);
+  }
+
+  openSupportModal() {
+    // Crear componente modal dinámicamente
+    const modalRef = this.modalService.open(SupportModalComponent, {
+      centered: true,
+      size: 'md'
+    });
   }
 }

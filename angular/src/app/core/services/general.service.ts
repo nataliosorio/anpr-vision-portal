@@ -147,6 +147,11 @@ get<T>(endpoint: string, params?: HttpParams): Observable<T> {
   const url = this.buildUrlWithParking(endpoint);
   return this.http.get(url, { params }).pipe(this.handle<T>());
 }
+
+getBlob(endpoint: string): Observable<Blob> {
+  const url = this.buildUrlWithParking(endpoint);
+  return this.http.get(url, { responseType: 'blob' });
+}
   getById<T>(endpoint: string, id: number | string): Observable<T> {
     const url = this.buildUrlWithParking(`${endpoint}/${id}`);
     return this.http.get(url).pipe(this.handle<T>());

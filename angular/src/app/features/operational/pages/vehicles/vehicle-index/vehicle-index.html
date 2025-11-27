@@ -72,9 +72,9 @@
             [class.active]="vehicle.asset && !vehicle.isDeleted"
             [class.inactive]="!vehicle.asset && !vehicle.isDeleted"
             [class.deleted]="vehicle.isDeleted">
-            <mat-icon>
+            <!-- <mat-icon>
               {{ vehicle.isDeleted ? 'block' : (vehicle.asset ? 'check_circle' : 'cancel') }}
-            </mat-icon>
+            </mat-icon> -->
             <span>{{ vehicle.isDeleted ? 'Eliminado' : (vehicle.asset ? 'Activo' : 'Inactivo') }}</span>
           </div>
         </div>

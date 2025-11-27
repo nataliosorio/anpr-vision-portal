@@ -11,6 +11,7 @@ import { ApiResponse } from 'src/app/shared/Models/ApiResponse';
 import { AuthData } from '../../models/AuthData';
 import { VerificationRequestDto } from '../../models/verificationRequestDto';
 import { AuthService } from '../../services/auth.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 
 @Component({
   selector: 'app-verify-otp',
@@ -26,12 +27,12 @@ export class VerifyOtpComponent implements OnInit {
 
   otpForm!: FormGroup;
   otpIdx = [0, 1, 2, 3, 4, 5];
-  loading = false;
 
   private fb = inject(FormBuilder);
   private service = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private loaderService = inject(LoaderService);
 
   // ngOnInit(): void {
   //   // Inicializar formulario OTP
@@ -94,7 +95,7 @@ export class VerifyOtpComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.loaderService.show();
 
     const otpCode = Object.values(this.otpForm.value).join('');
     const dto: VerificationRequestDto = {
@@ -133,6 +134,7 @@ export class VerifyOtpComponent implements OnInit {
         });
       },
       error: (err: Error) => {
+        this.loaderService.hide();
         Swal.fire({
           icon: 'error',
           title: 'Error de verificación',
@@ -140,7 +142,7 @@ export class VerifyOtpComponent implements OnInit {
         });
       },
       complete: () => {
-        this.loading = false;
+        this.loaderService.hide();
       },
     });
   }

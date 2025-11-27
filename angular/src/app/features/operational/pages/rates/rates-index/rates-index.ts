@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 import { Rates } from 'src/app/shared/Models/Entitys';
 
@@ -20,7 +21,7 @@ export class RatesIndex implements OnInit {
   columns = [
     { key: 'name', label: 'Nombre' },
     { key: 'type', label: 'Tipo' },
-    { key: 'amount', label: 'Cantidad' },
+    { key: 'amount', label: 'Monto' },
     { key: 'starHour', label: 'Hora de Inicio' }, // ← si realmente es startHour en tu back, cámbialo aquí
     { key: 'endHour', label: 'Hora de Fin' },
     { key: 'year', label: 'Año' },
@@ -28,12 +29,12 @@ export class RatesIndex implements OnInit {
     { key: 'typeVehicle', label: 'Tipo de Vehículo' },
     { key: 'parking', label: 'Parqueadero' },
     { key: 'asset', label: 'Estado' },
-    { key: 'isDeleted', label: 'Eliminado Lógicamente' }
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -42,6 +43,7 @@ export class RatesIndex implements OnInit {
   }
 
   getAllRates(): void {
+    this._loaderService.show();
     this._generalService.get<Rates[]>('Rates/join').subscribe({
       next: (items) => {
         this.dataSource.data = items || [];
@@ -50,7 +52,9 @@ export class RatesIndex implements OnInit {
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar las tarifas.', 'error');
         this.dataSource.data = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -74,6 +78,7 @@ export class RatesIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Rates', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
@@ -81,7 +86,9 @@ export class RatesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -99,6 +106,7 @@ export class RatesIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Rates/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
@@ -106,7 +114,9 @@ export class RatesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
