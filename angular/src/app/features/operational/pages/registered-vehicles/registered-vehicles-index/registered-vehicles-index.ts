@@ -45,6 +45,9 @@ export class RegisteredVehiclesIndex implements OnInit {
   validationResult: VehicleValidationResultDto | null = null;
   isValidatingPlate = false;
   canProceed = false;
+  showExitButton = false;
+  showNewEntryButton = false;
+  showRegisterEntryButton = false;
 
   columns = [
     { key: 'vehicle', label: 'Vehículo' },
@@ -104,37 +107,57 @@ export class RegisteredVehiclesIndex implements OnInit {
     };
 
     this._generalService.post<VehicleValidationResultDto>('RegisteredVehicles/validate-plate', request).subscribe({
-      next: (result) => {
-        this.validationResult = result;
+  next: (result) => {
+    this.validationResult = result;
 
-        // Determine if user can proceed
-        if (result.exists) {
-          if (result.isBlacklisted) {
-            this.canProceed = false;
-            plateControl.setErrors({ blacklisted: true });
-          } else if (result.hasActiveEntry) {
-            this.canProceed = false;
-            plateControl.setErrors({ activeEntry: true });
-          } else {
-            this.canProceed = true;
-            plateControl.setErrors(null);
-          }
-        } else {
-          // New vehicle - can proceed
-          this.canProceed = true;
-          plateControl.setErrors(null);
-        }
-      },
-      error: (err: Error) => {
-        console.error('Error validating plate:', err);
-        this.validationResult = null;
+    // Determine if user can proceed and show appropriate buttons
+    if (result.exists) {
+      if (result.isBlacklisted) {
         this.canProceed = false;
-        Swal.fire('Error', 'No se pudo validar la placa. Intente nuevamente.', 'error');
-      },
-      complete: () => {
-        this.isValidatingPlate = false;
+        this.showExitButton = false;
+        this.showNewEntryButton = false;
+        plateControl.setErrors({ blacklisted: true });
+        // Close modal and show error
+        this.dialog.closeAll();
+        setTimeout(() => {
+          Swal.fire('Vehículo en lista negra', result.message, 'error');
+        }, 300);
+      } else if (result.hasActiveEntry) {
+        this.canProceed = false;
+        this.showExitButton = true; // Show exit button for vehicles with active entry
+        this.showNewEntryButton = false;
+        plateControl.setErrors({ activeEntry: true });
+      } else {
+        // Vehicle exists, not blacklisted, no active entry - can create new entry
+        this.canProceed = true;
+        this.showExitButton = false;
+        this.showNewEntryButton = true; // Show new entry button
+        plateControl.setErrors(null);
       }
-    });
+    } else {
+      // New vehicle - can proceed and show register entry button
+      this.canProceed = true;
+      this.showExitButton = false;
+      this.showNewEntryButton = false;
+      this.showRegisterEntryButton = true; // Show register entry button for new vehicles
+      plateControl.setErrors(null);
+    }
+  },
+  error: (err: Error) => {
+    console.error('Error validating plate:', err);
+    this.validationResult = null;
+    this.canProceed = false;
+    this.isValidatingPlate = false;
+    // Close modal and show error
+    this.dialog.closeAll();
+    setTimeout(() => {
+      Swal.fire('Error', 'No se pudo validar la placa. Intente nuevamente.', 'error');
+    }, 300);
+  },
+  complete: () => {
+    this.isValidatingPlate = false;
+  }
+});
   }
 
   loadVehicleTypes(): void {
@@ -181,6 +204,9 @@ export class RegisteredVehiclesIndex implements OnInit {
     // Reset validation state
     this.validationResult = null;
     this.canProceed = false;
+    this.showExitButton = false;
+    this.showNewEntryButton = false;
+    this.showRegisterEntryButton = false;
     this.isValidatingPlate = false;
 
     // Set parkingId from localStorage
@@ -526,5 +552,235 @@ export class RegisteredVehiclesIndex implements OnInit {
         });
       }
     });
+  }
+
+  registerExitFromValidation(): void {
+    if (!this.validationResult || !this.validationResult.exists || !this.validationResult.hasActiveEntry) {
+      return;
+    }
+
+    const plate = this.manualEntryForm.get('plate')?.value?.toUpperCase();
+    if (!plate) {
+      this.dialog.closeAll();
+      setTimeout(() => {
+        Swal.fire('Error', 'No se pudo obtener la placa del vehículo', 'error');
+      }, 300);
+      return;
+    }
+
+    // Find the active entry for this plate
+    const activeEntry = this.originalData.find(entry =>
+      entry.vehicle === plate && !entry.exitDate && !entry.isDeleted
+    );
+
+    if (!activeEntry) {
+      this.dialog.closeAll();
+      setTimeout(() => {
+        Swal.fire('Error', 'No se encontró una entrada activa para este vehículo', 'error');
+      }, 300);
+      return;
+    }
+
+    // Close modal first, then call registerExit
+    this.dialog.closeAll();
+    setTimeout(() => {
+      this.registerExit(activeEntry);
+    }, 300);
+  }
+
+  createNewEntryFromValidation(): void {
+    if (!this.validationResult || !this.validationResult.exists || this.validationResult.isBlacklisted || this.validationResult.hasActiveEntry) {
+      return;
+    }
+
+    const plate = this.manualEntryForm.get('plate')?.value?.toUpperCase();
+    const parkingId = this.manualEntryForm.get('parkingId')?.value;
+
+    if (!plate || !parkingId) {
+      Swal.fire('Error', 'No se pudieron obtener los datos necesarios', 'error');
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Crear nueva entrada?',
+      text: `¿Está seguro de crear una nueva entrada para el vehículo ${plate}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, crear entrada',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4caf50',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._loaderService.show();
+
+        // For existing vehicles, only send plate and parkingId
+        // Backend will handle getting typeVehicleId from existing vehicle
+        const data = {
+          plate: plate,
+          parkingId: parkingId
+        };
+
+        this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
+          next: (response: ManualEntryResponseDto) => {
+            this._loaderService.hide();
+            // Close modal first
+            this.dialog.closeAll();
+            setTimeout(() => {
+              Swal.fire({
+                title: '¡Entrada creada!',
+                text: 'La nueva entrada ha sido registrada exitosamente.',
+                icon: 'success',
+                confirmButtonColor: '#4caf50'
+              }).then(() => {
+                // Abrir el PDF en una nueva pestaña
+                this.openPdfInNewTab(response.ticketPdfBytes);
+              });
+            }, 300);
+            this.getAllEntries(); // Recargar la lista
+          },
+          error: (err: Error) => {
+            this._loaderService.hide();
+            // Close modal first
+            this.dialog.closeAll();
+            setTimeout(() => {
+              const errorMessage = err.message || 'Error al crear la nueva entrada.';
+              Swal.fire({
+                title: 'Error',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#f44336'
+              });
+            }, 300);
+          }
+        });
+      }
+    });
+  }
+
+  registerNewEntryFromValidation(): void {
+    if (!this.validationResult || this.validationResult.exists) {
+      return;
+    }
+
+    const plate = this.manualEntryForm.get('plate')?.value?.toUpperCase();
+    const parkingId = this.manualEntryForm.get('parkingId')?.value;
+
+    if (!plate || !parkingId) {
+      this.dialog.closeAll();
+      setTimeout(() => {
+        Swal.fire('Error', 'No se pudieron obtener los datos necesarios', 'error');
+      }, 300);
+      return;
+    }
+
+    // Close modal first, then show the form
+    this.dialog.closeAll();
+    setTimeout(() => {
+      // For new vehicles, we need to collect client information and vehicle type
+      // Show a form to collect client data and vehicle type
+      Swal.fire({
+        title: 'Registro de Vehículo Nuevo',
+      html: `
+        <div style="text-align: left; margin-bottom: 20px;">
+          <p style="margin-bottom: 15px; color: #666;">Complete los datos para registrar el vehículo <strong>${plate}</strong></p>
+
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">Tipo de Vehículo *</label>
+            <select id="vehicleType" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+              <option value="">Seleccione un tipo</option>
+              ${this.vehicleTypes.map(type => `<option value="${type.id}">${type.name}</option>`).join('')}
+            </select>
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">Nombre del Cliente *</label>
+            <input id="clientName" type="text" placeholder="Juan Pérez" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+          </div>
+
+          <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">Correo Electrónico *</label>
+            <input id="clientEmail" type="email" placeholder="juan.perez@email.com" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Registrar Entrada',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4caf50',
+      cancelButtonColor: '#3085d6',
+      preConfirm: () => {
+        const vehicleTypeId = (document.getElementById('vehicleType') as HTMLSelectElement).value;
+        const clientName = (document.getElementById('clientName') as HTMLInputElement).value.trim();
+        const clientEmail = (document.getElementById('clientEmail') as HTMLInputElement).value.trim();
+
+        if (!vehicleTypeId) {
+          Swal.showValidationMessage('Por favor seleccione el tipo de vehículo');
+          return false;
+        }
+
+        if (!clientName) {
+          Swal.showValidationMessage('Por favor ingrese el nombre del cliente');
+          return false;
+        }
+
+        if (!clientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
+          Swal.showValidationMessage('Por favor ingrese un correo electrónico válido');
+          return false;
+        }
+
+        return { vehicleTypeId: parseInt(vehicleTypeId), clientName, clientEmail };
+      }
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const { vehicleTypeId, clientName, clientEmail } = result.value;
+
+        this._loaderService.show();
+
+        // Send all required data for new vehicle registration
+        const data = {
+          plate: plate,
+          parkingId: parkingId,
+          typeVehicleId: vehicleTypeId,
+          clientName: clientName,
+          clientEmail: clientEmail.toLowerCase()
+        };
+
+        this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
+          next: (response: ManualEntryResponseDto) => {
+            this._loaderService.hide();
+            // Close modal first
+            this.dialog.closeAll();
+            setTimeout(() => {
+              Swal.fire({
+                title: '¡Vehículo registrado!',
+                text: 'El vehículo nuevo ha sido registrado y la entrada creada exitosamente.',
+                icon: 'success',
+                confirmButtonColor: '#4caf50'
+              }).then(() => {
+                // Abrir el PDF en una nueva pestaña
+                this.openPdfInNewTab(response.ticketPdfBytes);
+              });
+            }, 300);
+            this.getAllEntries(); // Recargar la lista
+          },
+          error: (err: Error) => {
+            this._loaderService.hide();
+            // Close modal first
+            this.dialog.closeAll();
+            setTimeout(() => {
+              const errorMessage = err.message || 'Error al registrar el vehículo nuevo.';
+              Swal.fire({
+                title: 'Error',
+                text: errorMessage,
+                icon: 'error',
+                confirmButtonColor: '#f44336'
+              });
+            }, 300);
+          }
+        });
+      }
+    });
+    }, 300);
   }
 }
