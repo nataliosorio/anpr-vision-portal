@@ -27,9 +27,8 @@
               color="primary"
               class="create-parking-btn"
               (click)="goToCreate()"
-              matTooltip="Registrar nueva entrada">
-              <mat-icon class="title-icon">directions_car</mat-icon>
-              Nueva Entrada
+              matTooltip="Validar placa de vehículo">
+              Registrar Entrada
             </button>
           </div>
 
@@ -225,15 +224,15 @@
         color="primary"
         class="empty-action-btn"
         (click)="goToCreate()">
-        <mat-icon>add</mat-icon>
-        Registrar Entrada
+        <mat-icon>search</mat-icon>
+        Validar Placa
       </button>
     </div>
   </div>
 </div>
 
-<!-- Manual Entry Dialog -->
-<ng-template #manualEntryDialog>
+<!-- Plate Validation Dialog -->
+<ng-template #plateValidationDialog>
   <div class="manual-entry-dialog">
     <!-- Header Section -->
     <div class="dialog-header">
@@ -241,62 +240,95 @@
         <mat-icon class="vehicle-icon">directions_car</mat-icon>
       </div>
       <div class="header-content">
-        <h2 class="dialog-title">Registrar Entrada Manual</h2>
-        <p class="dialog-subtitle">Ingrese los datos del vehículo para registrar su entrada al parqueadero</p>
+        <h2 class="dialog-title">Validar Placa</h2>
+        <p class="dialog-subtitle">Ingrese la placa del vehículo para validar su estado</p>
       </div>
     </div>
 
     <mat-dialog-content class="dialog-content">
       <form [formGroup]="manualEntryForm" class="entry-form">
-        <!-- Plate Field -->
-        <div class="form-field-container">
-          <mat-form-field appearance="outline" class="custom-form-field plate-field">
-            <mat-label>Placa del Vehículo</mat-label>
-            <input matInput
-                   formControlName="plate"
-                   placeholder="ABC123"
-                   required
-                   autocomplete="off"
-                   maxlength="6"
-                   (input)="manualEntryForm.get('plate')?.setValue(manualEntryForm.get('plate')?.value?.toUpperCase())">
-            <mat-icon matSuffix class="field-icon">credit_card</mat-icon>
-            <mat-hint>Ingrese la placa en formato estándar (máx. 6 caracteres)</mat-hint>
-            <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('required')">
-              La placa es requerida
-            </mat-error>
-            <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('pattern')">
-              Formato de placa inválido (ej: ABC123)
-            </mat-error>
-          </mat-form-field>
+        <!-- Plate Search Section -->
+        <div class="search-section">
+          <div class="form-field-container">
+            <mat-form-field appearance="outline" class="custom-form-field plate-field">
+              <mat-label>Placa del Vehículo</mat-label>
+              <input matInput
+                     formControlName="plate"
+                     placeholder="ABC123"
+                     required
+                     autocomplete="off"
+                     maxlength="6"
+                     (input)="manualEntryForm.get('plate')?.setValue(manualEntryForm.get('plate')?.value?.toUpperCase())"
+                     (keyup.enter)="searchPlate()">
+              <mat-icon matSuffix class="field-icon">credit_card</mat-icon>
+              <mat-hint>Ingrese la placa y presione Enter o haga clic en Buscar</mat-hint>
+              <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('required')">
+                La placa es requerida
+              </mat-error>
+              <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('pattern')">
+                Formato de placa inválido (ej: ABC123)
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button
+                  color="primary"
+                  class="search-btn"
+                  [disabled]="manualEntryForm.get('plate')?.invalid || isValidatingPlate"
+                  (click)="searchPlate()">
+            <mat-icon *ngIf="!isValidatingPlate">search</mat-icon>
+            <mat-icon *ngIf="isValidatingPlate">hourglass_empty</mat-icon>
+            {{ isValidatingPlate ? 'Buscando...' : 'Buscar' }}
+          </button>
+        </div>
+
+        <!-- Validation Result Section -->
+        <div class="result-section" *ngIf="validationResult">
+          <div class="result-card" [class.success]="canProceed" [class.error]="!canProceed">
+            <mat-icon class="result-icon">{{ canProceed ? 'check_circle' : 'error' }}</mat-icon>
+            <div class="result-content">
+              <h3 class="result-title">{{ canProceed ? 'Vehículo válido' : 'No se puede proceder' }}</h3>
+              <p class="result-message">{{ validationResult.message }}</p>
+
+              <!-- Action Buttons -->
+              <div class="result-actions">
+                <!-- Exit Button for vehicles with active entry -->
+                <button mat-raised-button
+                        color="warn"
+                        class="exit-btn"
+                        *ngIf="showExitButton"
+                        (click)="registerExitFromValidation()">
+                  <mat-icon>exit_to_app</mat-icon>
+                  Registrar Salida
+                </button>
+
+                <!-- New Entry Button for registered vehicles without active entry -->
+                <button mat-raised-button
+                        color="primary"
+                        class="new-entry-btn"
+                        *ngIf="showNewEntryButton"
+                        (click)="createNewEntryFromValidation()">
+                  <mat-icon>add_circle</mat-icon>
+                  Crear Entrada Nueva
+                </button>
+
+                <!-- Register Entry Button for new vehicles -->
+                <button mat-raised-button
+                        color="primary"
+                        class="register-entry-btn"
+                        *ngIf="showRegisterEntryButton"
+                        (click)="registerNewEntryFromValidation()">
+                  <mat-icon>add_circle</mat-icon>
+                  Registrar Entrada
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Hidden Parking ID -->
         <input type="hidden" formControlName="parkingId">
 
-        <!-- Vehicle Type Field -->
-        <div class="form-field-container">
-          <mat-form-field appearance="outline" class="custom-form-field type-field">
-            <mat-label>Tipo de Vehículo</mat-label>
-            <mat-select formControlName="typeVehicleId" required>
-              <mat-select-trigger>
-                <div class="selected-content">
-                  <mat-icon class="selected-icon">{{ getVehicleTypeIcon(getSelectedVehicleTypeName()) }}</mat-icon>
-                  <span>{{ getSelectedVehicleTypeName() }}</span>
-                </div>
-              </mat-select-trigger>
-              <mat-option *ngFor="let type of vehicleTypes" [value]="type.id">
-                <div class="option-content">
-                  <mat-icon class="option-icon">{{ getVehicleTypeIcon(type.name) }}</mat-icon>
-                  <span>{{ type.name }}</span>
-                </div>
-              </mat-option>
-            </mat-select>
-            <mat-icon matSuffix class="field-icon">arrow_drop_down</mat-icon>
-            <mat-error *ngIf="manualEntryForm.get('typeVehicleId')?.hasError('required')">
-              Seleccione el tipo de vehículo
-            </mat-error>
-          </mat-form-field>
-        </div>
       </form>
     </mat-dialog-content>
 
@@ -307,10 +339,10 @@
       </button>
       <button mat-raised-button
               class="submit-btn"
-              [disabled]="manualEntryForm.invalid"
+              [disabled]="manualEntryForm.invalid || !canProceed"
               mat-dialog-close="submit">
-        <mat-icon>add_circle</mat-icon>
-        Registrar Entrada
+        <mat-icon>check_circle</mat-icon>
+        Validar Placa
       </button>
     </mat-dialog-actions>
   </div>
