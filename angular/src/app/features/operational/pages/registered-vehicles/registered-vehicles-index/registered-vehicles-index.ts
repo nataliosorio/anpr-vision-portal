@@ -16,6 +16,7 @@ import { General } from 'src/app/core/services/general.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { RegisteredVehicle } from 'src/app/shared/Models/Entitys';
+import { VehicleValidationRequestDto, VehicleValidationResultDto } from 'src/app/shared/Models/vehicle-validation';
 
 // Interface for the new response with PDF
 interface ManualEntryResponseDto extends RegisteredVehicle {
@@ -40,6 +41,11 @@ export class RegisteredVehiclesIndex implements OnInit {
   vehicleTypes: VehicleType[] = [];
   manualEntryForm: FormGroup;
 
+  // Validation state
+  validationResult: VehicleValidationResultDto | null = null;
+  isValidatingPlate = false;
+  canProceed = false;
+
   columns = [
     { key: 'vehicle', label: 'Vehículo' },
     { key: 'entryDate', label: 'Fecha de Entrada' },
@@ -49,7 +55,7 @@ export class RegisteredVehiclesIndex implements OnInit {
   ];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild('manualEntryDialog') manualEntryDialogTemplate!: TemplateRef<any>;
+  @ViewChild('plateValidationDialog') plateValidationDialogTemplate!: TemplateRef<any>;
 
   private _generalService = inject(General);
   private _loaderService = inject(LoaderService);
@@ -66,8 +72,7 @@ export class RegisteredVehiclesIndex implements OnInit {
                Validators.pattern(/^[A-Z]{3}[0-9]{3}$|^[A-Z]{3}[0-9]{2}[A-Z]$/)
              ]
            ],
-      parkingId: [this._generalService.getParkingId() ? parseInt(this._generalService.getParkingId()!) : null, [Validators.required, Validators.min(1)]],
-      typeVehicleId: [null, [Validators.required, Validators.min(1)]]
+      parkingId: [this._generalService.getParkingId() ? parseInt(this._generalService.getParkingId()!) : null, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -75,6 +80,61 @@ export class RegisteredVehiclesIndex implements OnInit {
     this._loaderService.show();
     this.getAllEntries();
     this.loadVehicleTypes();
+  }
+
+  searchPlate(): void {
+    const plateControl = this.manualEntryForm.get('plate');
+    if (!plateControl?.valid || !plateControl?.value) {
+      this.validationResult = null;
+      this.canProceed = false;
+      return;
+    }
+
+    this.isValidatingPlate = true;
+    const parkingId = this._generalService.getParkingId();
+    if (!parkingId) {
+      Swal.fire('Error', 'No se pudo obtener el ID del parqueadero.', 'error');
+      this.isValidatingPlate = false;
+      return;
+    }
+
+    const request: VehicleValidationRequestDto = {
+      plate: plateControl.value.trim().toUpperCase(),
+      parkingId: parseInt(parkingId)
+    };
+
+    this._generalService.post<VehicleValidationResultDto>('RegisteredVehicles/validate-plate', request).subscribe({
+      next: (result) => {
+        this.validationResult = result;
+
+        // Determine if user can proceed
+        if (result.exists) {
+          if (result.isBlacklisted) {
+            this.canProceed = false;
+            plateControl.setErrors({ blacklisted: true });
+          } else if (result.hasActiveEntry) {
+            this.canProceed = false;
+            plateControl.setErrors({ activeEntry: true });
+          } else {
+            this.canProceed = true;
+            plateControl.setErrors(null);
+          }
+        } else {
+          // New vehicle - can proceed
+          this.canProceed = true;
+          plateControl.setErrors(null);
+        }
+      },
+      error: (err: Error) => {
+        console.error('Error validating plate:', err);
+        this.validationResult = null;
+        this.canProceed = false;
+        Swal.fire('Error', 'No se pudo validar la placa. Intente nuevamente.', 'error');
+      },
+      complete: () => {
+        this.isValidatingPlate = false;
+      }
+    });
   }
 
   loadVehicleTypes(): void {
@@ -113,17 +173,22 @@ export class RegisteredVehiclesIndex implements OnInit {
   }
 
   goToCreate(): void {
-    this.openManualEntryDialog();
+    this.openPlateValidationDialog();
   }
 
-  openManualEntryDialog(): void {
+  openPlateValidationDialog(): void {
     this.manualEntryForm.reset();
+    // Reset validation state
+    this.validationResult = null;
+    this.canProceed = false;
+    this.isValidatingPlate = false;
+
     // Set parkingId from localStorage
     const parkingId = this._generalService.getParkingId();
     if (parkingId) {
       this.manualEntryForm.patchValue({ parkingId: parseInt(parkingId) });
     }
-    const dialogRef = this.dialog.open(this.manualEntryDialogTemplate, {
+    const dialogRef = this.dialog.open(this.plateValidationDialogTemplate, {
       width: '500px',
       disableClose: true
     });
@@ -136,41 +201,21 @@ export class RegisteredVehiclesIndex implements OnInit {
   }
 
   submitManualEntry(): void {
-    if (this.manualEntryForm.valid) {
-      const formValue = this.manualEntryForm.value;
-      const data = {
-        plate: formValue.plate.trim().toUpperCase(),
-        parkingId: formValue.parkingId,
-        typeVehicleId: formValue.typeVehicleId
-      };
-
-      this._loaderService.show();
-      this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
-        next: (response: ManualEntryResponseDto) => {
-          Swal.fire({
-            title: '¡Éxito!',
-            text: 'Entrada manual registrada correctamente.',
-            icon: 'success',
-            confirmButtonColor: '#4caf50'
-          }).then(() => {
-            // Abrir el PDF en una nueva pestaña
-            this.openPdfInNewTab(response.ticketPdfBytes);
-          });
-          this.getAllEntries(); // Recargar la lista
-        },
-        error: (err: Error) => {
-          // El general.service.ts ya extrae el message del ApiResponse
-          const errorMessage = err.message || 'Error al procesar la entrada manual.';
-          Swal.fire({
-            title: 'Error',
-            text: errorMessage,
-            icon: 'error',
-            confirmButtonColor: '#f44336'
-          });
-          this._loaderService.hide();
-        },
-        complete: () => this._loaderService.hide()
+    if (this.manualEntryForm.valid && this.canProceed) {
+      // Por ahora solo mostrar que la validación funciona
+      Swal.fire({
+        title: 'Validación Exitosa',
+        text: `Placa validada: ${this.validationResult?.message}`,
+        icon: 'success',
+        confirmButtonColor: '#4caf50'
       });
+      // TODO: Implementar el envío completo cuando se agreguen los demás campos
+    } else {
+      if (!this.canProceed && this.validationResult) {
+        Swal.fire('No se puede proceder', this.validationResult.message, 'error');
+      } else {
+        Swal.fire('Error', 'Por favor valide la placa primero.', 'warning');
+      }
     }
   }
 
