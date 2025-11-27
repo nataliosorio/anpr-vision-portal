@@ -13,7 +13,7 @@ export type Permission = IEntity;
 export interface Person extends IBaseEntity {
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  // phoneNumber: string;
   document: string;
   phone: string;
   age: number;
@@ -140,5 +140,14 @@ export interface Notification {
   relatedEntityId?: number; // opcional
   parkingId: number;
   createdAt?: string;       // si en el backend añadimos fecha
+}
+
+export interface RolParkingUser extends IBaseEntity {
+  userId: number;
+  userName: string;
+  rolId: number;
+  rolName: string;
+  parkingId: number;
+  parkingName: string;
 }
 

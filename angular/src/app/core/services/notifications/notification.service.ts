@@ -30,9 +30,23 @@ export class NotificationService {
     );
   }
 
+  markAllAsRead(parkingId: number): Observable<any> {
+    const url = `${this.baseUrl}/notification/by-parking/${parkingId}/read-all`;
+    return this.http.put(url, {}).pipe(
+      this.general['handle']<any>()
+    );
+  }
+
   delete(id: number): Observable<any> {
     // Asumiendo que hay DELETE /api/notification/{id}
     const url = `${this.baseUrl}/notification/${id}`;
+    return this.http.delete(url).pipe(
+      this.general['handle']<any>()
+    );
+  }
+
+  permanentDelete(id: number): Observable<any> {
+    const url = `${this.baseUrl}/notification/permanent/${id}`;
     return this.http.delete(url).pipe(
       this.general['handle']<any>()
     );

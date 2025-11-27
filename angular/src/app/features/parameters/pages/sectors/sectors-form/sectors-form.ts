@@ -8,6 +8,7 @@ import { VehicleType } from '../../vehicleType/vehicle-type';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 
@@ -18,65 +19,13 @@ import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/g
   styleUrl: './sectors-form.scss'
 })
 export class SectorsForm implements OnInit {
-  formConfig: FieldConfig[] = [
-    {
-      name: 'name',
-      label: 'Nombre',
-      type: 'text',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
-        { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
-        // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'El nombre solo puede contener letras y espacios.' }
-      ]
-    },
-    {
-      name: 'capacity',
-      label: 'Capacidad',
-      type: 'number',
-      required: true,
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La capacidad es obligatoria.' },
-        { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 1, message: 'La capacidad debe ser al menos 1.' },
-        { name: ValidatorNames.Max, validator: ValidatorNames.Max, value: 10000, message: 'La capacidad no puede ser mayor a 10,000.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[0-9]+$', message: 'La capacidad solo puede contener números enteros.' },
-        { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[1-9][0-9]{0,3}$', message: 'La capacidad debe ser un número válido entre 1 y 9999.' },
-      ]
-    },
-    {
-      name: 'zonesId',
-      label: 'Zona a la que pertenece',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar una zona.' }
-      ]
-    },
-    {
-      name: 'typeVehicleId',
-      label: 'Tipo de Vehículo',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un tipo de vehículo.' }
-      ]
-    },
-    {
-      name: 'asset',
-      label: 'Activo',
-      type: 'toggle',
-      value: true,
-      hidden: true
-    }
-  ];
+  formConfig!: FieldConfig[];
 
   isEdit = false;
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -84,9 +33,64 @@ export class SectorsForm implements OnInit {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
 
+    this.formConfig = [
+      {
+        name: 'name',
+        label: 'Nombre',
+        type: 'text',
+        required: true,
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'El nombre es obligatorio.' },
+          { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'El nombre debe tener al menos 3 caracteres.' },
+          { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'El nombre no puede exceder los 50 caracteres.' },
+          // { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[a-zA-ZÀ-ÿ\\s]+$', message: 'El nombre solo puede contener letras y espacios.' }
+        ]
+      },
+      {
+        name: 'capacity',
+        label: 'Capacidad',
+        type: 'number',
+        required: true,
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La capacidad es obligatoria.' },
+          { name: ValidatorNames.Min, validator: ValidatorNames.Min, value: 1, message: 'La capacidad debe ser al menos 1.' },
+          { name: ValidatorNames.Max, validator: ValidatorNames.Max, value: 10000, message: 'La capacidad no puede ser mayor a 10,000.' },
+          { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[0-9]+$', message: 'La capacidad solo puede contener números enteros.' },
+          { name: ValidatorNames.Pattern, validator: ValidatorNames.Pattern, value: '^[1-9][0-9]{0,3}$', message: 'La capacidad debe ser un número válido entre 1 y 9999.' },
+        ]
+      },
+      {
+        name: 'zonesId',
+        label: 'Zona a la que pertenece',
+        type: 'select',
+        required: true,
+        options: [],
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar una zona.' }
+        ]
+      },
+      {
+        name: 'typeVehicleId',
+        label: 'Tipo de Vehículo',
+        type: 'select',
+        required: true,
+        options: [],
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un tipo de vehículo.' }
+        ]
+      },
+      {
+        name: 'asset',
+        label: 'Activo',
+        type: 'toggle',
+        value: true,
+        hidden: !this.isEdit
+      }
+    ];
+
     // Cargar selects en paralelo y, si es edición, el sector
     const selects$ = forkJoin({
-      zones: this.service.get<Zones[]>('Zones/select').pipe(
+      zones: this.service.get<Zones[]>('Zones/join').pipe(
         catchError((err: Error) => {
           Swal.fire('Error', err.message || 'No se pudieron cargar las zonas.', 'error');
           return of<Zones[]>([]);
@@ -121,23 +125,31 @@ export class SectorsForm implements OnInit {
     );
 
     if (this.isEdit && id) {
+      this.loaderService.show();
       selects$.pipe(
         switchMap(() =>
           this.service.getById<any>('Sectors', id).pipe(
             catchError((err: Error) => {
               Swal.fire('Error', err.message || 'No se pudo cargar el sector.', 'error');
+              this.loaderService.hide();
               return of(null);
             })
           )
         )
-      ).subscribe((sector) => {
-        if (sector) {
-          this.initialData = this.normalizeSector(sector);
-        }
+      ).subscribe({
+        next: (sector) => {
+          if (sector) {
+            this.initialData = this.normalizeSector(sector);
+          }
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       // Solo selects (crear)
-      selects$.subscribe();
+      this.loaderService.show();
+      selects$.subscribe({
+        complete: () => this.loaderService.hide()
+      });
     }
   }
 
@@ -154,6 +166,7 @@ export class SectorsForm implements OnInit {
   }
 
   save(data: any) {
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Sectors', data).subscribe({
         next: () => {
@@ -168,10 +181,12 @@ export class SectorsForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo actualizar el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
-      const payload = { ...data };
+      const payload = { ...data, asset: true };
       delete payload.id;
 
       this.service.post('Sectors', payload).subscribe({
@@ -187,7 +202,9 @@ export class SectorsForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo crear el registro.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

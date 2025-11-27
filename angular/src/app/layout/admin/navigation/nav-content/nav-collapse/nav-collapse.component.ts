@@ -36,6 +36,7 @@ export class NavCollapseComponent {
       parent = parent.parentElement!;
     }
     parent = (parent as HTMLElement).parentElement as HTMLElement;
+    // Cerrar otros submenús al abrir uno
     const sections = document.querySelectorAll('.pcoded-hasmenu');
     for (let i = 0; i < sections.length; i++) {
       if (sections[i] !== parent) {

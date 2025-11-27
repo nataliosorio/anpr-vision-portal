@@ -12,55 +12,55 @@ import { MatOptionModule } from '@angular/material/core';
 import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIcon } from '@angular/material/icon';
-import { of } from 'rxjs';
 import { debounceTime, map, switchMap, catchError } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
 import { User } from 'src/app/shared/Models/Entitys';
 
 /* --- VALIDADORES ASÍNCRONOS (compatibles con General que retorna T directo) --- */
-export function usernameExistsValidator(service: General, getUserId: () => string | null): AsyncValidatorFn {
-  return (control: AbstractControl) => {
-    if (!control.value?.trim()) return of(null);
+// export function usernameExistsValidator(service: General, getUserId: () => string | null): AsyncValidatorFn {
+//   return (control: AbstractControl) => {
+//     if (!control.value?.trim()) return of(null);
 
-    return of(control.value).pipe(
-      debounceTime(300),
-      switchMap(username => {
-        const params = new HttpParams().set('username', username);
-        return service.get<any>('User/check-username', params).pipe(
-          map(res => {
-            // Soporta boolean directo o { exists: boolean }
-            const exists = typeof res === 'boolean' ? res : !!res?.exists;
-            const currentId = getUserId() ?? control.parent?.get('id')?.value ?? null;
-            return exists && control.parent?.get('id')?.value !== currentId ? { usernameExists: true } : null;
-          }),
-          catchError(() => of(null)) // si falla la API, no bloquea
-        );
-      })
-    );
-  };
-}
+//     return of(control.value).pipe(
 
-export function emailExistsValidator(service: General, getUserId: () => string | null): AsyncValidatorFn {
-  return (control: AbstractControl) => {
-    if (!control.value?.trim()) return of(null);
+//       debounceTime(300),
+//       switchMap(username => {
+//         const params = new HttpParams().set('username', username);
+//         return service.get<any>('User/check-username', params).pipe(
+//           map(res => {
+//             // Soporta boolean directo o { exists: boolean }
+//             const exists = typeof res === 'boolean' ? res : !!res?.exists;
+//             const currentId = getUserId() ?? control.parent?.get('id')?.value ?? null;
+//             return exists && control.parent?.get('id')?.value !== currentId ? { usernameExists: true } : null;
+//           }),
+//           catchError(() => of(null)) // si falla la API, no bloquea
+//         );
+//       })
+//     );
+//   };
+// }
 
-    return of(control.value).pipe(
-      debounceTime(400),
-      switchMap(email => {
-        const currentUserId = getUserId() ?? '';
-        const params = new HttpParams().set('email', email).set('currentUserId', currentUserId);
-        return service.get<any>('User/check-email', params).pipe(
-          map(res => {
-            const exists = typeof res === 'boolean' ? res : !!res?.exists;
-            const currentId = getUserId() ?? control.parent?.get('id')?.value ?? null;
-            return exists && control.parent?.get('id')?.value !== currentId ? { emailExists: true } : null;
-          }),
-          catchError(() => of(null))
-        );
-      })
-    );
-  };
-}
+// export function emailExistsValidator(service: General, getUserId: () => string | null): AsyncValidatorFn {
+//   return (control: AbstractControl) => {
+//     if (!control.value?.trim()) return of(null);
+
+//     return of(control.value).pipe(
+//       debounceTime(400),
+//       switchMap(email => {
+//         const currentUserId = getUserId() ?? '';
+//         const params = new HttpParams().set('email', email).set('currentUserId', currentUserId);
+//         return service.get<any>('User/check-email', params).pipe(
+//           map(res => {
+//             const exists = typeof res === 'boolean' ? res : !!res?.exists;
+//             const currentId = getUserId() ?? control.parent?.get('id')?.value ?? null;
+//             return exists && control.parent?.get('id')?.value !== currentId ? { emailExists: true } : null;
+//           }),
+//           catchError(() => of(null))
+//         );
+//       })
+//     );
+//   };
+// }
 
 @Component({
   selector: 'app-user-form',
@@ -91,6 +91,7 @@ export class UserForm implements OnInit {
   rolUserAsset: boolean = true;
   userRoles: any[] = [];
   editIndex: number | null = null;
+  selectedPersonName: string = '';
 
   private FormBuilder = inject(FormBuilder);
   private ActivatedRoute = inject(ActivatedRoute);
@@ -101,15 +102,16 @@ export class UserForm implements OnInit {
   constructor() {
     this.form = this.FormBuilder.group({
       id: [null],
-      userName: [
+      username: [
         '',
         [Validators.required, Validators.minLength(3), Validators.maxLength(30)],
-        [usernameExistsValidator(this.service, () => this.userId)]
+        // [usernameExistsValidator(this.service, () => this.userId)]
       ],
+
       email: [
         '',
         [Validators.required, Validators.email],
-        [emailExistsValidator(this.service, () => this.userId)]
+        // [emailExistsValidator(this.service, () => this.userId)]
       ],
       password: [
         '',
@@ -121,6 +123,7 @@ export class UserForm implements OnInit {
         ]
       ],
       personId: ['', Validators.required],
+      roleId: [''],
       asset: [true],
       // el template usa hidePassword → lo agregamos
       hidePassword: [true]
@@ -132,10 +135,12 @@ export class UserForm implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllPersons();
-
     const id = this.ActivatedRoute.snapshot.paramMap.get('id');
     this.isEdit = !!id;
+
+    if (!this.isEdit) {
+      this.getAllPersons();
+    }
 
     if (this.isEdit && id) {
       this.userId = id;
@@ -152,20 +157,37 @@ export class UserForm implements OnInit {
           this.originalPassword = user.password ?? '';
           this.form.patchValue(userData);
 
+          // Cargar la persona específica para edición
+          if (user.personId) {
+            this.service.getById<any>('Person', user.personId).subscribe({
+              next: (person) => {
+                this.selectedPersonName = `${person.firstName} ${person.lastName || ''}`.trim();
+              },
+              error: () => {
+                this.selectedPersonName = 'Persona no encontrada';
+              }
+            });
+          }
+
           // Revalidar asincrónicos con el userId cargado
-          this.form.get('userName')?.updateValueAndValidity();
+          this.form.get('username')?.updateValueAndValidity();
           this.form.get('email')?.updateValueAndValidity();
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar el usuario.', 'error');
-          this.route.navigate(['/user-index']);
+          this.route.navigate(['/user-index'], { queryParams: { refresh: Date.now() } });
         }
       });
+    } else {
+      // En creación, cargar roles y hacer roleId required
+      this.getAllRoles();
+      this.form.get('roleId')?.setValidators(Validators.required);
+      this.form.get('roleId')?.updateValueAndValidity();
     }
   }
 
   getAllPersons(): void {
-    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/select').subscribe({
+    this.service.get<Array<{ id: number; firstName: string; lastName?: string }>>('Person/no-user').subscribe({
       next: (people) => {
         this.persons = people || [];
       },
@@ -183,12 +205,13 @@ export class UserForm implements OnInit {
   }
 
   loadUserRoles(userId: string) {
-    this.service.get<any[]>(`User/roles/${userId}`).subscribe({
-      next: (items) => {
-        const list = items || [];
+    this.service.get<any>(`RolParkingUser/by-user/${userId}`).subscribe({
+      next: (response) => {
+        const list = response || [];
         this.userRoles = list.map((role: any) => ({
           ...role,
-          asset: Boolean(role.asset)
+          asset: Boolean(role.asset),
+          rolUserId: role.id
         }));
       },
       error: (err: Error) => {
@@ -209,7 +232,7 @@ export class UserForm implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.service.delete('RolUser/permanent', id).subscribe({
+        this.service.delete('RolParkingUser/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El rol ha sido eliminado.', 'success');
             this.loadUserRoles(this.userId);
@@ -239,7 +262,24 @@ export class UserForm implements OnInit {
     const request$ = this.isEdit ? this.service.put('User', data) : this.service.post('User', data);
 
     request$.subscribe({
-      next: () => {
+      next: (response: any) => {
+        if (!this.isEdit) {
+          // Crear roluserparking
+          const userId = response.id;
+          const parkingId = this.service.getParkingId();
+          const rolId = this.form.get('roleId')?.value;
+          if (userId && parkingId && rolId) {
+            this.service.post('RolParkingUser', { userId, parkingId, rolId, asset: true }).subscribe({
+              next: () => {
+                // Rol asignado exitosamente
+              },
+              error: (err: Error) => {
+                console.error('Error creando roluserparking:', err);
+                // No mostrar error al usuario, ya que el usuario se creó
+              }
+            });
+          }
+        }
         Swal.fire({
           icon: 'success',
           title: this.isEdit ? 'Registro actualizado exitosamente' : 'Registro creado exitosamente',
@@ -259,8 +299,8 @@ export class UserForm implements OnInit {
           return;
         }
         if (msg.includes('usuario') || msg.includes('username')) {
-          this.form.get('userName')?.setErrors({ usernameExists: true });
-          this.form.get('userName')?.markAsTouched();
+          this.form.get('username')?.setErrors({ usernameExists: true });
+          this.form.get('username')?.markAsTouched();
           return;
         }
 
@@ -277,10 +317,11 @@ export class UserForm implements OnInit {
     const userId = this.form.get('id')?.value;
     const rolId = this.selectedRoleId;
     const asset = this.rolUserAsset;
+    const parkingId = this.service.getParkingId();
 
-    if (userId && rolId != null) {
-      const payload = { userId, rolId, asset };
-      this.service.post('RolUser', payload).subscribe({
+    if (userId && rolId != null && parkingId) {
+      const payload = { userId, rolId, parkingId, asset };
+      this.service.post('RolParkingUser', payload).subscribe({
         next: () => {
           Swal.fire({
             icon: 'success',

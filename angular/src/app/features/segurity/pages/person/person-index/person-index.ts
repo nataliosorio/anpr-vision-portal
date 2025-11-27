@@ -20,8 +20,11 @@ export class PersonIndex implements OnInit {
   columns = [
     { key: 'firstName', label: 'Nombre' },
     { key: 'lastName', label: 'Apellido' },
-    { key: 'phoneNumber', label: 'Teléfono' },
+    { key: 'phone', label: 'Teléfono' },
+     {key: 'document', label: 'Documento' },
+    { key: 'age', label: 'Edad' },
     { key: 'asset', label: 'Estado' },
+
     // { key: 'isDeleted', label: 'Eliminado Lógicamente' }
   ];
 
@@ -33,7 +36,7 @@ export class PersonIndex implements OnInit {
   }
 
   getAllPersons(): void {
-    this._generalService.get<Person[]>('Person/join').subscribe({
+    this._generalService.get<Person[]>('Person/select').subscribe({
       next: (items) => {
         this.dataSource.data = items || [];
         if (this.paginator) this.dataSource.paginator = this.paginator;

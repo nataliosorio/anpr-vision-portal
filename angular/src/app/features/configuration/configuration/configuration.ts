@@ -6,6 +6,7 @@ import { Subject, of } from 'rxjs';
 import { takeUntil, catchError } from 'rxjs/operators';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { User, Person } from 'src/app/shared/Models/Entitys';
 // Dialog components are imported dynamically when needed
 
@@ -23,6 +24,7 @@ import { User, Person } from 'src/app/shared/Models/Entitys';
 export class Configuration implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private dialog = inject(MatDialog);
 
   // modelos tipados según tu genérico
@@ -116,6 +118,7 @@ parkingCategoryLoading = false;
   /** Carga User y luego Person si existe personId */
   loadUser(id: number): void {
     this.loading = true;
+    this.loaderService.show();
     this.errorMessage = '';
 
     this.service.getById<User>('User', id)
@@ -123,6 +126,7 @@ parkingCategoryLoading = false;
         takeUntil(this.destroy$),
         catchError(err => {
           this.loading = false;
+          this.loaderService.hide();
           this.errorMessage = `No se pudo cargar el usuario: ${err?.message ?? err}`;
           console.error('Error get User', err);
           return of(null);
@@ -130,6 +134,7 @@ parkingCategoryLoading = false;
       )
       .subscribe((user) => {
         this.loading = false;
+        this.loaderService.hide();
         if (!user) return;
         this.userData = user;
         this.applyToProfile();
@@ -143,6 +148,7 @@ parkingCategoryLoading = false;
 
   loadPerson(id: number): void {
     this.loading = true;
+    this.loaderService.show();
     this.errorMessage = '';
 
     this.service.getById<Person>('Person', id)
@@ -150,6 +156,7 @@ parkingCategoryLoading = false;
         takeUntil(this.destroy$),
         catchError(err => {
           this.loading = false;
+          this.loaderService.hide();
           this.errorMessage = `No se pudo cargar la persona: ${err?.message ?? err}`;
           console.error('Error get Person', err);
           return of(null);
@@ -157,6 +164,7 @@ parkingCategoryLoading = false;
       )
       .subscribe((person) => {
         this.loading = false;
+        this.loaderService.hide();
         if (!person) return;
         this.personData = person;
         this.applyToProfile();
@@ -210,31 +218,34 @@ parkingCategoryLoading = false;
 
 
   // ------------------ NUEVO: Cargar información del parqueadero por ID (quemado = 3) ------------------
-// ------------------ Cargar información del parqueadero por ID (quemado = 3) ------------------
-loadParking(id: number): void {
-  this.parkingLoading = true;
-  this.parkingError = '';
-
-  console.log('Haciendo petición GET a Parking con ID:', id);
-  this.service.getById<any>('Parking', id)
-    .pipe(
-      takeUntil(this.destroy$),
-      catchError(err => {
-        this.parkingLoading = false;
-        this.parkingError = `No se pudo cargar el parqueadero: ${err?.message ?? err}`;
-        console.error('Error get Parking', err);
-        return of(null);
-      })
-    )
-    .subscribe((resp) => {
-      console.log('Respuesta completa del servidor para Parking:', resp);
-
-      // termina estado de loading principal (pero si vamos a cargar categoría, lo manejamos abajo)
-      if (!resp) {
-        this.parkingLoading = false;
-        this.parkingData = null;
-        return;
-      }
+  // ------------------ Cargar información del parqueadero por ID (quemado = 3) ------------------
+  loadParking(id: number): void {
+    this.parkingLoading = true;
+    this.loaderService.show();
+    this.parkingError = '';
+  
+    console.log('Haciendo petición GET a Parking con ID:', id);
+    this.service.getById<any>('Parking', id)
+      .pipe(
+        takeUntil(this.destroy$),
+        catchError(err => {
+          this.parkingLoading = false;
+          this.loaderService.hide();
+          this.parkingError = `No se pudo cargar el parqueadero: ${err?.message ?? err}`;
+          console.error('Error get Parking', err);
+          return of(null);
+        })
+      )
+      .subscribe((resp) => {
+        console.log('Respuesta completa del servidor para Parking:', resp);
+  
+        // termina estado de loading principal (pero si vamos a cargar categoría, lo manejamos abajo)
+        if (!resp) {
+          this.parkingLoading = false;
+          this.loaderService.hide();
+          this.parkingData = null;
+          return;
+        }
 
       // Manejar diferentes formatos de respuesta
       let payload: any;
@@ -251,6 +262,7 @@ loadParking(id: number): void {
       else {
         console.error('Formato de respuesta desconocido:', resp);
         this.parkingLoading = false;
+        this.loaderService.hide();
         this.parkingData = null;
         this.parkingError = 'Formato de respuesta del servidor no reconocido';
         return;
@@ -289,7 +301,10 @@ loadParking(id: number): void {
           .subscribe((catResp) => {
             console.log('Respuesta completa del servidor para ParkingCategory:', catResp);
             this.parkingCategoryLoading = false;
-            if (!catResp) return;
+            if (!catResp) {
+              this.loaderService.hide();
+              return;
+            }
 
             // Manejar diferentes formatos de respuesta para la categoría
             let catPayload: any;
@@ -310,19 +325,23 @@ loadParking(id: number): void {
               ...this.parkingData,
               parkingCategory: catPayload ?? this.parkingData?.parkingCategory
             };
+            this.loaderService.hide();
           }, () => {
             // por seguridad: asegurar que la bandera se apaga ante error no capturado
             this.parkingCategoryLoading = false;
+            this.loaderService.hide();
           }, () => {
             // noop
           });
 
         // dejamos el loading principal en false porque ya terminó la carga del parking (categoria se carga por separado)
         this.parkingLoading = false;
+        this.loaderService.hide();
       } else {
         // no hay catId o ya viene la categoría embebida: terminamos
         this.parkingCategoryLoading = false;
         this.parkingLoading = false;
+        this.loaderService.hide();
       }
     });
 }

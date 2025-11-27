@@ -7,16 +7,17 @@
   color: #adb7be;
 
   .header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 32px;
 
     .title {
       display: flex;
       align-items: center;
-      justify-content: center;
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 0;
       color: #ffffff;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 
@@ -24,6 +25,28 @@
         margin-right: 16px;
         font-size: 3rem;
         color: #4099ff;
+      }
+    }
+
+    .fullscreen-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #4099ff;
+        color: #4099ff;
+      }
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
       }
     }
 
@@ -37,7 +60,7 @@
 
   .content {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 280px;
     gap: 24px;
 
     @media (max-width: 768px) {
@@ -91,7 +114,7 @@
 
   .notifications-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(600px, 1fr));
     gap: 16px;
 
     @media (max-width: 768px) {
@@ -144,7 +167,11 @@
     .message {
       margin: 0 0 16px 0;
       line-height: 1.5;
-      font-size: 0.95rem;
+      font-size: 2.5rem;
+      font-weight: bold;
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     }
 
     .slot-info {

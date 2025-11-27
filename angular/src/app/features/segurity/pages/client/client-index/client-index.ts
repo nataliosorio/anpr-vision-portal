@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 import { Client } from 'src/app/shared/Models/Entitys';
 import Swal from 'sweetalert2';
@@ -25,6 +26,7 @@ export class ClientIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -32,6 +34,7 @@ export class ClientIndex implements OnInit {
   }
 
   getAllClients(): void {
+    this._loaderService.show();
     this._generalService.get<Client[]>('Client/join').subscribe({
       next: (items) => {
         this.dataSource.data = items || [];
@@ -40,7 +43,9 @@ export class ClientIndex implements OnInit {
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudieron cargar los clientes.', 'error');
         this.dataSource.data = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -64,6 +69,7 @@ export class ClientIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Client', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
@@ -71,7 +77,9 @@ export class ClientIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -89,6 +97,7 @@ export class ClientIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('Client/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
@@ -96,7 +105,9 @@ export class ClientIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });

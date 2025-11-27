@@ -18,6 +18,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { Camera } from 'src/app/shared/Models/Entitys';
 
 @Component({
@@ -52,6 +53,7 @@ export class CameraIndex implements OnInit {
 
   constructor(
     private _generalService: General,
+    private _loaderService: LoaderService,
     private _snack: MatSnackBar,
     private router: Router
   ) {}
@@ -61,6 +63,7 @@ export class CameraIndex implements OnInit {
 
   loadCameras(): void {
   this.loadingCameras = true;
+  this._loaderService.show();
 
   // ✅ Obtén el parkingId desde localStorage
   const parkingId = this._generalService.getParkingId();
@@ -68,6 +71,7 @@ export class CameraIndex implements OnInit {
   if (!parkingId) {
     this._snack.open('No se encontró el ParkingId en localStorage.', 'Cerrar', { duration: 3000 });
     this.loadingCameras = false;
+    this._loaderService.hide();
     return;
   }
 
@@ -93,8 +97,13 @@ export class CameraIndex implements OnInit {
       this.filteredCameras = [];
       this.selectedCamera = null;
       this.showDetails = false;
+      this.loadingCameras = false;
+      this._loaderService.hide();
     },
-    complete: () => this.loadingCameras = false
+    complete: () => {
+      this.loadingCameras = false;
+      this._loaderService.hide();
+    }
   });
 }
 
@@ -149,6 +158,7 @@ export class CameraIndex implements OnInit {
     if (!res.isConfirmed) return;
 
     this.deleting = true;
+    this._loaderService.show();
 
     if (isHard) {
       // 🔥 Hard delete
@@ -161,8 +171,13 @@ export class CameraIndex implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
+          this.deleting = false;
+          this._loaderService.hide();
         },
-        complete: () => { this.deleting = false; }
+        complete: () => {
+          this.deleting = false;
+          this._loaderService.hide();
+        }
       });
     } else {
       // 🧹 Soft delete
@@ -175,8 +190,13 @@ export class CameraIndex implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
+          this.deleting = false;
+          this._loaderService.hide();
         },
-        complete: () => { this.deleting = false; }
+        complete: () => {
+          this.deleting = false;
+          this._loaderService.hide();
+        }
       });
     }
   }

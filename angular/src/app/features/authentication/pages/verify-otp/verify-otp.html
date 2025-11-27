@@ -30,10 +30,8 @@
 
       <button type="submit"
               class="primary-button"
-              [disabled]="loading || otpForm.invalid"
-              [class.loading]="loading">
-        <span *ngIf="!loading">Verificar código</span>
-        <span *ngIf="loading" class="loading-spinner"></span>
+              [disabled]="otpForm.invalid">
+        Verificar código
       </button>
 
       <button type="button" class="secondary-button" (click)="backToLogin()">
