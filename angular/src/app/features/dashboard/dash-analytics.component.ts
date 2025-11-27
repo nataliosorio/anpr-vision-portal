@@ -26,9 +26,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 
 import Swal from 'sweetalert2';
-import { Subject, switchMap, takeUntil, timer, forkJoin, of } from 'rxjs';
+import { Subject, switchMap, takeUntil, forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { DashboardCard, Client, TotalEnvelope, OccupancyEnvelope } from 'src/app/shared/Models/Entitys';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { VehicleType } from '../parameters/pages/vehicleType/vehicle-type';
@@ -113,6 +114,7 @@ private piePalette = [
 
   /** Servicio general para peticiones HTTP */
   private service = inject(General);
+  private loaderService = inject(LoaderService);
 
 
   // ==================== REFERENCIAS A PLANTILLAS Y GRÁFICOS ====================
@@ -364,28 +366,29 @@ private piePalette = [
   // ==================== CICLO DE VIDA ========================
   // ===========================================================
   ngOnInit(): void {
-     // Obtener parkingId actual desde el servicio
-    this.parkingId = this.service.getParkingId();
-    // tipos de vehículo
-    this.service.get<{ data: VehicleType[] }>('TypeVehicle/select').subscribe(res => {
-      if (res?.data) this.vehicleTypes = res.data.map(item => ({ value: item.id, label: item.name }));
-    });
+      // Obtener parkingId actual desde el servicio
+     this.parkingId = this.service.getParkingId();
+     this.loaderService.show();
+     // tipos de vehículo
+     this.service.get<{ data: VehicleType[] }>('TypeVehicle/select').subscribe(res => {
+       if (res?.data) this.vehicleTypes = res.data.map(item => ({ value: item.id, label: item.name }));
+     });
 
-    // clientes
-    this.service.get<{ data: Client[] }>('Client/join').subscribe(res => {
-      if (res?.data) this.clients = res.data.map(item => ({ value: item.id, label: item.name }));
-    });
+     // clientes
+     this.service.get<{ data: Client[] }>('Client/join').subscribe(res => {
+       if (res?.data) this.clients = res.data.map(item => ({ value: item.id, label: item.name }));
+     });
 
-    // zonas
-    this.loadZones();
+     // zonas
+     this.loadZones();
 
-    // polling (global + tipos + zona actual)
-    this.startDashboardPolling();
-  }
+     // carga inicial (global + tipos + zona actual)
+     this.loadDashboardData();
+   }
 
-  // =================== POLLING ===================
-  private startDashboardPolling() {
-    timer(0, 10000)
+  // =================== CARGA INICIAL ===================
+  private loadDashboardData() {
+    of(null)
       .pipe(
         switchMap(() =>
           forkJoin({
@@ -397,45 +400,53 @@ private piePalette = [
         ),
         takeUntil(this.destroy$)
       )
-      .subscribe(({ total, occupancy, distribution, zoneOcc }) => {
-        // total
-        if (total) {
-          const t = Number((total as any)?.data?.total ?? (total as any)?.total ?? 0);
-          this.setCardNumberById('currentVehicles', t);
+      .subscribe({
+        next: ({ total, occupancy, distribution, zoneOcc }) => {
+          // total
+          if (total) {
+            const t = Number((total as any)?.data?.total ?? (total as any)?.total ?? 0);
+            this.setCardNumberById('currentVehicles', t);
+          }
+
+          // ocupación global
+          if (occupancy) {
+            const d: any = (occupancy as any).data ?? occupancy;
+            const occupied = Number(d?.occupied ?? 0);
+            const totalSlots = Number(d?.total ?? (occupied + Number(d?.free ?? 0)));
+            const free = Math.max(Number(d?.free ?? (totalSlots - occupied)), 0);
+            const percentage = totalSlots ? (occupied / totalSlots) * 100 : 0;
+
+            this.capacity = { occupied, total: totalSlots, free, percentage };
+            this.occupancyDonutOptions = { ...this.occupancyDonutOptions,  colors: ['#f7b48f', '#c9a5ff'], series: [Math.max(occupied, 0.0001), Math.max(free, 0.0001)] };
+          }
+
+          // distribución por tipo
+          if (distribution) {
+            const d: any = distribution.data ?? distribution;
+            const labels: string[] =
+              Array.isArray(d?.labels) && d.labels.length ? d.labels :
+              Array.isArray(d?.slices) ? d.slices.map((s: any) => s.name) : [];
+            const series: number[] =
+              Array.isArray(d?.series) && d.series.length ? d.series.map((n: any) => Number(n ?? 0)) :
+              Array.isArray(d?.slices) ? d.slices.map((s: any) => Number(s?.count ?? 0)) : [];
+
+            const sum = series.reduce((a, b) => a + b, 0);
+            this.vehicleTypeTotal = Number(d?.total ?? sum);
+
+            this.vehicleTypePieOptions = (!labels.length || sum === 0)
+              ? { ...this.vehicleTypePieOptions, labels: ['Sin datos'], series: [1] }
+              : { ...this.vehicleTypePieOptions, labels, series };
+          }
+
+          // zona
+          if (zoneOcc) this.applyZoneOccToDonut(zoneOcc);
+        },
+        error: () => {
+          this.loaderService.hide();
+        },
+        complete: () => {
+          this.loaderService.hide();
         }
-
-        // ocupación global
-        if (occupancy) {
-          const d: any = (occupancy as any).data ?? occupancy;
-          const occupied = Number(d?.occupied ?? 0);
-          const totalSlots = Number(d?.total ?? (occupied + Number(d?.free ?? 0)));
-          const free = Math.max(Number(d?.free ?? (totalSlots - occupied)), 0);
-          const percentage = totalSlots ? (occupied / totalSlots) * 100 : 0;
-
-          this.capacity = { occupied, total: totalSlots, free, percentage };
-          this.occupancyDonutOptions = { ...this.occupancyDonutOptions,  colors: ['#f7b48f', '#c9a5ff'], series: [Math.max(occupied, 0.0001), Math.max(free, 0.0001)] };
-        }
-
-        // distribución por tipo
-        if (distribution) {
-          const d: any = distribution.data ?? distribution;
-          const labels: string[] =
-            Array.isArray(d?.labels) && d.labels.length ? d.labels :
-            Array.isArray(d?.slices) ? d.slices.map((s: any) => s.name) : [];
-          const series: number[] =
-            Array.isArray(d?.series) && d.series.length ? d.series.map((n: any) => Number(n ?? 0)) :
-            Array.isArray(d?.slices) ? d.slices.map((s: any) => Number(s?.count ?? 0)) : [];
-
-          const sum = series.reduce((a, b) => a + b, 0);
-          this.vehicleTypeTotal = Number(d?.total ?? sum);
-
-          this.vehicleTypePieOptions = (!labels.length || sum === 0)
-            ? { ...this.vehicleTypePieOptions, labels: ['Sin datos'], series: [1] }
-            : { ...this.vehicleTypePieOptions, labels, series };
-        }
-
-        // zona
-        if (zoneOcc) this.applyZoneOccToDonut(zoneOcc);
       });
   }
 
@@ -477,6 +488,11 @@ private piePalette = [
         console.error("Error al cargar zonas:", err);
         this.zones = [];
         this.selectedZoneId = null;
+        this.loaderService.hide();
+      },
+      complete: () => {
+        // Las otras llamadas en ngOnInit no tienen complete, así que aquí ocultamos el loader
+        this.loaderService.hide();
       }
 
     });
@@ -497,6 +513,7 @@ private piePalette = [
   }
 
   private loadZoneOccupancy(zoneId: number) {
+    this.loaderService.show();
     this.getZoneOcc$(zoneId).pipe(
       catchError(() => of({
         data: [{
@@ -505,7 +522,11 @@ private piePalette = [
           occupied: 0, total: 0, free: 0, percentage: 0
         }]
       }))
-    ).subscribe(res => this.applyZoneOccToDonut(res));
+    ).subscribe({
+      next: (res) => this.applyZoneOccToDonut(res),
+      error: () => this.loaderService.hide(),
+      complete: () => this.loaderService.hide()
+    });
   }
 
   private applyZoneOccToDonut(payload: any) {
@@ -531,9 +552,14 @@ private piePalette = [
 
   save(data: any) {
     delete data.id;
-    this.service.post('Vehicle', data).subscribe(() => {
-      Swal.fire({ icon: 'success', title: 'Vehículo creado exitosamente', showConfirmButton: false, timer: 2000, timerProgressBar: true })
-        .then(() => { this.dialog.closeAll(); this.dialog.open(this.secondModal, { width: '400px' }); });
+    this.loaderService.show();
+    this.service.post('Vehicle', data).subscribe({
+      next: () => {
+        Swal.fire({ icon: 'success', title: 'Vehículo creado exitosamente', showConfirmButton: false, timer: 2000, timerProgressBar: true })
+          .then(() => { this.dialog.closeAll(); this.dialog.open(this.secondModal, { width: '400px' }); });
+      },
+      error: () => this.loaderService.hide(),
+      complete: () => this.loaderService.hide()
     });
   }
 

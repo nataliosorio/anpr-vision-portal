@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { GenericTable } from 'src/app/shared/components/ui-element/generic-table/generic-table';
 import { BlackList } from 'src/app/shared/Models/Entitys';
 
@@ -27,6 +28,7 @@ export class BackListIndex implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
 
   ngOnInit(): void {
@@ -34,6 +36,7 @@ export class BackListIndex implements OnInit {
   }
 
   getAllBlackList(): void {
+    this._loaderService.show();
     this._generalService.get<BlackList[]>('BlackList/join').subscribe({
       next: (items) => {
         this.dataSource.data = items || [];
@@ -45,7 +48,9 @@ export class BackListIndex implements OnInit {
       error: (err: Error) => {
         Swal.fire('Error', err.message || 'No se pudo cargar la lista negra.', 'error');
         this.dataSource.data = [];
-      }
+        this._loaderService.hide();
+      },
+      complete: () => this._loaderService.hide()
     });
   }
 
@@ -69,6 +74,7 @@ export class BackListIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('BlackList', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado.', 'success');
@@ -76,7 +82,9 @@ export class BackListIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -94,6 +102,7 @@ export class BackListIndex implements OnInit {
       cancelButtonColor: '#3085d6'
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('BlackList/permanent', id).subscribe({
           next: () => {
             Swal.fire('¡Eliminado!', 'El registro ha sido eliminado permanentemente.', 'success');
@@ -101,7 +110,9 @@ export class BackListIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });

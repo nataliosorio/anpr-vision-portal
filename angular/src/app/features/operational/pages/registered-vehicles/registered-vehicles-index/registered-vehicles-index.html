@@ -50,11 +50,29 @@
 
         </div>
 
+        <!-- Nueva fila: Botones de Entradas/Salidas -->
+        <div class="entry-exit-filters">
+          <button
+            mat-stroked-button
+            [class.active]="entryExitFilter === 'entries'"
+            (click)="setEntryExitFilter('entries')"
+            class="filter-btn">
+            <mat-icon>login</mat-icon>
+            Entradas
+          </button>
+          <button
+            mat-stroked-button
+            [class.active]="entryExitFilter === 'exits'"
+            (click)="setEntryExitFilter('exits')"
+            class="filter-btn">
+            <mat-icon>logout</mat-icon>
+            Salidas
+          </button>
+        </div>
 
-
-      </div>
-    </mat-card>
-  </div>
+     </div>
+   </mat-card>
+ </div>
 
   <!-- Vehicle List -->
   <div class="vehicle-list" *ngIf="dataSource.data.length > 0">
@@ -108,8 +126,30 @@
 
       <!-- Right Section: Acciones -->
       <div class="card-right">
+        <!-- Botón Ver Ticket (para todos) -->
+        <button
+          mat-icon-button
+          class="ticket-btn"
+          (click)="viewTicket(entry)"
+          matTooltip="Ver ticket">
+           <mat-icon>receipt_long</mat-icon>
+
+          <!-- <mat-icon>visibility</mat-icon> -->
+        </button>
+
+        <!-- Botón Registrar Salida (solo para entradas activas) -->
+        <button
+          *ngIf="!entry.exitDate && !entry.isDeleted"
+          mat-raised-button
+          class="action-btn-horizontal edit-btn"
+          (click)="registerExit(entry)"
+          matTooltip="Registrar salida">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Salida</span>
+        </button>
+
         <ng-container *ngIf="!entry.isDeleted">
-          <button
+          <!-- <button
             mat-raised-button
             color="primary"
             class="action-btn-horizontal edit-btn"
@@ -117,7 +157,7 @@
             matTooltip="Editar entrada">
             <mat-icon>edit</mat-icon>
             <span>Editar</span>
-          </button>
+          </button> -->
 
           <button
             mat-raised-button
@@ -212,14 +252,20 @@
         <div class="form-field-container">
           <mat-form-field appearance="outline" class="custom-form-field plate-field">
             <mat-label>Placa del Vehículo</mat-label>
-            <input matInput formControlName="plate" placeholder="ABC-123" required autocomplete="off">
+            <input matInput
+                   formControlName="plate"
+                   placeholder="ABC123"
+                   required
+                   autocomplete="off"
+                   maxlength="6"
+                   (input)="manualEntryForm.get('plate')?.setValue(manualEntryForm.get('plate')?.value?.toUpperCase())">
             <mat-icon matSuffix class="field-icon">credit_card</mat-icon>
-            <mat-hint>Ingrese la placa en formato estándar</mat-hint>
+            <mat-hint>Ingrese la placa en formato estándar (máx. 6 caracteres)</mat-hint>
             <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('required')">
               La placa es requerida
             </mat-error>
             <mat-error *ngIf="manualEntryForm.get('plate')?.hasError('pattern')">
-              Formato de placa inválido (ej: ABC-123)
+              Formato de placa inválido (ej: ABC123)
             </mat-error>
           </mat-form-field>
         </div>
@@ -232,6 +278,12 @@
           <mat-form-field appearance="outline" class="custom-form-field type-field">
             <mat-label>Tipo de Vehículo</mat-label>
             <mat-select formControlName="typeVehicleId" required>
+              <mat-select-trigger>
+                <div class="selected-content">
+                  <mat-icon class="selected-icon">{{ getVehicleTypeIcon(getSelectedVehicleTypeName()) }}</mat-icon>
+                  <span>{{ getSelectedVehicleTypeName() }}</span>
+                </div>
+              </mat-select-trigger>
               <mat-option *ngFor="let type of vehicleTypes" [value]="type.id">
                 <div class="option-content">
                   <mat-icon class="option-icon">{{ getVehicleTypeIcon(type.name) }}</mat-icon>
