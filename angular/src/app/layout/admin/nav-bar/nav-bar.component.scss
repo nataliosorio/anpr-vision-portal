@@ -1,1 +1,54 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+// Responsive styles for navbar
+@media (max-width: 768px) {
+  .m-header {
+    padding: 8px 16px;
+
+    .b-brand {
+      .logo {
+        width: 40px;
+      }
+
+      .logo-thumb {
+        width: 32px;
+      }
+    }
+
+    .mob-toggler {
+      padding: 8px;
+    }
+
+    .header-mobile-collapse {
+      padding: 8px;
+    }
+  }
+
+  .collapse.navbar-collapse {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+  }
+}
+
+@media (max-width: 480px) {
+  .m-header {
+    .b-brand {
+      .logo {
+        width: 32px;
+      }
+
+      .logo-thumb {
+        width: 28px;
+      }
+    }
+
+    b {
+      font-size: 14px;
+    }
+  }
+}
