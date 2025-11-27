@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import Module from 'module';
 import { General } from 'src/app/core/services/general.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
@@ -14,35 +13,7 @@ import Swal from 'sweetalert2';
   styleUrl: './form-module-form.scss'
 })
 export class FormModuleForm implements OnInit {
-  formConfig: FieldConfig[] = [
-    {
-      name: 'formId',
-      label: 'Formulario',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un formulario.' }
-      ]
-    },
-    {
-      name: 'moduleId',
-      label: 'Módulo',
-      type: 'select',
-      required: true,
-      options: [],
-      validations: [
-        { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un módulo.' }
-      ]
-    },
-    {
-      name: 'asset',
-      label: 'Activo',
-      type: 'toggle',
-      value: true,
-      hidden: true
-    }
-  ];
+  formConfig!: FieldConfig[];
 
   isEdit = false;
   initialData: any = {};
@@ -53,15 +24,45 @@ export class FormModuleForm implements OnInit {
 
   ngOnInit(): void {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
+    this.isEdit = !!id;
+
+    this.formConfig = [
+      {
+        name: 'formId',
+        label: 'Formulario',
+        type: 'select',
+        required: true,
+        options: [],
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un formulario.' }
+        ]
+      },
+      {
+        name: 'moduleId',
+        label: 'Módulo',
+        type: 'select',
+        required: true,
+        options: [],
+        validations: [
+          { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'Debe seleccionar un módulo.' }
+        ]
+      },
+      {
+        name: 'asset',
+        label: 'Activo',
+        type: 'toggle',
+        value: true,
+        hidden: !this.isEdit
+      }
+    ];
 
     // Cargar selects
-    // this.loadSelectOptions<AppForm>('Form/select', 'formId');
-    // this.loadSelectOptions<Module>('Module/select', 'moduleId');
+    this.loadSelectOptions<any>('Form/select', 'formId');
+    this.loadSelectOptions<any>('Module/select', 'moduleId');
 
     // Modo edición
-    if (id) {
-      this.isEdit = true;
-      this.service.getById<any>('FormModule', id).subscribe({
+    if (this.isEdit) {
+      this.service.getById<any>('FormModule', id!).subscribe({
         next: (data) => {
           this.initialData = this.normalize(data);
         },
@@ -120,7 +121,7 @@ export class FormModuleForm implements OnInit {
         }
       });
     } else {
-      const payload = { ...data };
+      const payload = { ...data, asset: true };
       delete payload.id;
 
       this.service.post('FormModule', payload).subscribe({

@@ -13,6 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { VehicleType } from 'src/app/features/parameters/pages/vehicleType/vehicle-type';
 import { RegisteredVehicle } from 'src/app/shared/Models/Entitys';
 
@@ -33,6 +34,7 @@ export class RegisteredVehiclesIndex implements OnInit {
   dataSource = new MatTableDataSource<RegisteredVehicle>();
   originalData: RegisteredVehicle[] = [];
   selectedFilter: string = 'all';
+  entryExitFilter: string = 'entries'; // 'entries' or 'exits'
   pagedData: RegisteredVehicle[] = [];
 
   vehicleTypes: VehicleType[] = [];
@@ -50,19 +52,27 @@ export class RegisteredVehiclesIndex implements OnInit {
   @ViewChild('manualEntryDialog') manualEntryDialogTemplate!: TemplateRef<any>;
 
   private _generalService = inject(General);
+  private _loaderService = inject(LoaderService);
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private dialog = inject(MatDialog);
 
   constructor() {
     this.manualEntryForm = this.fb.group({
-      plate: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/i)]],
+       plate: [
+             '',
+             [
+               Validators.required,
+               Validators.pattern(/^[A-Z]{3}[0-9]{3}$|^[A-Z]{3}[0-9]{2}[A-Z]$/)
+             ]
+           ],
       parkingId: [this._generalService.getParkingId() ? parseInt(this._generalService.getParkingId()!) : null, [Validators.required, Validators.min(1)]],
       typeVehicleId: [null, [Validators.required, Validators.min(1)]]
     });
   }
 
   ngOnInit(): void {
+    this._loaderService.show();
     this.getAllEntries();
     this.loadVehicleTypes();
   }
@@ -74,6 +84,11 @@ export class RegisteredVehiclesIndex implements OnInit {
       },
       error: (err: Error) => {
         console.error('Error loading vehicle types:', err);
+        this._loaderService.hide();
+      },
+      complete: () => {
+        // Las otras llamadas en ngOnInit no tienen complete, así que aquí ocultamos el loader
+        this._loaderService.hide();
       }
     });
   }
@@ -82,7 +97,9 @@ export class RegisteredVehiclesIndex implements OnInit {
     this._generalService.get<RegisteredVehicle[]>('RegisteredVehicles/join').subscribe({
       next: (items) => {
         this.originalData = items || [];
-        this.dataSource.data = items || [];
+        // Aplicar filtro por defecto (entradas activas)
+        const filteredData = this.originalData.filter(e => !e.exitDate && !e.isDeleted);
+        this.dataSource.data = filteredData;
         this.applyPagination(); // ✅ inicializar con la primera página
       },
       error: (err: Error) => {
@@ -90,6 +107,7 @@ export class RegisteredVehiclesIndex implements OnInit {
         this.originalData = [];
         this.dataSource.data = [];
         this.pagedData = [];
+        this._loaderService.hide();
       }
     });
   }
@@ -126,6 +144,7 @@ export class RegisteredVehiclesIndex implements OnInit {
         typeVehicleId: formValue.typeVehicleId
       };
 
+      this._loaderService.show();
       this._generalService.post<ManualEntryResponseDto>('RegisteredVehicles/manual-entry', data).subscribe({
         next: (response: ManualEntryResponseDto) => {
           Swal.fire({
@@ -148,7 +167,9 @@ export class RegisteredVehiclesIndex implements OnInit {
             icon: 'error',
             confirmButtonColor: '#f44336'
           });
-        }
+          this._loaderService.hide();
+        },
+        complete: () => this._loaderService.hide()
       });
     }
   }
@@ -214,6 +235,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RegisteredVehicles', id).subscribe({
           next: () => {
             Swal.fire({
@@ -231,7 +253,9 @@ export class RegisteredVehiclesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -256,6 +280,7 @@ export class RegisteredVehiclesIndex implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
+        this._loaderService.show();
         this._generalService.delete('RegisteredVehicles/permanent', id).subscribe({
           next: () => {
             Swal.fire({
@@ -273,7 +298,9 @@ export class RegisteredVehiclesIndex implements OnInit {
           },
           error: (err: Error) => {
             Swal.fire({ icon: 'error', title: 'No se pudo eliminar permanentemente', text: err.message });
-          }
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
         });
       }
     });
@@ -298,15 +325,17 @@ export class RegisteredVehiclesIndex implements OnInit {
 
     let filteredData = this.originalData;
 
+    // Si hay búsqueda, mostrar resultados de todos los datos
     if (filterValue) {
       filteredData = filteredData.filter(e =>
         e.vehicle?.toLowerCase().includes(filterValue) ||
         e.entryDate?.toLowerCase().includes(filterValue) ||
         e.slots?.toLowerCase().includes(filterValue)
       );
+    } else {
+      // Si no hay búsqueda, aplicar el filtro activo
+      filteredData = this.applyStatusFilter(filteredData);
     }
-
-    filteredData = this.applyStatusFilter(filteredData);
 
     this.dataSource.data = filteredData;
     this.applyPagination(); // ✅ aplicar paginación después del filtro
@@ -332,6 +361,32 @@ export class RegisteredVehiclesIndex implements OnInit {
 
     this.dataSource.data = filteredData;
     this.applyPagination(); // ✅ aplicar paginación después del filtro
+  }
+
+  setEntryExitFilter(filter: string): void {
+    this.entryExitFilter = filter;
+    this.selectedFilter = filter === 'entries' ? 'active' : 'exited';
+
+    // Verificar si hay búsqueda activa
+    const searchInput = document.querySelector('.search-input') as HTMLInputElement;
+    const searchValue = searchInput ? searchInput.value.trim() : '';
+
+    let filteredData = this.originalData;
+
+    // Si hay búsqueda, mostrar todos los resultados que coincidan
+    if (searchValue) {
+      filteredData = filteredData.filter(e =>
+        e.vehicle?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        e.entryDate?.toLowerCase().includes(searchValue.toLowerCase()) ||
+        e.slots?.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    } else {
+      // Si no hay búsqueda, aplicar el filtro de status
+      filteredData = this.applyStatusFilter(filteredData);
+    }
+
+    this.dataSource.data = filteredData;
+    this.applyPagination();
   }
 
   private applyStatusFilter(data: RegisteredVehicle[]): RegisteredVehicle[] {
@@ -372,5 +427,59 @@ export class RegisteredVehiclesIndex implements OnInit {
       'Scooter': 'electric_scooter'
     };
     return iconMap[typeName] || 'directions_car';
+  }
+
+  getSelectedVehicleTypeName(): string {
+    const selectedId = this.manualEntryForm.get('typeVehicleId')?.value;
+    const selectedType = this.vehicleTypes.find(type => type.id === selectedId);
+    return selectedType ? selectedType.name : '';
+  }
+
+  viewTicket(entry: RegisteredVehicle): void {
+    this._loaderService.show();
+    this._generalService.getBlob(`tickets/${entry.id}/pdf`).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        this._loaderService.hide();
+      },
+      error: (err: Error) => {
+        Swal.fire('Error', err.message || 'No se pudo obtener el ticket', 'error');
+        this._loaderService.hide();
+      }
+    });
+  }
+
+  registerExit(entry: RegisteredVehicle): void {
+    Swal.fire({
+      title: '¿Confirmar salida?',
+      text: `¿Está seguro de registrar la salida del vehículo ${entry.vehicle}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar salida',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4caf50',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._loaderService.show();
+        this._generalService.put(`RegisteredVehicles/exit/${entry.id}`, {}).subscribe({
+          next: () => {
+            Swal.fire({
+              title: '¡Salida registrada!',
+              text: 'La salida del vehículo ha sido registrada exitosamente.',
+              icon: 'success',
+              confirmButtonColor: '#4caf50'
+            });
+            this.getAllEntries(); // Recargar la lista
+          },
+          error: (err: Error) => {
+            Swal.fire('Error', err.message || 'No se pudo registrar la salida', 'error');
+            this._loaderService.hide();
+          },
+          complete: () => this._loaderService.hide()
+        });
+      }
+    });
   }
 }

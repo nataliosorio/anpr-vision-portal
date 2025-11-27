@@ -2,6 +2,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { FieldConfig, ValidatorNames } from 'src/app/shared/components/ui-element/generic-form/field-config.model';
 import { GenericForm } from 'src/app/shared/components/ui-element/generic-form/generic-form';
 import Swal from 'sweetalert2';
@@ -43,7 +44,13 @@ export class CameraForm implements OnInit {
       validations: [
         { name: ValidatorNames.Required, validator: ValidatorNames.Required, message: 'La resolución es obligatoria.' },
         { name: ValidatorNames.MinLength, validator: ValidatorNames.MinLength, value: 3, message: 'Debe tener al menos 3 caracteres.' },
-        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'No puede superar los 50 caracteres.' }
+        {
+          name: ValidatorNames.Pattern,
+          validator: ValidatorNames.Pattern,
+          value: '^[0-9]{3,5}x[0-9]{3,5}$',
+          message: 'Use formato válido: ej. 1920x1080'
+        },
+        { name: ValidatorNames.MaxLength, validator: ValidatorNames.MaxLength, value: 50, message: 'No puede superar los 20 caracteres.' }
       ]
     },
     {
@@ -62,8 +69,8 @@ export class CameraForm implements OnInit {
         {
           name: ValidatorNames.Pattern,
           validator: ValidatorNames.Pattern,
-          value: '^(https?|rtsp):\\/\\/[^\\s/$.?#].[^\\s]*$',
-          message: 'Debe ser una URL válida con protocolo (http, https o rtsp).'
+          value: '^(rtsp|https?)://(([\\w.-]+(:[\\w.-]+)?@)?[\\w.-]+)(:[0-9]+)?(/.*)?$',
+          message: 'Debe ser una URL válida de cámara (rtsp, http o https).'
         }
       ]
     },
@@ -90,6 +97,7 @@ export class CameraForm implements OnInit {
   initialData: any = {};
 
   private service = inject(General);
+  private loaderService = inject(LoaderService);
   private route = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -106,6 +114,7 @@ export class CameraForm implements OnInit {
     // en edición
     if (id) {
       this.isEdit = true;
+      this.loaderService.show();
       this.service.getById<any>('Cameras', id).subscribe({
         next: (camera) => {
           const normalized: any = { ...camera };
@@ -119,7 +128,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire('Error', err.message || 'No se pudo cargar la cámara.', 'error');
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       // si es nuevo, inicializamos con el parkingId
@@ -131,6 +142,7 @@ export class CameraForm implements OnInit {
     // asegura que siempre use el parkingId del localStorage
     data.parkingId = localStorage.getItem('parkingId');
 
+    this.loaderService.show();
     if (this.isEdit) {
       this.service.put('Cameras', data).subscribe({
         next: () => {
@@ -145,7 +157,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo actualizar', text: err.message });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     } else {
       delete data.id;
@@ -162,7 +176,9 @@ export class CameraForm implements OnInit {
         },
         error: (err: Error) => {
           Swal.fire({ icon: 'error', title: 'No se pudo crear', text: err.message });
-        }
+          this.loaderService.hide();
+        },
+        complete: () => this.loaderService.hide()
       });
     }
   }

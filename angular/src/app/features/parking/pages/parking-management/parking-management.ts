@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 
 import Swal from 'sweetalert2';
 import { General } from 'src/app/core/services/general.service';
+import { LoaderService } from 'src/app/core/services/loader.service';
 import { Sectors } from 'src/app/features/parameters/pages/sectors/sectors';
 import { Slots } from 'src/app/features/parameters/pages/slots/slots';
 import { Zones } from 'src/app/features/parameters/pages/zones/zones';
@@ -47,6 +48,7 @@ export class ParkingManagement implements OnInit {
   filteredSlots: Slots[] = [];
 
   selectedSlot: Slots | null = null;
+  isGlobalSearch: boolean = false;
 
   // usar setter para filtrar sin cambiar el HTML
   private _searchTerm = '';
@@ -57,9 +59,10 @@ export class ParkingManagement implements OnInit {
     if (this.selectedSector) this.filterSlots();
   }
 
-  constructor(private _generalService: General) {}
+  constructor(private _generalService: General, private _loaderService: LoaderService) {}
 
   ngOnInit() {
+    this._loaderService.show();
     this.getAllZones();
     this.getAllSectors();
     this.getAllSlots();
@@ -71,6 +74,7 @@ export class ParkingManagement implements OnInit {
     if (!parkingId) {
       Swal.fire('Error', 'No se encontró el ParkingId en localStorage.', 'error');
       this.zones = [];
+      this._loaderService.hide();
       return;
     }
 
@@ -79,7 +83,14 @@ export class ParkingManagement implements OnInit {
         this.zones = zones ?? [];
         if (this.zones.length > 0) this.selectZone(this.zones[0]);
       },
-      error: (err) => console.error('Error al obtener zonas:', err)
+      error: (err) => {
+        console.error('Error al obtener zonas:', err);
+        this._loaderService.hide();
+      },
+      complete: () => {
+        // Las otras llamadas en ngOnInit no tienen complete, así que aquí ocultamos el loader
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -90,7 +101,10 @@ export class ParkingManagement implements OnInit {
         this.sectors = sectors ?? [];
         this.filterSectors();
       },
-      error: (err) => console.error('Error al obtener sectores:', err)
+      error: (err) => {
+        console.error('Error al obtener sectores:', err);
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -101,7 +115,10 @@ export class ParkingManagement implements OnInit {
         this.slots = slots ?? [];
         this.filterSlots();
       },
-      error: (err) => console.error('Error al obtener slots:', err)
+      error: (err) => {
+        console.error('Error al obtener slots:', err);
+        this._loaderService.hide();
+      }
     });
   }
 
@@ -114,19 +131,35 @@ export class ParkingManagement implements OnInit {
   }
 
   filterSectors(): void {
-    if (!this.selectedZone) { this.filteredSectors = []; return; }
+    if (!this.selectedZone && !this._searchTerm.trim()) { this.filteredSectors = []; return; }
 
     const t = this._searchTerm.toLowerCase().trim();
-    const base = this.sectors.filter(s => s.zonesId === this.selectedZone!.id);
+    this.isGlobalSearch = !!t;
 
-    this.filteredSectors = !t ? base : base.filter(s =>
-      (s.name ?? '').toLowerCase().includes(t) ||
-      String(s.capacity ?? '').toLowerCase().includes(t) ||
-      (s.typeVehicle ?? '').toLowerCase().includes(t)
-    );
+    let base: Sectors[];
+    if (t) {
+      // Si hay término de búsqueda, buscar en todos los sectores
+      base = this.sectors.filter(s =>
+        (s.name ?? '').toLowerCase().includes(t) ||
+        String(s.capacity ?? '').toLowerCase().includes(t) ||
+        (s.typeVehicle ?? '').toLowerCase().includes(t)
+      );
+    } else {
+      // Si no hay búsqueda, filtrar por zona seleccionada
+      base = this.sectors.filter(s => s.zonesId === this.selectedZone!.id);
+    }
+
+    this.filteredSectors = base;
   }
 
   selectSector(sector: Sectors): void {
+    // Si el sector pertenece a otra zona, cambiar la zona seleccionada
+    const zoneOfSector = this.zones.find(z => z.id === sector.zonesId);
+    if (zoneOfSector && zoneOfSector.id !== this.selectedZone?.id) {
+      this.selectedZone = zoneOfSector;
+      // No llamar selectZone() porque resetea selectedSector, solo cambiar selectedZone
+    }
+
     this.selectedSector = sector;
     this.filterSlots();
     this.selectedSlot = null;
@@ -163,34 +196,51 @@ export class ParkingManagement implements OnInit {
 
   // Consulta al backend para traer la info del vehículo en el slot
   loadVehicleData(slotId: number): void {
-  this._generalService.get<any>(`Vehicle/slot/${slotId}`).subscribe({
-    next: (response) => {
-      this.vehicleData = response;
+    this._loaderService.show();
+    this._generalService.get<any>(`Vehicle/slot/${slotId}`).subscribe({
+      next: (response) => {
+        this.vehicleData = response;
 
-      if (this.vehicleData?.vehicleId) {
-        // Primero traigo el vehículo
-        this._generalService.get<any>(`Vehicle/${this.vehicleData.vehicleId}`).subscribe({
-          next: (vehicle) => {
-            this.vehicleData.vehicle = vehicle;
+        if (this.vehicleData?.vehicleId) {
+          // Primero traigo el vehículo
+          this._generalService.get<any>(`Vehicle/${this.vehicleData.vehicleId}`).subscribe({
+            next: (vehicle) => {
+              this.vehicleData.vehicle = vehicle;
 
-            // Ahora si existe clientId, hago la consulta del cliente
-            if (vehicle?.clientId) {
-              this._generalService.get<any>(`Client/${vehicle.clientId}`).subscribe({
-                next: (client) => {
-                  this.vehicleData.vehicle.client = client;
-                  console.log("Cliente cargado:", client);
-                },
-                error: (err) => console.error('Error cargando datos del cliente', err)
-              });
+              // Ahora si existe clientId, hago la consulta del cliente
+              if (vehicle?.clientId) {
+                this._generalService.get<any>(`Client/${vehicle.clientId}`).subscribe({
+                  next: (client) => {
+                    this.vehicleData.vehicle.client = client;
+                    console.log("Cliente cargado:", client);
+                  },
+                  error: (err) => {
+                    console.error('Error cargando datos del cliente', err);
+                    this._loaderService.hide();
+                  },
+                  complete: () => this._loaderService.hide()
+                });
+              } else {
+                // No hay clientId, terminamos aquí
+                this._loaderService.hide();
+              }
+            },
+            error: (err) => {
+              console.error('Error cargando datos del vehículo', err);
+              this._loaderService.hide();
             }
-          },
-          error: (err) => console.error('Error cargando datos del vehículo', err)
-        });
+          });
+        } else {
+          // No hay vehicleId, terminamos aquí
+          this._loaderService.hide();
+        }
+      },
+      error: (err) => {
+        console.error('Error cargando info de slot', err);
+        this._loaderService.hide();
       }
-    },
-    error: (err) => console.error('Error cargando info de slot', err)
-  });
-}
+    });
+  }
 
 
   // --- UTILIDADES ---
@@ -229,5 +279,10 @@ export class ParkingManagement implements OnInit {
       mantenimiento: 'En Mantenimiento'
     };
     return map[status] ?? status;
+  }
+
+  getZoneName(zonesId: number): string {
+    const zone = this.zones.find(z => z.id === zonesId);
+    return zone ? zone.name : 'Zona desconocida';
   }
 }

@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { NotificationHubService } from 'src/app/core/services/notifications/notification-hub.service';
@@ -36,13 +37,21 @@ export class ParkingEntry implements OnInit, OnDestroy {
   private notifSub!: Subscription;
   private parkingId: number | null = null;
   private timers: { [key: string]: any } = {};
+  isFullscreen: boolean = false;
 
   constructor(
     private notificationHub: NotificationHubService,
-    private general: General
+    private general: General,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    // Detectar si está en fullscreen
+    this.route.queryParams.subscribe(params => {
+      this.isFullscreen = params['fullscreen'] === 'true';
+    });
+
     const storedId = this.general.getParkingId();
     this.parkingId = storedId ? parseInt(storedId, 10) : null;
     if (this.parkingId) {
@@ -209,5 +218,19 @@ export class ParkingEntry implements OnInit, OnDestroy {
   // Método para trackBy en ngFor
   trackByNotification(index: number, item: ParkingNotification): any {
     return item.id;
+  }
+
+  // Toggle fullscreen mode
+  toggleFullscreen(): void {
+    const currentParams = { ...this.route.snapshot.queryParams };
+    if (this.isFullscreen) {
+      delete currentParams['fullscreen'];
+    } else {
+      currentParams['fullscreen'] = 'true';
+    }
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: currentParams
+    });
   }
 }

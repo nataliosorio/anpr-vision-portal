@@ -1,8 +1,178 @@
-<app-generic-form
-   [title]="'Permisos por Roles y Formularios'"
-  [config]="formConfig"
-  [isEdit]="isEdit"
-  [initialData]="initialData"
-  (saveForm)="save($event)"
-  (cancelForm)="cancel()">
-</app-generic-form>
+<div class="container mt-4 rol-form-permission">
+  <h2 class="page-title">{{ isEditMode ? 'Editar Permisos del Rol' : 'Crear Permisos para Rol' }}</h2>
+
+  <form [formGroup]="form" class="rol-form-form">
+    <mat-stepper [linear]="isLinear" #stepper orientation="horizontal">
+      <!-- PASO 1: Seleccionar Rol -->
+      <mat-step label="Seleccionar Rol" [completed]="!!form.get('rolId')?.value">
+  <ng-template matStepContent>
+    <section class="section step-content role-select-card">
+      <div class="role-select-header">
+        <div>
+          <h3 class="section-title">{{ isEditMode ? 'Rol Seleccionado' : '1. Escoge un rol' }}</h3>
+          <p class="section-help">
+            {{ isEditMode ? 'Este es el rol que vas a editar.' : 'Selecciona el rol para administrar sus permisos.' }}
+          </p>
+        </div>
+
+        <div class="role-select-badge">
+          <span class="badge-dot"></span>
+          <span class="badge-text">
+            Paso 1 · {{ isEditMode ? 'Rol seleccionado' : 'Selección de rol' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="role-select-body">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Rol</mat-label>
+          <mat-select formControlName="rolId" [disabled]="isEditMode">
+            <mat-option *ngFor="let role of roles" [value]="role.id">
+              {{ role.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('rolId')?.hasError('required')">
+            Debes seleccionar un rol.
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="step-actions role-select-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          matStepperNext
+          [disabled]="!form.get('rolId')?.value">
+          Siguiente
+        </button>
+      </div>
+    </section>
+  </ng-template>
+</mat-step>
+
+      <!-- PASO 2: Formularios del Rol -->
+      <mat-step label="Formularios del Rol" [completed]="true">
+        <ng-template matStepContent>
+          <section class="section step-content role-select-card">
+            <div class="section-header">
+              <div class="header-text">
+                <h3 class="section-title">
+                  2. Formularios del rol
+                  <span class="role-name">{{ permissionsData?.rolName }}</span>
+                </h3>
+                <p class="section-help">
+                  Formularios asociados y sus permisos actuales.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                mat-raised-button
+                color="primary"
+                (click)="onClickAddForm()">
+                Agregar formulario
+              </button>
+            </div>
+
+            <!-- Buscador -->
+            <div class="forms-toolbar">
+              <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Buscar</mat-label>
+                <input
+                  matInput
+                  (keyup)="applyFilter($event)"
+                  placeholder="Formulario, módulo o permiso..." />
+              </mat-form-field>
+            </div>
+
+            <!-- Tabla -->
+            <div class="table-wrapper">
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+                <ng-container matColumnDef="formName">
+                  <th mat-header-cell *matHeaderCellDef>Formulario</th>
+                  <td mat-cell *matCellDef="let row">{{ row.formName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="module">
+                  <th mat-header-cell *matHeaderCellDef>Módulo</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ row.modules?.[0]?.name || '-' }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="permissions">
+                  <th mat-header-cell *matHeaderCellDef>Permisos</th>
+                  <td mat-cell *matCellDef="let row">
+                    {{ row.permissions?.join(', ') || '-' }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </div>
+
+            <div *ngIf="!dataSource.data?.length" class="empty-state">
+              Este rol aún no tiene formularios asociados.
+            </div>
+
+            <div class="step-actions role-select-actions">
+              <button mat-stroked-button matStepperPrevious>
+                Anterior
+              </button>
+            </div>
+          </section>
+        </ng-template>
+      </mat-step>
+
+      <!-- PASO 3: Gestionar Permisos -->
+      <mat-step label="Gestionar Permisos" [completed]="true">
+        <ng-template matStepContent>
+          <div class="add-form-flow">
+            <!-- 3. Lista de formularios disponibles -->
+            <section class="section compact-section">
+              <h3 class="section-title">3. Formularios disponibles</h3>
+              <p class="section-help">Selecciona permisos para cada formulario.</p>
+
+              <div class="forms-permissions-list" *ngIf="forms.length > 0">
+                <div class="form-permissions-item" *ngFor="let form of forms">
+                  <h4 class="form-title">{{ form.name }}</h4>
+                  <div class="permissions-grid">
+                    <mat-checkbox
+                      *ngFor="let permission of permissions"
+                      [checked]="isPermissionSelectedForFormInBulk(form.id, permission.id)"
+                      (change)="onPermissionChangeForFormInBulk(form.id, permission.id, $event.checked)">
+                      {{ permission.name }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botones de acción -->
+              <div class="actions-inline" *ngIf="hasSelectedPermissions()">
+                <button
+                  mat-raised-button
+                  color="accent"
+                  type="button"
+                  [disabled]="isSaving"
+                  (click)="onSaveBulk()">
+                  Guardar permisos
+                </button>
+
+                <button mat-stroked-button type="button" (click)="onCancelBulk()">
+                  Cancelar
+                </button>
+              </div>
+            </section>
+
+            <div class="step-actions">
+              <button mat-stroked-button matStepperPrevious>
+                Anterior
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </mat-step>
+    </mat-stepper>
+  </form>
+</div>
