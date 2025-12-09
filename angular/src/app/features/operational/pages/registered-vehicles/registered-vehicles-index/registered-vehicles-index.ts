@@ -534,21 +534,25 @@ export class RegisteredVehiclesIndex implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this._loaderService.show();
-        this._generalService.put(`RegisteredVehicles/exit/${entry.id}`, {}).subscribe({
-          next: () => {
+        // Use POST with vehicleId as per backend specification
+        this._generalService.post<RegisteredVehicle>(`RegisteredVehicles/exit/${entry.vehicleId}`, {}).subscribe({
+          next: (response) => {
+            this._loaderService.hide();
+            // Show success message from backend
             Swal.fire({
               title: '¡Salida registrada!',
-              text: 'La salida del vehículo ha sido registrada exitosamente.',
+              text: 'Salida registrada exitosamente.',
               icon: 'success',
               confirmButtonColor: '#4caf50'
             });
             this.getAllEntries(); // Recargar la lista
           },
           error: (err: Error) => {
-            Swal.fire('Error', err.message || 'No se pudo registrar la salida', 'error');
             this._loaderService.hide();
-          },
-          complete: () => this._loaderService.hide()
+            // Show error message from backend
+            const errorMessage = err.message || 'No se pudo registrar la salida';
+            Swal.fire('Error', errorMessage, 'error');
+          }
         });
       }
     });
@@ -581,11 +585,53 @@ export class RegisteredVehiclesIndex implements OnInit {
       return;
     }
 
-    // Close modal first, then call registerExit
+    // Close modal first, then register exit using the backend endpoint
     this.dialog.closeAll();
     setTimeout(() => {
-      this.registerExit(activeEntry);
+      this.registerExitFromBackend(activeEntry);
     }, 300);
+  }
+
+  private registerExitFromBackend(activeEntry: RegisteredVehicle): void {
+    Swal.fire({
+      title: '¿Confirmar salida?',
+      text: `¿Está seguro de registrar la salida del vehículo ${activeEntry.vehicle}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, registrar salida',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#4caf50',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this._loaderService.show();
+
+        // Use POST with vehicleId in the route as per backend specification
+        this._generalService.post<RegisteredVehicle>(`RegisteredVehicles/exit/${activeEntry.vehicleId}`, {}).subscribe({
+          next: (response) => {
+            this._loaderService.hide();
+            // Show success message from backend
+            setTimeout(() => {
+              Swal.fire({
+                title: '¡Salida registrada!',
+                text: 'Salida registrada exitosamente.',
+                icon: 'success',
+                confirmButtonColor: '#4caf50'
+              });
+            }, 300);
+            this.getAllEntries(); // Recargar la lista
+          },
+          error: (err: Error) => {
+            this._loaderService.hide();
+            // Show error message from backend
+            setTimeout(() => {
+              const errorMessage = err.message || 'No se pudo registrar la salida';
+              Swal.fire('Error', errorMessage, 'error');
+            }, 300);
+          }
+        });
+      }
+    });
   }
 
   createNewEntryFromValidation(): void {
