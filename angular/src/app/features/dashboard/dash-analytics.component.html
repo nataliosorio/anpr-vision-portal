@@ -17,6 +17,14 @@
 
         <div class="stat-bottom">
           <div class="stat-number">{{ card.number }}</div>
+          <div class="stat-actions" *ngIf="card.id === 'availableSlots'">
+            <button mat-mini-fab color="primary" type="button" (click)="router.navigateByUrl('/registeredVehicle-index')" title="Registrar entrada">
+              <i class="fas fa-car"></i>
+            </button>
+            <!-- <button mat-stroked-button color="primary" type="button" (click)="router.navigateByUrl('/registeredVehicle-index')" style="margin-left:8px;">
+              Registrar entrada
+            </button> -->
+          </div>
         </div>
       </div>
     </app-card>
