@@ -335,69 +335,64 @@ private syncSelectedPermissionsForForm(): void {
     return false;
   }
 
-  // Solo contar permisos NUEVOS (no los que ya existían)
-  const newPermissionIds = this.selectedPermissionIds
-    .filter(id => !this.existingPermissionIdsForSelectedForm.includes(id));
+  // Contar permisos NUEVOS y permisos REMOVIDOS respecto a los existentes
+  const newPermissionIds = this.selectedPermissionIds.filter(id => !this.existingPermissionIdsForSelectedForm.includes(id));
+  const removedPermissionIds = this.existingPermissionIdsForSelectedForm.filter(id => !this.selectedPermissionIds.includes(id));
 
-  return newPermissionIds.length > 0;
+  return newPermissionIds.length > 0 || removedPermissionIds.length > 0;
 }
 
 
 onSave(): void {
   if (!this.canSave) {
-    Swal.fire('Error', 'Debes seleccionar al menos un permiso nuevo para guardar.', 'error');
+    Swal.fire('Error', 'No hay cambios en los permisos para guardar.', 'error');
     return;
   }
 
   const rolId = this.form.get('rolId')?.value as number;
   const formId = this.selectedFormId as number;
 
-  // 🔹 Filtrar solo los permisos NUEVOS
-  const newPermissionIds = this.selectedPermissionIds
-    .filter(id => !this.existingPermissionIdsForSelectedForm.includes(id));
+  // Permisos a agregar
+  const newPermissionIds = this.selectedPermissionIds.filter(id => !this.existingPermissionIdsForSelectedForm.includes(id));
+  // Permisos a quitar
+  const removedPermissionIds = this.existingPermissionIdsForSelectedForm.filter(id => !this.selectedPermissionIds.includes(id));
 
-  const requests = newPermissionIds.map(permissionId => {
-    const dto = {
-      rolId,
-      formId,
-      permissionId,
-      asset: true
-    };
+  const requests: any[] = [];
 
-    console.log('DTO enviado a RolFormPermission:', dto);
+  newPermissionIds.forEach(permissionId => {
+    requests.push({ rolId, formId, permissionId, asset: true });
+  });
 
-    return this.service.post('RolFormPermission', dto);
+  removedPermissionIds.forEach(permissionId => {
+    requests.push({ rolId, formId, permissionId, asset: false });
   });
 
   if (!requests.length) {
-    Swal.fire('Información', 'No hay permisos nuevos para registrar.', 'info');
+    Swal.fire('Información', 'No hay cambios en los permisos.', 'info');
     return;
   }
 
   this.isSaving = true;
-  forkJoin(requests).subscribe({
+  forkJoin(requests.map(req => this.service.post('RolFormPermission', req))).subscribe({
     next: () => {
       this.isSaving = false;
       Swal.fire({
         icon: 'success',
-        title: 'Permisos asignados exitosamente',
+        title: 'Cambios en permisos guardados exitosamente',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true
       });
 
-      // Navegar al índice para ver los cambios
-      this.router.navigate(['/rolFormPermission-index']);
-
+      // Volver al listado de permisos del rol o recargar
+      this.resetAddFormFlow();
+      this.loadPermissionsForRole(rolId);
+      this.prevStep();
     },
     error: (err: any) => {
       this.isSaving = false;
       console.error('Error al guardar permisos', err);
-      Swal.fire(
-        'Error',
-        err?.error?.message || err.message || 'No se pudieron asignar los permisos.',
-        'error'
-      );
+      Swal.fire('Error', err?.error?.message || err.message || 'No se pudieron asignar los permisos.', 'error');
     }
   });
 }
@@ -449,7 +444,33 @@ onSave(): void {
   }
 
   hasSelectedPermissions(): boolean {
-    return Object.values(this.bulkSelections).some(permissions => permissions.length > 0);
+    // Detectar cambios entre las selecciones actuales (bulkSelections)
+    // y las selecciones iniciales (initialSelections). Debe devolver true
+    // si hay permisos añadidos o removidos para cualquier formulario.
+    const formIds = new Set<string | number>([
+      ...Object.keys(this.initialSelections).map(k => k),
+      ...Object.keys(this.bulkSelections).map(k => k)
+    ]);
+
+    for (const fid of Array.from(formIds)) {
+      const id = fid as any;
+      const init = this.initialSelections[id] || [];
+      const curr = this.bulkSelections[id] || [];
+
+      if (init.length !== curr.length) return true;
+
+      const initSet = new Set(init);
+      for (const p of curr) {
+        if (!initSet.has(p)) return true;
+      }
+      // also check removals: if any init id not in curr
+      const currSet = new Set(curr);
+      for (const p of init) {
+        if (!currSet.has(p)) return true;
+      }
+    }
+
+    return false;
   }
 
   onSaveBulk(): void {

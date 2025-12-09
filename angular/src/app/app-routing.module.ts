@@ -57,6 +57,8 @@ import { SelectParking } from './features/parking/pages/select-parking/select-pa
 import { ResetPasswordComponent } from './features/authentication/pages/reset-password/reset-password';
 import { VerifyOtpComponent } from './features/authentication/pages/verify-otp/verify-otp';
 import { RegisteredVehiclesIndex } from './features/operational/pages/registered-vehicles/registered-vehicles-index/registered-vehicles-index';
+import { RolParkingUserIndex } from './features/segurity/pages/rol-parking-user/rol-parking-user-index/rol-parking-user-index';
+import { RolParkingUserForm } from './features/segurity/pages/rol-parking-user/rol-parking-user-form/rol-parking-user-form';
 
 // project import
 
@@ -152,6 +154,9 @@ const routes: Routes = [
       {path: 'rates-index', component: RatesIndex},
       {path: 'rates-form', component: RatesForm},
       {path: 'rates-form/:id', component: RatesForm},
+      {path: 'rol-parking-user-index', component: RolParkingUserIndex},
+      {path: 'rol-parking-user-form', component: RolParkingUserForm},
+      {path: 'rol-parking-user-form/:id', component: RolParkingUserForm},
       {path: 'configuracion', component: Configuration},
 
 
