@@ -15,12 +15,6 @@
         </div>
 
         <div class="actions">
-          <button mat-stroked-button color="primary" (click)="openDetails()">Detalles</button>
-
-          <a mat-flat-button  [href]="cam.url" target="_blank" rel="noopener">
-            Ver stream
-          </a>
-
           <button mat-icon-button (click)="copyUrl(cam)" matTooltip="Copiar URL">
             <mat-icon>content_copy</mat-icon>
           </button>
@@ -40,18 +34,9 @@
         </div>
       </div>
 
-      <div class="viewer-body" [class.has-details]="showDetails">
-        <!-- Reemplaza por tu <video>/<img> real -->
-       <div class="stream">
-  <!-- <img src="http://192.168.18.49:8080/video" alt="Stream en vivo" style="width:100%; max-width:600px;"> -->
- <img *ngIf="selectedCamera?.url" [src]="selectedCamera.url"
-       alt="Stream en vivo" style="width:100%; max-width:600px;">
-
-</div>
-
-
-        <!-- Panel de detalles: solo visible cuando se pulsa "Detalles" -->
-        <div class="info" *ngIf="showDetails">
+      <div class="viewer-body" [class.has-details]="true">
+        <!-- Panel de detalles: siempre visible -->
+        <div class="info">
           <div class="kv">
             <span class="key">Resolución</span>
             <strong class="val">{{ cam.resolution || '—' }}</strong>

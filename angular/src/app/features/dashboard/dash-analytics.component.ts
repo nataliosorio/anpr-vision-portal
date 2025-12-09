@@ -20,13 +20,14 @@ import {
 } from 'ng-apexcharts';
 
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import { MatError, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 
 import Swal from 'sweetalert2';
-import { Subject, switchMap, takeUntil, forkJoin, of } from 'rxjs';
+import { Subject, switchMap, takeUntil, forkJoin, of, interval } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { General } from 'src/app/core/services/general.service';
 import { LoaderService } from 'src/app/core/services/loader.service';
@@ -115,6 +116,7 @@ private piePalette = [
   /** Servicio general para peticiones HTTP */
   private service = inject(General);
   private loaderService = inject(LoaderService);
+  public router = inject(Router);
 
 
   // ==================== REFERENCIAS A PLANTILLAS Y GRÁFICOS ====================
@@ -358,8 +360,8 @@ private piePalette = [
    /** Tarjetas principales del dashboard */
   cards: DashboardCard[] = [
     { id: 'currentVehicles', background: 'bg-c-blue', title: 'Vehículos estacionados hoy', icon: 'fas fa-car', number: '—' },
-    { id: 'dailyRevenue', background: 'bg-c-green', title: 'Ingresos del día', icon: 'fas fa-dollar-sign', number: '—' },
-    { id: 'availableSlots', background: 'bg-c-yellow', title: 'Slots disponibles', icon: 'fas fa-draw-polygon', number: '—' },
+    { id: 'dailyRevenue', background: 'bg-c-green', title: 'Hora', icon: 'fas fa-dollar-sign', number: '—' },
+    { id: 'availableSlots', background: 'bg-c-yellow', title: 'Acciones rápidas', icon: 'fas fa-draw-polygon', number: '—' },
     // { id: 'activeMemberships', background: 'bg-c-red', title: 'Membresías activas', icon: 'fas fa-credit-card', number: '—' }
   ];
     // ===========================================================
@@ -369,6 +371,8 @@ private piePalette = [
       // Obtener parkingId actual desde el servicio
      this.parkingId = this.service.getParkingId();
      this.loaderService.show();
+     // Iniciar reloj que actualiza la tarjeta de ingresos del día en tiempo real
+     this.startClock();
      // tipos de vehículo
      this.service.get<{ data: VehicleType[] }>('TypeVehicle/select').subscribe(res => {
        if (res?.data) this.vehicleTypes = res.data.map(item => ({ value: item.id, label: item.name }));
@@ -454,6 +458,29 @@ private piePalette = [
     const card = this.cards.find(c => c.id === id);
     if (!card) return;
     card.number = value;
+  }
+
+  /** Inicia un reloj que actualiza la tarjeta 'dailyRevenue' cada segundo. */
+  private startClock(): void {
+    // Poner valor inicial inmediatamente
+    const now = new Date();
+    const formattedNow = now.toLocaleString('es-ES', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    this.setCardNumberById('dailyRevenue', formattedNow);
+
+    // Actualizar en tiempo real
+    interval(1000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        const d = new Date();
+        const fmt = d.toLocaleString('es-ES', {
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit'
+        });
+        this.setCardNumberById('dailyRevenue', fmt);
+      });
   }
 
   // ===================== ZONAS =====================
